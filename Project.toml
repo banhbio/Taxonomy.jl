@@ -3,6 +3,9 @@ uuid = "10bb16a4-4bfc-432e-9419-4ca69c1a753c"
 authors = ["banhbio <ban@kuicr.kyoto-u.ac.jp>"]
 version = "0.1.0"
 
+[deps]
+AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
+
 [compat]
 julia = "1.5"
 
