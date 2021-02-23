@@ -1,10 +1,12 @@
 struct Database
+    nodes_dmp::String
+    names_dmp::String
     parents::Dict{Int,Int}
     ranks::Dict{Int,String}
     names::Dict{Int,String}
 end
 
-function Database(taxdb_dir::String, nodes_dmp::String, names_dmp::String)
+function Database(nodes_dmp::String, names_dmp::String)
     function _importnodes(nodes_dmp_path::String)
         parents = Dict{Int,Int}()
         ranks = Dict{Int,String}()
@@ -40,15 +42,25 @@ function Database(taxdb_dir::String, nodes_dmp::String, names_dmp::String)
         return namaes
     end
 
-    @assert isdir(taxdb_dir)
+    @assert isfile(nodes_dmp)
+    @assert isfile(names_dmp)
+    nodes_dmp_abspath = abspath(nodes_dmp)
+    names_dmp_abspath = abspath(names_dmp)
 
-    nodes_dmp_path = joinpath(taxdb_dir, nodes_dmp)
-    names_dmp_path = joinpath(taxdb_dir, names_dmp)
+    parents, ranks = _importnodes(nodes_dmp_abspath)
+    namaes = _importnames(names_dmp_abspath)
 
-    parents, ranks = _importnodes(nodes_dmp_path)
-    namaes = _importnames(names_dmp_path)
+    return Database(nodes_dmp_abspath, names_dmp_abspath, parents, ranks, namaes)
+end
 
-    return Database(parents, ranks, namaes)
+function Database(db_path::String, nodes_dmp::String, names_dmp::String)
+    @assert ispath(db_path)
+    db_abspath = abspath(db_path)
+    
+    nodes_dmp_abspath = joinpath(db_abspath, nodes_dmp)
+    names_dmp_abspath = joinpath(db_abspath, names_dmp)
+
+    return Database(nodes_dmp_abspath, names_dmp_abspath)
 end
 
 struct Taxon
