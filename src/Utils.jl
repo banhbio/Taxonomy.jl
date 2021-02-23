@@ -56,7 +56,7 @@ end
 function Database(db_path::String, nodes_dmp::String, names_dmp::String)
     @assert ispath(db_path)
     db_abspath = abspath(db_path)
-    
+
     nodes_dmp_abspath = joinpath(db_abspath, nodes_dmp)
     names_dmp_abspath = joinpath(db_abspath, names_dmp)
 
@@ -105,7 +105,7 @@ end
 AbstractTrees.nodetype(::Taxon) = Taxon
 
 function lineage(taxon::Taxon)
-    lineage = []
+    lineage = Taxon[]
     current_taxon = taxon
     push!(lineage,current_taxon)
     while parent(current_taxon) !== nothing
