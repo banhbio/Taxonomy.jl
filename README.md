@@ -22,7 +22,7 @@ julia> using Taxonomy
 #
 julia> db = Database("db/nodes.dmp","db/names.dmp")
 #
-julia> db = Database("/your/path/to/db","nodes.dmp","db/names.dmp")
+julia> db = Database("/your/path/to/db","nodes.dmp","names.dmp")
 ```
 
 You can construct a `Taxon` object from its taxonomic identifier and the `Database` object.
@@ -32,7 +32,7 @@ You can construct a `Taxon` object from its taxonomic identifier and the `Databa
 julia> human = Taxon(9606, db) # species Homo sapiens
 Taxon(9606, "Homo sapiens")
 
-julia> gorilla = Taxon(9593, db) # species gorilla
+julia> wgorilla = Taxon(9593, db) # species Gorilla gorilla
 Taxon(9593, "Gorilla gorilla")
 
 julia> bacillus = Taxon(1386,db) # genus Bacillus
@@ -70,11 +70,18 @@ julia> lineage(gorilla)
  Taxon(1, "root")
 ```
 ```julia
-julia> children(gorilla)
-3-element Array{Taxon,1}:
- Taxon(9606, "Homo sapiens")
- Taxon(1425170, "Homo heidelbergensis")
- Taxon(2665952, "environmental samples")
+julia> children(bacillus)
+ Taxon(427072, "Bacillus chagannorensis")
+ Taxon(904295, "Bacillus ginsengisoli")
+ Taxon(1522318, "Bacillus kwashiorkori")
+ Taxon(1245522, "Bacillus thermophilus")
+ Taxon(1178786, "Bacillus thaonhiensis")
+ ⋮
+ Taxon(324768, "Bacillus idriensis")
+ Taxon(745819, "Bacillus alkalicola")
+ Taxon(170350, "Bacillus deramificans")
+ Taxon(1522308, "Bacillus niameyensis")
+ Taxon(324767, "Bacillus infantis")
 ```
 ```julia
 julia> l = [human, gorilla]
