@@ -1,4 +1,4 @@
-struct Database
+struct TaxonomyDatabase
     nodes_dmp::String
     names_dmp::String
     parents::Dict{Int,Int}
@@ -6,7 +6,7 @@ struct Database
     names::Dict{Int,String}
 end
 
-function Database(nodes_dmp::String, names_dmp::String)
+function TaxonomyDatabase(nodes_dmp::String, names_dmp::String)
     function _importnodes(nodes_dmp_path::String)
         parents = Dict{Int,Int}()
         ranks = Dict{Int,String}()
@@ -50,33 +50,33 @@ function Database(nodes_dmp::String, names_dmp::String)
     parents, ranks = _importnodes(nodes_dmp_abspath)
     namaes = _importnames(names_dmp_abspath)
 
-    return Database(nodes_dmp_abspath, names_dmp_abspath, parents, ranks, namaes)
+    return TaxonomyDatabase(nodes_dmp_abspath, names_dmp_abspath, parents, ranks, namaes)
 end
 
-function Database(db_path::String, nodes_dmp::String, names_dmp::String)
+function TaxonomyDatabase(db_path::String, nodes_dmp::String, names_dmp::String)
     @assert ispath(db_path)
     db_abspath = abspath(db_path)
 
     nodes_dmp_abspath = joinpath(db_abspath, nodes_dmp)
     names_dmp_abspath = joinpath(db_abspath, names_dmp)
 
-    return Database(nodes_dmp_abspath, names_dmp_abspath)
+    return TaxonomyDatabase(nodes_dmp_abspath, names_dmp_abspath)
 end
 
 struct Taxon
     taxid::Int
     name::String
-    db::Database
+    db::TaxonomyDatabase
 end
 
 Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\")")
 
-function Taxon(taxid::Int, taxDB::Database)
+function Taxon(taxid::Int, taxDB::TaxonomyDatabase)
     name = taxDB.names[taxid]
     return Taxon(taxid, name, taxDB)
 end
 
-function Taxon(name::String, taxDB::Database)
+function Taxon(name::String, taxDB::TaxonomyDatabase)
     taxid_canditates = findall(isequal(name), taxDB.names)
     length(taxid_canditates) == 0 && return nothing
     length(taxid_canditates) == 1 && return Taxon(taxid_canditates[1],taxDB)

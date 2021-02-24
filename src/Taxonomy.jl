@@ -1,7 +1,7 @@
 module Taxonomy
 
 using AbstractTrees
-export Database, Taxon
+export TaxonomyDatabase, Taxon
 export parent, children, rank, lineage, name_lineage, taxid, lca
 export PhyloTree
 export topolgoy

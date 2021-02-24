@@ -20,12 +20,12 @@ First, you need to download taxonomic data from NCBI's servers (ftp://ftp.ncbi.n
 # Load the package
 julia> using Taxonomy
 #
-julia> db = Database("db/nodes.dmp","db/names.dmp")
+julia> db = TaxonomyDatabase("db/nodes.dmp","db/names.dmp")
 #
-julia> db = Database("/your/path/to/db","nodes.dmp","names.dmp")
+julia> db = TaxonomyDatabase("/your/path/to/db","nodes.dmp","names.dmp")
 ```
 
-You can construct a `Taxon` object from its taxonomic identifier and the `Database` object.
+You can construct a `Taxon` object from its taxonomic identifier and the `TaxonomyDatabase` object.
 
 
 ```julia
