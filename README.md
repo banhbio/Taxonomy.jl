@@ -32,7 +32,7 @@ You can construct a `Taxon` object from its taxonomic identifier and the `Taxono
 julia> human = Taxon(9606, db) # species Homo sapiens
 Taxon(9606, "Homo sapiens")
 
-julia> wgorilla = Taxon(9593, db) # species Gorilla gorilla
+julia> gorilla = Taxon(9593, db) # species Gorilla gorilla
 Taxon(9593, "Gorilla gorilla")
 
 julia> bacillus = Taxon(1386,db) # genus Bacillus
