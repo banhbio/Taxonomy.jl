@@ -70,6 +70,7 @@ struct Taxon
 end
 
 Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\")")
+AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 
 function Taxon(taxid::Int, taxDB::TaxonomyDatabase)
     name = taxDB.names[taxid]
@@ -82,6 +83,8 @@ function Taxon(name::String, taxDB::TaxonomyDatabase)
     length(taxid_canditates) == 1 && return Taxon(taxid_canditates[1],taxDB)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
 end
+
+AbstractTrees.nodetype(::Taxon) = Taxon
 
 function Base.parent(taxon::Taxon)
    parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
@@ -101,8 +104,6 @@ end
 function rank(taxon::Taxon)
     taxon.db.ranks[taxon.taxid]
 end
-
-AbstractTrees.nodetype(::Taxon) = Taxon
 
 function lineage(taxon::Taxon)
     lineage = Taxon[]
