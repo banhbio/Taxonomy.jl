@@ -2,21 +2,21 @@ struct DB
     nodes_dmp::String
     names_dmp::String
     parents::Dict{Int,Int}
-    ranks::Dict{Int,String}
+    ranks::Dict{Int,Symbol}
     names::Dict{Int,String}
 end
 
 function DB(nodes_dmp::String, names_dmp::String)
     function _importnodes(nodes_dmp_path::String)
         parents = Dict{Int,Int}()
-        ranks = Dict{Int,String}()
+        ranks = Dict{Int,Symbol}()
 
         f = open(nodes_dmp_path, "r")
         for line in readlines(f)
             lines = split(line, "\t")
             taxid = parse(Int, lines[1])
             parent = parse(Int, lines[3])
-            rank = lines[5]
+            rank = Symbol(lines[5])
 
             parent != taxid || continue
 
@@ -66,19 +66,21 @@ end
 struct Taxon
     taxid::Int
     name::String
+    rank::Symbol
     db::DB
 end
 
-Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\")")
+Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\", \"$(taxon.rank)\")")
 AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 
 function Taxon(taxid::Int, db::DB)
-    name = taxDB.names[taxid]
-    return Taxon(taxid, name, db)
+    name = db.names[taxid]
+    rank = db.ranks[taxid]
+    return Taxon(taxid, name, rank, db)
 end
 
 function Taxon(name::String, db::DB)
-    taxid_canditates = findall(isequal(name), taxDB.names)
+    taxid_canditates = findall(isequal(name), db.names)
     length(taxid_canditates) == 0 && error("There is no candidates for ",name)
     length(taxid_canditates) == 1 && return Taxon(taxid_canditates[1],db)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
@@ -102,7 +104,7 @@ function AbstractTrees.children(taxon::Taxon)
 end
 
 function rank(taxon::Taxon)
-    taxon.db.ranks[taxon.taxid]
+    taxon.rank
 end
 
 function lineage(taxon::Taxon)
