@@ -1,4 +1,4 @@
-struct TaxonomyDatabase
+struct DB
     nodes_dmp::String
     names_dmp::String
     parents::Dict{Int,Int}
@@ -6,7 +6,7 @@ struct TaxonomyDatabase
     names::Dict{Int,String}
 end
 
-function TaxonomyDatabase(nodes_dmp::String, names_dmp::String)
+function DB(nodes_dmp::String, names_dmp::String)
     function _importnodes(nodes_dmp_path::String)
         parents = Dict{Int,Int}()
         ranks = Dict{Int,String}()
@@ -50,37 +50,37 @@ function TaxonomyDatabase(nodes_dmp::String, names_dmp::String)
     parents, ranks = _importnodes(nodes_dmp_abspath)
     namaes = _importnames(names_dmp_abspath)
 
-    return TaxonomyDatabase(nodes_dmp_abspath, names_dmp_abspath, parents, ranks, namaes)
+    return DB(nodes_dmp_abspath, names_dmp_abspath, parents, ranks, namaes)
 end
 
-function TaxonomyDatabase(db_path::String, nodes_dmp::String, names_dmp::String)
+function DB(db_path::String, nodes_dmp::String, names_dmp::String)
     @assert ispath(db_path)
     db_abspath = abspath(db_path)
 
     nodes_dmp_abspath = joinpath(db_abspath, nodes_dmp)
     names_dmp_abspath = joinpath(db_abspath, names_dmp)
 
-    return TaxonomyDatabase(nodes_dmp_abspath, names_dmp_abspath)
+    return DB(nodes_dmp_abspath, names_dmp_abspath)
 end
 
 struct Taxon
     taxid::Int
     name::String
-    db::TaxonomyDatabase
+    db::DB
 end
 
 Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\")")
 AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 
-function Taxon(taxid::Int, taxDB::TaxonomyDatabase)
+function Taxon(taxid::Int, db::DB)
     name = taxDB.names[taxid]
-    return Taxon(taxid, name, taxDB)
+    return Taxon(taxid, name, db)
 end
 
-function Taxon(name::String, taxDB::TaxonomyDatabase)
+function Taxon(name::String, db::DB)
     taxid_canditates = findall(isequal(name), taxDB.names)
-    length(taxid_canditates) == 0 && return nothing
-    length(taxid_canditates) == 1 && return Taxon(taxid_canditates[1],taxDB)
+    length(taxid_canditates) == 0 && error("There is no candidates for ",name)
+    length(taxid_canditates) == 1 && return Taxon(taxid_canditates[1],db)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
 end
 
