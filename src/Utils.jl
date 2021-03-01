@@ -67,7 +67,7 @@ struct Taxon
     db::DB
 end
 
-Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\", :$(taxon.rank))")
+Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\")")
 AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 
 function Taxon(taxid::Int, db::DB)
