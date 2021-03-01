@@ -44,23 +44,20 @@ function DB(nodes_dmp::String, names_dmp::String)
 
     @assert isfile(nodes_dmp)
     @assert isfile(names_dmp)
-    nodes_dmp_abspath = abspath(nodes_dmp)
-    names_dmp_abspath = abspath(names_dmp)
 
-    parents, ranks = _importnodes(nodes_dmp_abspath)
-    namaes = _importnames(names_dmp_abspath)
+    parents, ranks = _importnodes(nodes_dmp)
+    namaes = _importnames(names_dmp)
 
-    return DB(nodes_dmp_abspath, names_dmp_abspath, parents, ranks, namaes)
+    return DB(nodes_dmp, names_dmp, parents, ranks, namaes)
 end
 
 function DB(db_path::String, nodes_dmp::String, names_dmp::String)
     @assert ispath(db_path)
-    db_abspath = abspath(db_path)
 
-    nodes_dmp_abspath = joinpath(db_abspath, nodes_dmp)
-    names_dmp_abspath = joinpath(db_abspath, names_dmp)
+    nodes_dmp_path = joinpath(db_path, nodes_dmp)
+    names_dmp_path = joinpath(db_path, names_dmp)
 
-    return DB(nodes_dmp_abspath, names_dmp_abspath)
+    return DB(nodes_dmp_path, names_dmp_path)
 end
 
 struct Taxon
@@ -70,12 +67,12 @@ struct Taxon
     db::DB
 end
 
-Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\", \"$(taxon.rank)\")")
+Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\", :$(taxon.rank))")
 AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 
 function Taxon(taxid::Int, db::DB)
     name = db.names[taxid]
-    rank = db.ranks[taxid]
+    rank = get(db.ranks, taxid, Symbol("no rank"))
     return Taxon(taxid, name, rank, db)
 end
 
@@ -108,15 +105,20 @@ function rank(taxon::Taxon)
 end
 
 function lineage(taxon::Taxon)
-    lineage = Taxon[]
+    _lineage = Taxon[]
     current_taxon = taxon
-    push!(lineage,current_taxon)
+    push!(_lineage,current_taxon)
     while parent(current_taxon) !== nothing
         current_taxon = parent(current_taxon)
-        push!(lineage, current_taxon)
+        push!(_lineage, current_taxon)
     end
-    return lineage
+    return _lineage
 end  
+
+function lineage(taxon::Taxon, ranks::Vector{Symbol})
+   _lineage = lineage(taxon)
+   return filter(x -> x.rank in ranks, _lineage)
+end
 
 function lca(taxa::Vector{Taxon})
     lineages = [lineage(taxon) for taxon in taxa]
