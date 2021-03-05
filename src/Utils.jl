@@ -85,6 +85,22 @@ function Taxon(name::String, db::DB)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
 end
 
+function Base.get(taxid::Int, db::DB, default)
+    try
+        return Taxon(taxid, db)
+    catch
+        return default
+    end
+end
+
+function Base.get(name::String, db::DB, default)
+    try
+        return Taxon(name, db)
+    catch
+        return default
+    end
+end
+
 AbstractTrees.nodetype(::Taxon) = Taxon
 
 function Base.parent(taxon::Taxon)
