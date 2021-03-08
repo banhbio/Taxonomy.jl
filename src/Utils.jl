@@ -7,41 +7,6 @@ struct DB
 end
 
 function DB(nodes_dmp::String, names_dmp::String)
-    function _importnodes(nodes_dmp_path::String)
-        parents = Dict{Int,Int}()
-        ranks = Dict{Int,Symbol}()
-
-        f = open(nodes_dmp_path, "r")
-        for line in readlines(f)
-            lines = split(line, "\t")
-            taxid = parse(Int, lines[1])
-            parent = parse(Int, lines[3])
-            rank = Symbol(lines[5])
-
-            parent != taxid || continue
-
-            parents[taxid] = parent
-            ranks[taxid] = rank
-        end
-        close(f)
-        return parents, ranks
-    end
-
-    function _importnames(names_dmp_path::String)
-        namaes = Dict{Int,String}()
-        f = open(names_dmp_path, "r")
-        for line in readlines(f)
-            lines = split(line, "\t")
-            if lines[7] == "scientific name"
-                taxid = parse(Int, lines[1])
-                name = lines[3]
-                namaes[taxid] = name
-            end
-        end
-        close(f)
-        return namaes
-    end
-
     @assert isfile(nodes_dmp)
     @assert isfile(names_dmp)
 
@@ -50,6 +15,43 @@ function DB(nodes_dmp::String, names_dmp::String)
 
     return DB(nodes_dmp, names_dmp, parents, ranks, namaes)
 end
+
+function _importnodes(nodes_dmp_path::String)
+    parents = Dict{Int,Int}()
+    ranks = Dict{Int,Symbol}()
+
+    f = open(nodes_dmp_path, "r")
+    for line in readlines(f)
+        lines = split(line, "\t")
+        taxid = parse(Int, lines[1])
+        parent = parse(Int, lines[3])
+        rank = Symbol(lines[5])
+
+        parent != taxid || continue
+
+        parents[taxid] = parent
+        ranks[taxid] = rank
+    end
+    close(f)
+    return parents, ranks
+end
+
+
+function _importnames(names_dmp_path::String)
+    namaes = Dict{Int,String}()
+    f = open(names_dmp_path, "r")
+    for line in readlines(f)
+        lines = split(line, "\t")
+        if lines[7] == "scientific name"
+            taxid = parse(Int, lines[1])
+            name = lines[3]
+            namaes[taxid] = name
+        end
+    end
+    close(f)
+    return namaes
+end
+
 
 function DB(db_path::String, nodes_dmp::String, names_dmp::String)
     @assert ispath(db_path)
@@ -81,6 +83,22 @@ function Taxon(name::String, db::DB)
     length(taxid_canditates) == 0 && error("There is no candidates for ",name)
     length(taxid_canditates) == 1 && return Taxon(taxid_canditates[1],db)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
+end
+
+function Base.get(taxid::Int, db::DB, default)
+    try
+        return Taxon(taxid, db)
+    catch
+        return default
+    end
+end
+
+function Base.get(name::String, db::DB, default)
+    try
+        return Taxon(name, db)
+    catch
+        return default
+    end
 end
 
 AbstractTrees.nodetype(::Taxon) = Taxon
