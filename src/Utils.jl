@@ -135,7 +135,7 @@ end
 
 function lineage(taxon::Taxon, ranks::Vector{Symbol})
    _lineage = lineage(taxon)
-   return filter(x -> x.rank in ranks, _lineage)
+   return filter(x -> rank(x) in ranks, _lineage)
 end
 
 function lca(taxa::Vector{Taxon})
