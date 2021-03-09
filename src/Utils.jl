@@ -148,3 +148,8 @@ function lca(taxa::Vector{Taxon})
     end
     return nothing
 end
+
+function lca(taxa::Taxon...)
+    l = getindex(Taxon, taxa...)
+    return lca(l)
+end
