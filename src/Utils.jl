@@ -25,7 +25,7 @@ function _importnodes(nodes_dmp_path::String)
         lines = split(line, "\t")
         taxid = parse(Int, lines[1])
         parent = parse(Int, lines[3])
-        rank = Symbol(lines[5])
+        rank = x -> x == "no rank" ? Symbol("norank") : Symbol(lines[5])
 
         parent != taxid || continue
 
@@ -74,7 +74,7 @@ AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 
 function Taxon(taxid::Int, db::DB)
     name = db.names[taxid]
-    rank = get(db.ranks, taxid, Symbol("no rank"))
+    rank = get(db.ranks, taxid, Symbol("norank"))
     return Taxon(taxid, name, rank, db)
 end
 
@@ -134,7 +134,16 @@ function Lineage(taxon::Taxon)
         current_taxon = parent(current_taxon)
         push!(line, current_taxon)
     end
+<<<<<<< HEAD
     return Lineage(line)
+=======
+    return _lineage
+end  
+
+function lineage(taxon::Taxon, ranks::Vector{Symbol})
+   _lineage = lineage(taxon)
+   return filter(x -> rank(x) in ranks, _lineage)
+>>>>>>> 40985771a297f6076277cfd72ee49cf4d3524345
 end
 
 Base.size(l::Lineage) = size(l.line)
