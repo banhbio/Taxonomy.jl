@@ -10,7 +10,7 @@ Base.show(io::IO,ptree::PhyloTree) = print_tree(io, ptree)
 
 function topolgoy(taxa::Vector{Taxon}; intermediate=false)
     root = lca(taxa)
-    lineages = map(lineage, taxa)
+    lineages = map(Lineage, taxa)
     all_taxon = union(lineages...)
     branches = Dict{Taxon, Taxon}()
     for node in all_taxon

@@ -122,24 +122,28 @@ function rank(taxon::Taxon)
     taxon.rank
 end
 
-function lineage(taxon::Taxon)
-    _lineage = Taxon[]
-    current_taxon = taxon
-    push!(_lineage,current_taxon)
-    while parent(current_taxon) !== nothing
-        current_taxon = parent(current_taxon)
-        push!(_lineage, current_taxon)
-    end
-    return _lineage
-end  
-
-function lineage(taxon::Taxon, ranks::Vector{Symbol})
-   _lineage = lineage(taxon)
-   return filter(x -> x.rank in ranks, _lineage)
+struct Lineage <: AbstractVector{Taxon} 
+    line::Vector{Taxon}
 end
 
+function Lineage(taxon::Taxon)
+    line = Taxon[]
+    current_taxon = taxon
+    push!(line,current_taxon)
+    while parent(current_taxon) !== nothing
+        current_taxon = parent(current_taxon)
+        push!(line, current_taxon)
+    end
+    return Lineage(line)
+end
+
+Base.size(l::Lineage) = size(l.line)
+Base.getindex(l::Lineage, i::Int) = getindex(l.line, i)
+
+function Base.getindex(l::Lineage, s::Symbol)
+
 function lca(taxa::Vector{Taxon})
-    lineages = [lineage(taxon) for taxon in taxa]
+    lineages = [Lineage(taxon) for taxon in taxa]
     overlap = intersect(lineages...)
     for taxon in lineages[1]
         if taxon in overlap

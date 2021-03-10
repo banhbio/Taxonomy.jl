@@ -1,11 +1,16 @@
 module Taxonomy
 
 using AbstractTrees
-export Taxon
-export parent, children, rank, lineage, lca
-export PhyloTree
-export topolgoy
-export children, print_tree, Leaves 
+import DataAPI,
+       DataAPI.All,
+       DataAPI.Between,
+       DataAPI.Cols
+export Taxon, Lineage,
+       parent, children, rank, lca,
+       PhyloTree,
+       topolgoy,
+       children, print_tree, Leaves,
+       All, Between, Cols
 
 include("Utils.jl")
 include("tree.jl")
