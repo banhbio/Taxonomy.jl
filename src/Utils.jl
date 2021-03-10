@@ -134,16 +134,7 @@ function Lineage(taxon::Taxon)
         current_taxon = parent(current_taxon)
         push!(line, current_taxon)
     end
-<<<<<<< HEAD
     return Lineage(line)
-=======
-    return _lineage
-end  
-
-function lineage(taxon::Taxon, ranks::Vector{Symbol})
-   _lineage = lineage(taxon)
-   return filter(x -> rank(x) in ranks, _lineage)
->>>>>>> 40985771a297f6076277cfd72ee49cf4d3524345
 end
 
 Base.size(l::Lineage) = size(l.line)
