@@ -21,11 +21,11 @@ function _importnodes(nodes_dmp_path::String)
     ranks = Dict{Int,Symbol}()
 
     f = open(nodes_dmp_path, "r")
-    for line in readlines(f)
-        lines = split(line, "\t")
-        taxid = parse(Int, lines[1])
-        parent = parse(Int, lines[3])
-        rank = x -> x == "no rank" ? Symbol("norank") : Symbol(lines[5])
+    for line in eachline(f)
+        cols = split(line, "\t")
+        taxid = parse(Int, cols[1])
+        parent = parse(Int, cols[3])
+        rank = Symbol(cols[5])
 
         parent != taxid || continue
 
@@ -40,11 +40,11 @@ end
 function _importnames(names_dmp_path::String)
     namaes = Dict{Int,String}()
     f = open(names_dmp_path, "r")
-    for line in readlines(f)
-        lines = split(line, "\t")
-        if lines[7] == "scientific name"
-            taxid = parse(Int, lines[1])
-            name = lines[3]
+    for line in eachline(f)
+        cols = split(line, "\t")
+        if cols[7] == "scientific name"
+            taxid = parse(Int, cols[1])
+            name = cols[3]
             namaes[taxid] = name
         end
     end
@@ -69,12 +69,12 @@ struct Taxon
     db::DB
 end
 
-Base.show(io::IO, taxon::Taxon) = print(io, "Taxon($(taxon.taxid), \"$(taxon.name)\")")
+Base.show(io::IO, taxon::Taxon) = print(io, "$(taxon.taxid) [$(String(taxon.rank))] $(taxon.name)")
 AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 
 function Taxon(taxid::Int, db::DB)
     name = db.names[taxid]
-    rank = get(db.ranks, taxid, Symbol("norank"))
+    rank = get(db.ranks, taxid, Symbol("no rank"))
     return Taxon(taxid, name, rank, db)
 end
 
@@ -140,7 +140,7 @@ end
 Base.size(l::Lineage) = size(l.line)
 Base.getindex(l::Lineage, i::Int) = getindex(l.line, i)
 
-function Base.getindex(l::Lineage, s::Symbol)
+#function Base.getindex(l::Lineage, s::Symbol)
 
 function lca(taxa::Vector{Taxon})
     lineages = [Lineage(taxon) for taxon in taxa]
