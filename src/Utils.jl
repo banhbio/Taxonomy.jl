@@ -1,3 +1,14 @@
+const CanonicalRank = [:superkingdom,
+                      :phylum,
+                      :class,
+                      :order,
+                      :family,
+                      :genus,
+                      :species,
+                      :subspecies,
+                      :strain
+                      ]
+
 struct DB
     nodes_dmp::String
     names_dmp::String
@@ -124,6 +135,7 @@ end
 
 struct Lineage <: AbstractVector{Taxon} 
     line::Vector{Taxon}
+    index::Dict{Symbol,Int}
 end
 
 function Lineage(taxon::Taxon)
@@ -134,13 +146,28 @@ function Lineage(taxon::Taxon)
         current_taxon = parent(current_taxon)
         push!(line, current_taxon)
     end
-    return Lineage(line)
+    rankline = map(rank, line)
+    index = Dict{Symbol,Int}()
+    for crank in CanonicalRank
+        position = findfirst(x -> x == crank, rankline)
+        position === nothing ? continue : index[crank] = position 
+    end
+    return Lineage(line,index)
 end
 
 Base.size(l::Lineage) = size(l.line)
 Base.getindex(l::Lineage, i::Int) = getindex(l.line, i)
 
-#function Base.getindex(l::Lineage, s::Symbol)
+function Base.getindex(l::Lineage, s::Symbol)
+    i = getindex(l.index, s)
+    return getindex(l.line, i)
+end
+
+#Base.getindex(l::Lineage, all::All)
+#Base.getindex(l::Lineage, cols::Cols)
+#Base.getindex(l::Lineage, between::Between)
+#Base.getindex(l::Lineage, from::From)
+#Base.getindex(l::Lineage, until::Until)
 
 function lca(taxa::Vector{Taxon})
     lineages = [Lineage(taxon) for taxon in taxa]
