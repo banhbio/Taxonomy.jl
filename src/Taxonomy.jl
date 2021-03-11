@@ -6,6 +6,7 @@ import DataAPI,
        DataAPI.Between,
        DataAPI.Cols
 export Taxon, Lineage,
+       CanonicalRank,
        parent, children, rank, lca,
        PhyloTree,
        topolgoy,
