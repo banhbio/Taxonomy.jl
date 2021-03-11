@@ -133,7 +133,7 @@ function rank(taxon::Taxon)
     taxon.rank
 end
 
-struct Lineage <: AbstractVector{Taxon} 
+struct Lineage #OrderedDict would be nice?
     line::Vector{Taxon}
     index::Dict{Symbol,Int}
 end
@@ -146,27 +146,34 @@ function Lineage(taxon::Taxon)
         current_taxon = parent(current_taxon)
         push!(line, current_taxon)
     end
+    idx = index(line)
+    return Lineage(line,idx)
+end
+
+function index(line::Vector{Taxon})
     rankline = map(rank, line)
     index = Dict{Symbol,Int}()
     for crank in CanonicalRank
         position = findfirst(x -> x == crank, rankline)
-        position === nothing ? continue : index[crank] = position 
+        position === nothing ? continue : index[crank] = position
     end
-    return Lineage(line,index)
+    return index
 end
 
 Base.size(l::Lineage) = size(l.line)
 Base.getindex(l::Lineage, i::Int) = getindex(l.line, i)
-
-function Base.getindex(l::Lineage, s::Symbol)
-    i = getindex(l.index, s)
-    return getindex(l.line, i)
+Base.getindex(l::Lineage, s::Symbol) = l.line[l.index[s]]
+function Base.getindex(l::Lineage, range::UnitRange{Int})
+    line = l.line[range]
+    idx = index(line)
+    return Lineage(line,idx)
 end
+#Base.getindex(l::Lineage, idx::All)
+#Base.getindex(l::Lineage, idx::Cols)
 
-#Base.getindex(l::Lineage, all::All)
-#Base.getindex(l::Lineage, cols::Cols)
-#Base.getindex(l::Lineage, between::Between)
-#Base.getindex(l::Lineage, from::From)
+Base.getindex(l::Lineage, idx::Between) = l[l.index[idx.first]:l.index[idx.last]]
+
+#Base.getindex(l::Lineage, from::From) 
 #Base.getindex(l::Lineage, until::Until)
 
 function lca(taxa::Vector{Taxon})
