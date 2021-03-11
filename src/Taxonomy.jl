@@ -11,9 +11,11 @@ export Taxon, Lineage,
        PhyloTree,
        topolgoy,
        children, print_tree, Leaves,
-       All, Between, Cols
+       All, Between, Cols,
+       From, Until
 
 include("Utils.jl")
 include("tree.jl")
+include("exDataAPI.jl")
 
 end
