@@ -133,7 +133,7 @@ function rank(taxon::Taxon)
     taxon.rank
 end
 
-struct Lineage #OrderedDict would be nice?
+struct Lineage <: AbstractVector{Taxon}
     line::Vector{Taxon}
     index::Dict{Symbol,Int}
 end
@@ -146,6 +146,7 @@ function Lineage(taxon::Taxon)
         current_taxon = parent(current_taxon)
         push!(line, current_taxon)
     end
+    reverse!(line)
     idx = index(line)
     return Lineage(line,idx)
 end
@@ -162,19 +163,45 @@ end
 
 Base.size(l::Lineage) = size(l.line)
 Base.getindex(l::Lineage, i::Int) = getindex(l.line, i)
+Base.lastindex(l::Lineage) = lastindex(l.line)
+
 Base.getindex(l::Lineage, s::Symbol) = l.line[l.index[s]]
+
+
 function Base.getindex(l::Lineage, range::UnitRange{Int})
     line = l.line[range]
     idx = index(line)
     return Lineage(line,idx)
 end
-#Base.getindex(l::Lineage, idx::All)
-#Base.getindex(l::Lineage, idx::Cols)
 
-Base.getindex(l::Lineage, idx::Between) = l[l.index[idx.first]:l.index[idx.last]]
+function Base.getindex(l::Lineage, idx::All)
+    if isempty(idx.cols)
+        return l
+    else
+        return getindex(l, Cols(idx.cols))
+    end
+end
 
-#Base.getindex(l::Lineage, from::From) 
-#Base.getindex(l::Lineage, until::Until)
+function Base.getindex(l::Lineage, idx::Cols)
+    if isempty(idx.cols)
+        line = Taxon[]
+        idx = index(line)
+        return Lineage(line, idx)
+    else
+        line = union(map(x -> try getindex(l,x) catch nothing end ,idx.cols))
+        filter!(!isnothing, line)
+        idx = index(line)
+        return Lineage(line,idx)
+    end
+end
+Base.getindex(l::Lineage, idx::Between{Int,Int}) = l[idx.first:idx.last]
+Base.getindex(l::Lineage, idx::Between{Symbol,Int}) = getindex(l, Between(l.index[idx.first], idx.last))
+Base.getindex(l::Lineage, idx::Between{Int,Symbol}) = getindex(l, Between(idx.first, l.index[idx.last]))
+Base.getindex(l::Lineage, idx::Between{Symbol,Symbol}) = getindex(l, Between(l.index[idx.first], l.index[idx.last]))
+Base.getindex(l::Lineage, idx::From{Int}) = l[idx.first:end]
+Base.getindex(l::Lineage, idx::From{Symbol}) = getindex(l, From(l.index[idx.first]))
+Base.getindex(l::Lineage, idx::Until{Int}) = l[1:idx.last]
+Base.getindex(l::Lineage, idx::Until{Symbol}) = getindex(l, Until(l.index[idx.last]))
 
 function lca(taxa::Vector{Taxon})
     lineages = [Lineage(taxon) for taxon in taxa]
