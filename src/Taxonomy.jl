@@ -14,8 +14,8 @@ export Taxon, Lineage,
        All, Between, Cols,
        From, Until
 
+include("exDataAPI.jl")
 include("Utils.jl")
 include("tree.jl")
-include("exDataAPI.jl")
 
 end
