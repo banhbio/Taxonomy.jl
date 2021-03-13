@@ -16,8 +16,12 @@ export CanonicalRank,
        All, Between, Cols,
        From, Until
 
-include("exDataAPI.jl")
+include("DataAPI.jl")
 include("Utils.jl")
+include("database.jl")
+include("taxon.jl")
+include("lineage.jl")
+include("lca.jl")
 include("tree.jl")
 
 end
