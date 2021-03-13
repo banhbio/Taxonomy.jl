@@ -1,4 +1,5 @@
 const CanonicalRank = [:superkingdom,
+                       :kingdom,
                        :phylum,
                        :class,
                        :order,
