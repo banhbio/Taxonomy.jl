@@ -21,13 +21,13 @@ function DB(nodes_dmp::String, names_dmp::String)
     @assert isfile(nodes_dmp)
     @assert isfile(names_dmp)
 
-    parents, ranks = _importnodes(nodes_dmp)
-    namaes = _importnames(names_dmp)
+    parents, ranks = importnodes(nodes_dmp)
+    namaes = importnames(names_dmp)
 
     return DB(nodes_dmp, names_dmp, parents, ranks, namaes)
 end
 
-function _importnodes(nodes_dmp_path::String)
+function importnodes(nodes_dmp_path::String)
     parents = Dict{Int,Int}()
     ranks = Dict{Int,Symbol}()
 
@@ -48,7 +48,7 @@ function _importnodes(nodes_dmp_path::String)
 end
 
 
-function _importnames(names_dmp_path::String)
+function importnames(names_dmp_path::String)
     namaes = Dict{Int,String}()
     f = open(names_dmp_path, "r")
     for line in eachline(f)
@@ -133,8 +133,8 @@ function rank(taxon::Taxon)
     taxon.rank
 end
 
-struct Lineage <: AbstractVector{Taxon}
-    line::Vector{Taxon}
+struct Lineage <: AbstractVector{Union{Taxon,Nothing}}
+    line::Vector{Union{Taxon,Nothing}}
     index::Dict{Symbol,Int}
 end
 
@@ -151,7 +151,7 @@ function Lineage(taxon::Taxon)
     return Lineage(line,idx)
 end
 
-function index(line::Vector{Taxon})
+function index(line::Vector{Union{Taxon,Nothing}})
     rankline = map(rank, line)
     index = Dict{Symbol,Int}()
     for crank in CanonicalRank
@@ -202,6 +202,28 @@ Base.getindex(l::Lineage, idx::From{Int}) = l[idx.first:end]
 Base.getindex(l::Lineage, idx::From{Symbol}) = getindex(l, From(l.index[idx.first]))
 Base.getindex(l::Lineage, idx::Until{Int}) = l[1:idx.last]
 Base.getindex(l::Lineage, idx::Until{Symbol}) = getindex(l, Until(l.index[idx.last]))
+
+function Base.get(l::Lineage, idx::Union{Int,Symbol}, default::Any)
+    try
+        return getindex(l,idx)
+    catch
+        return default
+    end
+    
+end
+
+function reformat(l::Lineage, ranks::Vector{Symbol})
+    line = Union{Taxon,Nothing}[]
+    idx = Dict{Symbol,Int}()
+    count = 0
+    for rank in ranks
+        count += 1
+        taxon = get(l, rank, nothing)
+        push!(line, taxon)
+        idx[rank]=count
+    end
+    return Lineage(line, idx)
+end
 
 function lca(taxa::Vector{Taxon})
     lineages = [Lineage(taxon) for taxon in taxa]
