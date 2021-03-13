@@ -1,13 +1,13 @@
 const CanonicalRank = [:superkingdom,
-                      :phylum,
-                      :class,
-                      :order,
-                      :family,
-                      :genus,
-                      :species,
-                      :subspecies,
-                      :strain
-                      ]
+                       :phylum,
+                       :class,
+                       :order,
+                       :family,
+                       :genus,
+                       :species,
+                       :subspecies,
+                       :strain
+                       ]
 
 struct DB
     nodes_dmp::String
@@ -147,18 +147,13 @@ function Lineage(taxon::Taxon)
         push!(line, current_taxon)
     end
     reverse!(line)
-    idx = index(line)
-    return Lineage(line,idx)
-end
-
-function index(line::Vector{Union{Taxon,Nothing}})
     rankline = map(rank, line)
     index = Dict{Symbol,Int}()
     for crank in CanonicalRank
         position = findfirst(x -> x == crank, rankline)
         position === nothing ? continue : index[crank] = position
     end
-    return index
+    return Lineage(line,index)
 end
 
 Base.size(l::Lineage) = size(l.line)
@@ -170,7 +165,7 @@ Base.getindex(l::Lineage, s::Symbol) = l.line[l.index[s]]
 
 function Base.getindex(l::Lineage, range::UnitRange{Int})
     line = l.line[range]
-    idx = index(line)
+    idx = filter(x -> last(x) in range, l.index)
     return Lineage(line,idx)
 end
 
@@ -183,17 +178,18 @@ function Base.getindex(l::Lineage, idx::All)
 end
 
 function Base.getindex(l::Lineage, idx::Cols)
-    if isempty(idx.cols)
-        line = Taxon[]
-        idx = index(line)
-        return Lineage(line, idx)
-    else
-        line = union(map(x -> try getindex(l,x) catch nothing end ,idx.cols))
-        filter!(!isnothing, line)
-        idx = index(line)
-        return Lineage(line,idx)
+    line = Union{Taxon,Nothing}[]
+    index = Dict{Symbol,Int}()
+    count = 0
+    for rank in idx.cols
+        count += 1
+        taxon = getindex(l, rank)
+        push!(line, taxon)
+        index[rank]=count
     end
+    return Lineage(line,index)
 end
+
 Base.getindex(l::Lineage, idx::Between{Int,Int}) = l[idx.first:idx.last]
 Base.getindex(l::Lineage, idx::Between{Symbol,Int}) = getindex(l, Between(l.index[idx.first], idx.last))
 Base.getindex(l::Lineage, idx::Between{Int,Symbol}) = getindex(l, Between(idx.first, l.index[idx.last]))
@@ -209,7 +205,6 @@ function Base.get(l::Lineage, idx::Union{Int,Symbol}, default::Any)
     catch
         return default
     end
-    
 end
 
 function reformat(l::Lineage, ranks::Vector{Symbol})
