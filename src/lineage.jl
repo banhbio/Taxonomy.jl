@@ -27,10 +27,9 @@ Base.lastindex(l::Lineage) = lastindex(l.line)
 
 Base.getindex(l::Lineage, s::Symbol) = l.line[l.index[s]]
 
-
 function Base.getindex(l::Lineage, range::UnitRange{Int})
     line = l.line[range]
-    idx = filter(x -> last(x) in range, l.index)
+    idx = Dict(key => value - range.start + 1 for (key, value) in l.index if value in range)
     return Lineage(line,idx)
 end
 
