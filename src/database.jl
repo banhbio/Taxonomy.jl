@@ -6,6 +6,8 @@ struct DB
     names::Dict{Int,String}
 end
 
+Base.show(io::IO, db::DB) = print(io, "Taxonomy.DB(\"$(db.nodes_dmp)\",\"$(db.names_dmp)\")")
+
 function DB(nodes_dmp::String, names_dmp::String)
     @assert isfile(nodes_dmp)
     @assert isfile(names_dmp)
