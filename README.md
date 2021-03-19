@@ -22,10 +22,10 @@ First, you need to download taxonomic data from NCBI's servers (ftp://ftp.ncbi.n
 ```julia
 # Load the package
 julia> using Taxonomy
-# One way to 
-julia> db = Taxonomy.DB("db/nodes.dmp","db/names.dmp")
-#
-julia> db = Taxonomy.DB("/your/path/to/db","nodes.dmp","names.dmp")
+
+julia> db = Taxonomy.DB("db/nodes.dmp","db/names.dmp") # Create a Taxonomy.DB objext from the path to each file
+
+julia> db = Taxonomy.DB("/your/path/to/db","nodes.dmp","names.dmp") # Alternatively, create the object from the path to the directory and the name of each files
 ```
 
 You can construct a `Taxon` object from its taxonomic identifier and the `Taxonomy.DB` object.
@@ -142,6 +142,9 @@ Struct `Lineage` stores linage informaction in `Vector`-like format.
 ```julia
 julia> lineage[1]
 1 [no rank] root
+
+julia> lineage[9]
+7711 [phylum] Chordata
 
 julia> lineage[end]
 9593 [species] Gorilla gorilla
