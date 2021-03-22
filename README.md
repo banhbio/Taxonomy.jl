@@ -8,6 +8,8 @@
 
 Taxonomy.jl is a julia package to handle NCBI-formatted taxonomic databases.
 
+Now, this package only supports `scientific name`.
+
 Installation
 ------------
 Install Taxonomy.jl as follows:
