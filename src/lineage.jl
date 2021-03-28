@@ -1,5 +1,5 @@
-struct Lineage <: AbstractVector{Union{Taxon,Nothing}}
-    line::Vector{Union{Taxon,Nothing}}
+struct Lineage <: AbstractVector{AbstractTaxon}
+    line::Vector{AbstractTaxon}
     index::Dict{Symbol,Int}
 end
 
@@ -42,7 +42,7 @@ function Base.getindex(l::Lineage, idx::All)
 end
 
 function Base.getindex(l::Lineage, idx::Cols)
-    line = Union{Taxon,Nothing}[]
+    line = AbstractTaxon[]
     index = Dict{Symbol,Int}()
     count = 0
     for rank in idx.cols
@@ -72,14 +72,28 @@ function Base.get(l::Lineage, idx::Union{Int,Symbol}, default::Any)
 end
 
 function reformat(l::Lineage, ranks::Vector{Symbol})
-    line = Union{Taxon,Nothing}[]
+    line = AbstractTaxon[]
     idx = Dict{Symbol,Int}()
     count = 0
     for rank in ranks
         count += 1
-        taxon = get(l, rank, nothing)
+        taxon = try
+            getindex(l, rank)
+        catch
+            filtered_line = filter(x -> typeof(x) == Taxon, line)
+            edge = filtered_line[end]
+            UnclassifiedTaxon(rank, edge)
+        end
         push!(line, taxon)
         idx[rank]=count
     end
     return Lineage(line, idx)
+end
+
+function print_lineage(io::IO, l::Lineage; delim::AbstractString=";", fill::Bool=false)
+    if !fill
+        l = filter(x -> typeof(x) == Taxon, l)
+    end
+    name_line = map(x -> x.name, l)
+    return foldl((x,y) -> x * delim * y, name_line)
 end

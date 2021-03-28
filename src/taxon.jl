@@ -1,4 +1,6 @@
-struct Taxon
+abstract type  AbstractTaxon end
+
+struct Taxon <: AbstractTaxon
     taxid::Int
     name::String
     rank::Symbol
@@ -7,6 +9,7 @@ end
 
 Base.show(io::IO, taxon::Taxon) = print(io, "$(taxon.taxid) [$(String(taxon.rank))] $(taxon.name)")
 AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
+AbstractTrees.nodetype(::Taxon) = Taxon
 
 function Taxon(taxid::Int, db::DB)
     name = db.names[taxid]
@@ -37,8 +40,6 @@ function Base.get(name::String, db::DB, default)
     end
 end
 
-AbstractTrees.nodetype(::Taxon) = Taxon
-
 function Base.parent(taxon::Taxon)
    parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
    if parent_taxid === nothing
@@ -54,6 +55,19 @@ function AbstractTrees.children(taxon::Taxon)
     return children_taxon
 end
 
-function rank(taxon::Taxon)
+struct UnclassifiedTaxon <:AbstractTaxon
+    name::String
+    rank::Symbol
+    source::Taxon
+end
+
+function UnclassifiedTaxon(rank, source)
+    name = "unclassified " * source.name * " " * String(rank)
+    UnclassifiedTaxon(name, rank, source)
+end
+
+Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(String(taxon.rank))] $(taxon.name)")
+
+function rank(taxon::AbstractTaxon)
     taxon.rank
 end
