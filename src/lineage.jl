@@ -101,3 +101,9 @@ function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill
 end
 
 print_lineage(lineage::Lineage; kwargs...) = print_lineage(stdout::IO, lineage)
+
+function lineage_line(lineage::Lineage; kwargs...)
+    io = IOBuffer()
+    print_lineage(io,lineage; kwargs...)
+    return String(take!(io))
+end
