@@ -40,6 +40,8 @@ function Base.get(name::String, db::DB, default)
     end
 end
 
+taxid(taxon::Taxon) = taxon.taxid
+
 function Base.parent(taxon::Taxon)
    parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
    if parent_taxid === nothing
