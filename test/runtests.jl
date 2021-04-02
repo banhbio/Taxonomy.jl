@@ -42,19 +42,12 @@ end
     lineage = Lineage(human)
     @test lineage[1] == Taxon(1,db)
     @test size(lineage) == (32,)
-    @test lineage[32] == human
-    @test lineage[end] == human
-    @test lineage[:species] == human
-    @test lineage[1:9] == Lineage(Taxon(7711,db))
+    @test lineage[32] == lineage[end] == lineage[:species] == human
+    @test lineage[1:9] == lineage[Between(1, 9)]
     @test lineage[All()] == lineage
-    @test lineage[Between(1, 9)] == lineage[1:9]
-    @test lineage[Between(:superkingdom, 29)] == lineage[3:29]
-    @test lineage[Between(3, :family)] == lineage[3:29]
-    @test lineage[Between(:superkingdom, :order)] == lineage[3:24]
-    @test lineage[From(14)] == lineage[14:32]
-    @test lineage[From(:phylum)] == lineage[9:32]
-    @test lineage[Until(9)] == lineage[1:9]
-    @test lineage[Until(:order)] == lineage[1:24]
+    @test lineage[Between(3, 29)] == lineage[Between(:superkingdom, 29)] == lineage[Between(3, :family)] == lineage[Between(:superkingdom, :family)]
+    @test lineage[From(9)] == lineage[From(:phylum)] == lineage[9:32]
+    @test lineage[Until(24)] == lineage[Until(:order)] == lineage[1:24]
 
     @test get(lineage, 2, nothing) == Taxon(131567,db)
     @test get(lineage, :class, nothing) == Taxon(40674, db)
@@ -82,7 +75,7 @@ end
     @test lca([human,gorilla]) == lca(human,gorilla) == Taxon(207598, db)
 end
 
-@test "tree.jl" begin
+@testset "tree.jl" begin
     human = Taxon(9606, db)
     gorilla = Taxon(9593, db)
     tree = topolgoy([human, gorilla])
