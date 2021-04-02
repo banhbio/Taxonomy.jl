@@ -20,6 +20,9 @@ db = Taxonomy.DB("db/nodes.dmp","db/names.dmp")
     @test rank(human) == human.rank
     @test parent(human) == Taxon(9605,db)
     @test children(human) == [Taxon(741158,db), Taxon(63221,db)]
+    denisova = Taxon(741158,db)
+    @test children(denisova) == Taxon[]
+    @test isempty(children(denisova))
 
     unclassified_human_subspecies = UnclassifiedTaxon(:subspecies, human)
     @test typeof(unclassified_human_subspecies) == UnclassifiedTaxon
