@@ -1,7 +1,7 @@
 using Taxonomy
 using Test
 
-db = Taxonomy.DB("db/nodes.dmp","db/names.dmp")
+db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
 
 @testset "taxon.jl" begin
     @test Taxon <: AbstractTaxon
@@ -20,7 +20,7 @@ db = Taxonomy.DB("db/nodes.dmp","db/names.dmp")
     @test rank(human) == human.rank
     @test parent(human) == Taxon(9605,db)
     @test children(human) == [Taxon(741158,db), Taxon(63221,db)]
-    denisova = Taxon(741158,db)
+    denisova = Taxon(741158, db)
     @test children(denisova) == Taxon[]
     @test isempty(children(denisova))
 
@@ -47,10 +47,10 @@ end
     @test lineage[:species] == human
     @test lineage[1:9] == Lineage(Taxon(7711,db))
     @test lineage[All()] == lineage
-    @test lineage[Between(1,9)] == lineage[1:9]
-    @test lineage[Between(:superkingdom,29)] == lineage[3:29]
-    @test lineage[Between(3,:family)] == lineage[3:29]
-    @test lineage[Between(:superkingdom,:order)] == lineage[3:24]
+    @test lineage[Between(1, 9)] == lineage[1:9]
+    @test lineage[Between(:superkingdom, 29)] == lineage[3:29]
+    @test lineage[Between(3, :family)] == lineage[3:29]
+    @test lineage[Between(:superkingdom, :order)] == lineage[3:24]
     @test lineage[From(14)] == lineage[14:32]
     @test lineage[From(:phylum)] == lineage[9:32]
     @test lineage[Until(9)] == lineage[1:9]
@@ -67,11 +67,24 @@ end
     @test reformated[1] == Taxon(2759, db)
     @test reformated[3] == Taxon(40674, db)
     @test reformated[7] == Taxon(9606, db)
-    @test sprint(io -> print_lineage(io,reformated) ) == "Eukaryota;Chordata;Mammalia;Primates;Hominidae;Homo;Homo sapiens"
+    @test sprint(io -> print_lineage(io, reformated) ) == "Eukaryota;Chordata;Mammalia;Primates;Hominidae;Homo;Homo sapiens"
 
     primate = Taxon(9443,db)
-    reformated_1 = reformat(Lineage(primate),[:superkingdom,:phylum,:class,:order,:family,:genus,:species])
+    reformated_1 = reformat(Lineage(primate), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
     @test reformated_1[7] == UnclassifiedTaxon(:species, primate)
-    @test sprint(io -> print_lineage(io,reformated_1)) == "Eukaryota;Chordata;Mammalia;Primates"
-    @test sprint(io -> print_lineage(io,reformated_1; fill=true)) == "Eukaryota;Chordata;Mammalia;Primates;unclassified Primates family;unclassified Primates genus;unclassified Primates species"
+    @test sprint(io -> print_lineage(io, reformated_1)) == "Eukaryota;Chordata;Mammalia;Primates"
+    @test sprint(io -> print_lineage(io, reformated_1; fill=true)) == "Eukaryota;Chordata;Mammalia;Primates;unclassified Primates family;unclassified Primates genus;unclassified Primates species"
+end
+
+@testset "lca.jl" begin
+    human = Taxon(9606, db)
+    gorilla = Taxon(9593, db)
+    @test lca([human,gorilla]) == lca(human,gorilla) == Taxon(207598, db)
+end
+
+@test "tree.jl" begin
+    human = Taxon(9606, db)
+    gorilla = Taxon(9593, db)
+    tree = topolgoy([human, gorilla])
+    @test tree.node == Taxon(207598, db)
 end
