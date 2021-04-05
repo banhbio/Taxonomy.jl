@@ -9,6 +9,11 @@ version = "0.3.3"
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
+[[DataAPI]]
+git-tree-sha1 = "dfb3b7e89e395be1e25c2ad6d7690dc29cc53b1d"
+uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
+version = "1.6.0"
+
 [[Dates]]
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -94,7 +99,7 @@ uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [[Taxonomy]]
-deps = ["AbstractTrees"]
+deps = ["AbstractTrees", "DataAPI"]
 path = "/home/banned/.julia/dev/Taxonomy"
 uuid = "10bb16a4-4bfc-432e-9419-4ca69c1a753c"
 version = "0.1.0"
