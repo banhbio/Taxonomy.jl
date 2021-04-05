@@ -235,10 +235,7 @@ julia> reformated = reformat(Lineage(uncultured_bacillales), myrank)
  1239 [phylum] Firmicutes
  91061 [class] Bacilli
  1385 [order] Bacillales
- nothing
- nothing
+ Unclassified [family] unclassified Bacillales family
+ Unclassified [genus] unclassified Bacillales genus
  157472 [species] uncultured Bacillales bacterium
-
-julia> reformated[:family] # return nothing
-
 ```
