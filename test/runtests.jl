@@ -72,7 +72,9 @@ end
 @testset "lca.jl" begin
     human = Taxon(9606, db)
     gorilla = Taxon(9593, db)
+    pan = Taxon(9598, db)
     @test lca([human,gorilla]) == lca(human,gorilla) == Taxon(207598, db)
+    @test lca([human,gorilla,pan]) == lca(human,gorilla,pan) == Taxon(207598, db)
 end
 
 @testset "tree.jl" begin
