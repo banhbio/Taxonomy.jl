@@ -4,7 +4,7 @@ function lca(taxa::Vector{Taxon})
     end
     lineages = [Lineage(taxon) for taxon in taxa]
     overlap = intersect(lineages...)
-    return overlap[end]s
+    return overlap[end]
 end
 
 function lca(taxa::Taxon...)
