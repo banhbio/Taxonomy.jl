@@ -63,10 +63,10 @@ end
     @test sprint(io -> print_lineage(io, reformated) ) == "Eukaryota;Chordata;Mammalia;Primates;Hominidae;Homo;Homo sapiens"
 
     primate = Taxon(9443,db)
-    reformated_1 = reformat(Lineage(primate), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
-    @test reformated_1[7] == UnclassifiedTaxon(:species, primate)
-    @test sprint(io -> print_lineage(io, reformated_1)) == "Eukaryota;Chordata;Mammalia;Primates"
-    @test sprint(io -> print_lineage(io, reformated_1; fill=true)) == "Eukaryota;Chordata;Mammalia;Primates;unclassified Primates family;unclassified Primates genus;unclassified Primates species"
+    reformated_primate_lineage = reformat(Lineage(primate), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
+    @test reformated_primate_lineage[7] == UnclassifiedTaxon(:species, primate)
+    @test sprint(io -> print_lineage(io, reformated_primate_lineage)) == "Eukaryota;Chordata;Mammalia;Primates"
+    @test sprint(io -> print_lineage(io, reformated_primate_lineage; fill=true)) == "Eukaryota;Chordata;Mammalia;Primates;unclassified Primates family;unclassified Primates genus;unclassified Primates species"
 end
 
 @testset "lca.jl" begin
