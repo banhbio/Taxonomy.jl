@@ -98,6 +98,9 @@ function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill
     if !fill
         lineage = filter(x -> typeof(x) == Taxon, lineage)
     end
+    if isempty(lineage)
+        return nothing
+    end
     name_line = map(x -> x.name, lineage)
     l = foldl((x,y) -> x * delim * y, name_line)
     print(io, l)
