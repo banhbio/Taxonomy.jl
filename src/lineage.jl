@@ -81,7 +81,11 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
             getindex(l, rank)
         catch
             filtered_line = filter(x -> typeof(x) == Taxon, line)
-            edge = filtered_line[end]
+            edge = try
+                filtered_line[end]
+            catch #if there is no taxon corresponding to the ranks
+                l[end]
+            end
             UnclassifiedTaxon(rank, edge)
         end
         push!(line, taxon)
