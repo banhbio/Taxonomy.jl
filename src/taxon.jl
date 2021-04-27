@@ -5,8 +5,6 @@ struct Taxon <: AbstractTaxon
     name::String
     rank::Symbol
     db::DB
-
-    
 end
 
 Base.show(io::IO, taxon::Taxon) = print(io, "$(taxon.taxid) [$(String(taxon.rank))] $(taxon.name)")
