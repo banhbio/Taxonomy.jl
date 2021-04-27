@@ -14,7 +14,7 @@ Installation
 ------------
 Install Taxonomy.jl as follows:
 ```
-julia -e 'using Pkg; Pkg.add("Taxonomy")'
+julia -e 'using Pkg; Pkg.add("https://github.com/banhbio/Taxonomy.jl")'
 ```
 
 Usage
