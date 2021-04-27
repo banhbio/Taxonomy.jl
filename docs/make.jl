@@ -20,5 +20,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/banhbio/Taxonomy.jl.git",
-    latest="main",
+    devbranch="main",
 )
