@@ -21,12 +21,12 @@ jobs:
       julia: 1
       script:
         julia --project=docs -e '
-          using Pkg
-          Pkg.develop(PackageSpec(path=pwd()))
-          Pkg.instantiate()
-          using Documenter
-          using Taxonomy
-          DocMeta.setdocmeta!(Taxonomy, :DocTestSetup, :(using Taxonomy); recursive=true)
-          doctest(Taxonomy)
+          using Pkg;
+          Pkg.develop(PackageSpec(path=pwd()));
+          Pkg.instantiate();
+          using Documenter;
+          using Taxonomy;
+          DocMeta.setdocmeta!(Taxonomy, :DocTestSetup, :(using Taxonomy); recursive=true);
+          doctest(Taxonomy);
           include("docs/make.jl")'
       after_success: skip
