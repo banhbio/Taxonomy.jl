@@ -81,7 +81,11 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
             getindex(l, rank)
         catch
             filtered_line = filter(x -> typeof(x) == Taxon, line)
-            edge = filtered_line[end]
+            edge = try
+                filtered_line[end]
+            catch #if there is no taxon corresponding to the ranks
+                l[end]
+            end
             UnclassifiedTaxon(rank, edge)
         end
         push!(line, taxon)
@@ -93,6 +97,9 @@ end
 function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill::Bool=false)
     if !fill
         lineage = filter(x -> typeof(x) == Taxon, lineage)
+    end
+    if isempty(lineage)
+        return nothing
     end
     name_line = map(x -> x.name, lineage)
     l = foldl((x,y) -> x * delim * y, name_line)

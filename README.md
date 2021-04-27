@@ -14,7 +14,7 @@ Installation
 ------------
 Install Taxonomy.jl as follows:
 ```
-julia -e 'using Pkg; Pkg.add("Taxonomy")'
+julia -e 'using Pkg; Pkg.add("https://github.com/banhbio/Taxonomy.jl")'
 ```
 
 Usage
@@ -224,7 +224,7 @@ julia> reformat(lineage, myrank)
  9592 [genus] Gorilla
  9593 [species] Gorilla gorilla
  ```
- If there is no corresponding taxon in the lineage to your ranks, then `nothing` will be stored.
+ If there is no corresponding taxon in the lineage to your ranks, then `UnclassifiedTaxon` will be stored.
 ```julia
 julia> uncultured_bacillales = Taxon(157472,db)
 57472 [species] uncultured Bacillales bacterium
