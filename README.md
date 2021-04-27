@@ -4,8 +4,6 @@
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://banhbio.github.io/Taxonomy.jl/dev)
 [![Build Status](https://travis-ci.com/banhbio/Taxonomy.jl.svg?token=TnLbrgdWxoQMPrAZynWc&branch=main)](https://travis-ci.com/banhbio/Taxonomy.jl)
 
-# This project is in the development stages
-
 Taxonomy.jl is a julia package to handle NCBI-formatted taxonomic databases.
 
 Now, this package only supports `scientific name`.
