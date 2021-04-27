@@ -19,5 +19,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/banhbio/Taxonomy.jl",
+    repo="github.com/banhbio/Taxonomy.jl.git",
+    latest="main",
 )
