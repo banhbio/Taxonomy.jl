@@ -24,7 +24,7 @@ jobs:
           using Pkg
           Pkg.develop(PackageSpec(path=pwd()))
           Pkg.instantiate()
-          using Documenter: DocMeta, doctest
+          using Documenter
           using Taxonomy
           DocMeta.setdocmeta!(Taxonomy, :DocTestSetup, :(using Taxonomy); recursive=true)
           doctest(Taxonomy)
