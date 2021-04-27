@@ -20,6 +20,13 @@ jobs:
     - stage: Documentation
       julia: 1.5
       script:
-        - julia --color=yes --project=docs/ -e 'using Pkg; Pkg.instantiate()'
-        - julia --color=yes --project=docs/ docs/make.jl
+        julia --project=docs -e '
+          using Pkg
+          Pkg.develop(PackageSpec(path=pwd()))
+          Pkg.instantiate()
+          using Documenter: DocMeta, doctest
+          using Taxonomy
+          DocMeta.setdocmeta!(Taxonomy, :DocTestSetup, :(using Taxonomy); recursive=true)
+          doctest(Taxonomy)
+          include("docs/make.jl")'
       after_success: skip
