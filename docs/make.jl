@@ -6,8 +6,8 @@ DocMeta.setdocmeta!(Taxonomy, :DocTestSetup, :(using Taxonomy); recursive=true)
 function readme2index()
     readme_path = "README.md"
     index_path = "docs/src/index.md" 
-    f = open(readme_path)
-    g = open(index_path)
+    f = open(readme_path,"r")
+    g = open(index_path, "w")
     try
         readme = read(f,String)
         replace!(readme,"![](docs/src/img" => "![](img")
