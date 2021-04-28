@@ -10,7 +10,7 @@ function readme2index()
     g = open(index_path, "w")
     try
         readme = read(f,String)
-        replace!(readme,"![](docs/src/img" => "![](img")
+        index = replace(readme,"![](docs/src/img" => "![](img")
         write(g,readme)
     finally
         close(f)
