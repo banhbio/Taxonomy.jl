@@ -26,7 +26,6 @@ jobs:
           Pkg.instantiate();
           using Documenter;
           using Taxonomy;
-          DocMeta.setdocmeta!(Taxonomy, :DocTestSetup, :(using Taxonomy); recursive=true);
-          doctest(Taxonomy);
-          include("docs/make.jl")'
+          include("docs/make.jl");
+          doctest(Taxonomy);'
       after_success: skip
