@@ -73,6 +73,11 @@ end
     @test reformated_co_lineage[7] == UnclassifiedTaxon(:species, co)
     @test sprint(io -> print_lineage(io, reformated_co_lineage)) == ""
     @test sprint(io -> print_lineage(io, reformated_co_lineage; fill=true)) == "unclassified cellular organisms superkingdom;unclassified cellular organisms phylum;unclassified cellular organisms class;unclassified cellular organisms order;unclassified cellular organisms family;unclassified cellular organisms genus;unclassified cellular organisms species"
+
+    human = Taxon(9606,db)
+    primate = Taxon(9443,db)
+    @test isdescendant(human, primate)
+    @test isancestor(primate, human)
 end
 
 @testset "lca.jl" begin
