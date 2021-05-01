@@ -114,3 +114,6 @@ function lineage_line(lineage::Lineage; kwargs...)
     print_lineage(io,lineage; kwargs...)
     return String(take!(io))
 end
+
+isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lineage(descendant)
+isancestor(ancestor::Taxon, descendant::Taxon) = isdescendant(descendant, ancestor)
