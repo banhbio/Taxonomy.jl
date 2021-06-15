@@ -1,5 +1,6 @@
 module Taxonomy
 
+using AbstractTrees: isempty
 using AbstractTrees
 import DataAPI,
        DataAPI.All,
@@ -8,7 +9,7 @@ import DataAPI,
 export CanonicalRank,
        AbstractTaxon, Taxon, UnclassifiedTaxon,
        Lineage,
-       taxid, parent, children, rank, lca,
+       taxid, name, rank, parent, children, lca,
        reformat, print_lineage, isdescendant, isancestor,
        PhyloTree,
        topolgoy,

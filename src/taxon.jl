@@ -73,3 +73,7 @@ Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(String(
 function rank(taxon::AbstractTaxon)
     taxon.rank
 end
+
+function name(taxon::AbstractTaxon)
+    taxon.name
+end
