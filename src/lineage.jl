@@ -95,27 +95,28 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
 end
 
 function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill::Bool=false, skip::Bool=false)
-    if isempty(lineage)
-        return nothing
-    end
-    l = ""
+    name_line = String[] 
     for taxon in lineage
-        if typeof(taxon) == AbstractTaxon
+        if typeof(taxon) == UnclassifiedTaxon
             if skip
                 continue
             end
-            if !fill
-                name = ""
+
+            if fill
+                push!(name_line, name(taxon))
             else
-                name = name(taxon)
+                push!(name_line, "")
             end
         else
-            name = name(taxon)
+            push!(name_line, name(taxon))
         end
-
-        l =  l * delim * name
     end
 
+    if isempty(name_line)
+        return nothing
+    end
+
+    l = foldl((x,y) -> x*delim*y, name_line)
     print(io, l)
     return nothing
 end

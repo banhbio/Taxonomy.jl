@@ -65,13 +65,15 @@ end
     primate = Taxon(9443,db)
     reformated_primate_lineage = reformat(Lineage(primate), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
     @test reformated_primate_lineage[7] == UnclassifiedTaxon(:species, primate)
-    @test sprint(io -> print_lineage(io, reformated_primate_lineage)) == "Eukaryota;Chordata;Mammalia;Primates"
+    @test sprint(io -> print_lineage(io, reformated_primate_lineage)) == "Eukaryota;Chordata;Mammalia;Primates;;;"
+    @test sprint(io -> print_lineage(io, reformated_primate_lineage; skip=true)) == "Eukaryota;Chordata;Mammalia;Primates"
     @test sprint(io -> print_lineage(io, reformated_primate_lineage; fill=true)) == "Eukaryota;Chordata;Mammalia;Primates;unclassified Primates family;unclassified Primates genus;unclassified Primates species"
 
     co = Taxon(131567,db)
     reformated_co_lineage = reformat(Lineage(co), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
     @test reformated_co_lineage[7] == UnclassifiedTaxon(:species, co)
-    @test sprint(io -> print_lineage(io, reformated_co_lineage)) == ""
+    @test sprint(io -> print_lineage(io, reformated_co_lineage)) == ";;;;;;"
+    @test sprint(io -> print_lineage(io, reformated_co_lineage; skip=true)) == ""
     @test sprint(io -> print_lineage(io, reformated_co_lineage; fill=true)) == "unclassified cellular organisms superkingdom;unclassified cellular organisms phylum;unclassified cellular organisms class;unclassified cellular organisms order;unclassified cellular organisms family;unclassified cellular organisms genus;unclassified cellular organisms species"
 
     human = Taxon(9606,db)
