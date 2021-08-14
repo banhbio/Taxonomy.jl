@@ -110,3 +110,7 @@ It also works for an `UnclassifiedTaxon` object.
 function rank(taxon::AbstractTaxon)
     taxon.rank
 end
+
+function name(taxon::AbstractTaxon)
+    taxon.name
+end

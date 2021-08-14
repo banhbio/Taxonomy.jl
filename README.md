@@ -11,7 +11,7 @@ Now, this package only supports `scientific name`.
 ## Installation
 Install Taxonomy.jl as follows:
 ```
-julia -e 'using Pkg; Pkg.add("https://github.com/banhbio/Taxonomy.jl")'
+julia -e 'using Pkg; Pkg.add("Taxonomy")'
 ```
 
 ## Usage
