@@ -13,7 +13,7 @@ Base.show(io::IO, db::DB) = print(io, "Taxonomy.DB(\"$(db.nodes_dmp)\",\"$(db.na
     DB(db_path::String, nodes_dmp::String, names_dmp::String)
 
 create DB(taxonomy database) object from nodes.dmp and names.dmp files.
-You can specify the paths of the nodes.dmp and names.dmp files, or the directory where they exist and the names of the files.
+You can specify the paths of the nodes.dmp and names.dmp files, or the directory where they exist and the names.
 """
 
 function DB(nodes_dmp::String, names_dmp::String)
