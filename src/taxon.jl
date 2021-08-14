@@ -24,6 +24,12 @@ function Taxon(name::String, db::DB)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
 end
 
+"""
+    get(db::DB, taxid::Int, default)
+
+Return the `Taxon` object stored for the given taxid, or the given default value if no mapping for the taxid is present.
+"""
+
 function Base.get(db::DB, taxid::Int, default)
     try
         return Taxon(taxid, db)
@@ -31,6 +37,12 @@ function Base.get(db::DB, taxid::Int, default)
         return default
     end
 end
+
+"""
+    get(db::DB, name::String, default)
+
+Return the `Taxon` object stored for the given name, or the given default value if no mapping for the name is present.
+"""
 
 function Base.get(db::DB, name::String, default)
     try
@@ -40,7 +52,19 @@ function Base.get(db::DB, name::String, default)
     end
 end
 
+"""
+    taxid(taxon::Taxon)
+
+Return the taxid of the given `Taxon` object.
+"""
+
 taxid(taxon::Taxon) = taxon.taxid
+
+"""
+    parent(taxon::Taxon)
+
+Return the `Taxon` object that is the parent of the given `Taxon` object.
+"""
 
 function Base.parent(taxon::Taxon)
    parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
@@ -50,6 +74,12 @@ function Base.parent(taxon::Taxon)
    parent = Taxon(parent_taxid, taxon.db)
    return parent
 end
+
+"""
+    children(taxon::Taxon)
+
+Return the vector of `Taxon` objects that are children of the given `Taxon` object.
+"""
 
 function AbstractTrees.children(taxon::Taxon)
     children_taxid = findall(isequal(taxon.taxid), taxon.db.parents)
@@ -69,6 +99,13 @@ function UnclassifiedTaxon(rank, source)
 end
 
 Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(String(taxon.rank))] $(taxon.name)")
+
+"""
+    rank(taxon::AbstractTaxon)
+
+Return the rank of the given `Taxon` object.
+It also works for an `UnclassifiedTaxon` object.
+"""
 
 function rank(taxon::AbstractTaxon)
     taxon.rank

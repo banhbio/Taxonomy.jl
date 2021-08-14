@@ -8,6 +8,14 @@ end
 
 Base.show(io::IO, db::DB) = print(io, "Taxonomy.DB(\"$(db.nodes_dmp)\",\"$(db.names_dmp)\")")
 
+"""
+    DB(nodes_dmp::String, names_dmp::String)
+    DB(db_path::String, nodes_dmp::String, names_dmp::String)
+
+create DB(taxonomy database) object from nodes.dmp and names.dmp files.
+You can specify the paths of the nodes.dmp and names.dmp files, or the directory where they exist and the names of the files.
+"""
+
 function DB(nodes_dmp::String, names_dmp::String)
     @assert isfile(nodes_dmp)
     @assert isfile(names_dmp)
@@ -16,6 +24,15 @@ function DB(nodes_dmp::String, names_dmp::String)
     namaes = importnames(names_dmp)
 
     return DB(nodes_dmp, names_dmp, parents, ranks, namaes)
+end
+
+function DB(db_path::String, nodes_dmp::String, names_dmp::String)
+    @assert ispath(db_path)
+
+    nodes_dmp_path = joinpath(db_path, nodes_dmp)
+    names_dmp_path = joinpath(db_path, names_dmp)
+
+    return DB(nodes_dmp_path, names_dmp_path)
 end
 
 function importnodes(nodes_dmp_path::String)
@@ -51,13 +68,4 @@ function importnames(names_dmp_path::String)
     end
     close(f)
     return namaes
-end
-
-function DB(db_path::String, nodes_dmp::String, names_dmp::String)
-    @assert ispath(db_path)
-
-    nodes_dmp_path = joinpath(db_path, nodes_dmp)
-    names_dmp_path = joinpath(db_path, names_dmp)
-
-    return DB(nodes_dmp_path, names_dmp_path)
 end
