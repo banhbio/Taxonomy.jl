@@ -24,7 +24,7 @@ function Taxon(name::String, db::DB)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
 end
 
-function Base.get(taxid::Int, db::DB, default)
+function Base.get(db::DB, taxid::Int, default)
     try
         return Taxon(taxid, db)
     catch
@@ -32,7 +32,7 @@ function Base.get(taxid::Int, db::DB, default)
     end
 end
 
-function Base.get(name::String, db::DB, default)
+function Base.get(db::DB, name::String, default)
     try
         return Taxon(name, db)
     catch

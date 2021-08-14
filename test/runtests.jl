@@ -14,7 +14,7 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
     @test human.rank == :species
     @test sprint(io -> show(io, human)) == "9606 [species] Homo sapiens"
 
-    @test get(9606, db, nothing) == human
+    @test get(db, 9606, nothing) == human
 
     @test taxid(human) == human.taxid
     @test rank(human) == human.rank
@@ -34,7 +34,7 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
     @test rank(unclassified_human_subspecies) == unclassified_human_subspecies.rank
 
     @test_throws KeyError Taxon(99999999, db)
-    @test get(9999999, db, nothing) === nothing
+    @test get(db, 9999999, nothing) === nothing
 end
 
 @testset "lineage.jl" begin
