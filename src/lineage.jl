@@ -71,6 +71,12 @@ function Base.get(l::Lineage, idx::Union{Int,Symbol}, default::Any)
     end
 end
 
+"""
+    reformat(l::Lineage, ranks::Vector{Symbol})
+
+Return the `Lineage` object reformatted according to the given ranks.
+"""
+
 function reformat(l::Lineage, ranks::Vector{Symbol})
     line = AbstractTaxon[]
     idx = Dict{Symbol,Int}()
@@ -93,6 +99,19 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
     end
     return Lineage(line, idx)
 end
+
+"""
+    print_lineage(lineage::Lineage; kwargs...)
+    print_lineage(io::IO, lineage::Lineage; kwargs...)
+
+Print a formatted representation of the lineage to the given `IO` object.
+
+# Arguments
+
+* `delim::AbstractString = ";"` - The delimiter between taxon fields.
+* `fill::Bool = false` - If true, prints UnclassifiedTaxon. only availavle when skip is false
+* `skip::Bool`= false` - If true, skip printing `UnclassifiedTaxon` and delimiter.
+"""
 
 function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill::Bool=false, skip::Bool=false)
     name_line = String[] 
@@ -123,5 +142,18 @@ end
 
 print_lineage(lineage::Lineage; kwargs...) = print_lineage(stdout::IO, lineage; kwargs...)
 
+"""
+    isdescendant(descendant::Taxon, ancestor::Taxon)
+
+Return true if the former taxon is a descendant of the latter taxon.
+"""
+
 isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lineage(descendant)
+
+"""
+    isancestor(ancestor::Taxon, descendant::Taxon)
+
+Return true if the former taxon is an ancestor of the latter taxon.
+"""
+
 isancestor(ancestor::Taxon, descendant::Taxon) = isdescendant(descendant, ancestor)
