@@ -26,9 +26,11 @@ function DB(nodes_dmp::String, names_dmp::String)
     @assert isfile(nodes_dmp)
     @assert isfile(names_dmp)
 
-    parents, ranks = importnodes(nodes_dmp)
-    namaes = importnames(names_dmp)
+    t1 = @async importnodes(nodes_dmp)
+    t2 = @async importnames(names_dmp)
 
+    parents, ranks = fetch(t1)
+    namaes = fetch(t2)
     return DB(nodes_dmp, names_dmp, parents, ranks, namaes)
 end
 
@@ -41,25 +43,26 @@ function DB(db_path::String, nodes_dmp::String, names_dmp::String)
     return DB(nodes_dmp_path, names_dmp_path)
 end
 
-function importnodes(nodes_dmp_path::String)
+function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
     parents = Tuple{Int,Int}[]
-    ranks = Tuple{Int,Symbol}[]
-    resize!(parents, default_db_size)
-    resize!(ranks, default_db_size)
+    ranks = Tuple{Int, Symbol}[]
+    resize!(parents, db_size)
+    resize!(ranks, db_size)
 
     f = open(nodes_dmp_path, "r")
     c = 0
     for line in eachline(f)
-        cols = split(line, "\t")
-        taxid = parse(Int, cols[1])
-        parent = parse(Int, cols[3])
-        rank = Symbol(cols[5])
+        cols = split(line, "\t", limit=6)
+        @assert length(cols) > 5
+        @inbounds taxid = parse(Int, cols[1])
+        @inbounds parent = parse(Int, cols[3])
+        @inbounds rank = Symbol(cols[5])
 
         parent != taxid || continue
             
         c += 1
-        parents[c] = (taxid, parent)
-        ranks[c] = (taxid, rank)
+        @inbounds parents[c] = (taxid, parent)
+        @inbounds ranks[c] = (taxid, rank)
     end
     resize!(parents, c)
     resize!(ranks, c)
@@ -67,20 +70,21 @@ function importnodes(nodes_dmp_path::String)
     return Dict(parents), Dict(ranks)
 end
 
-function importnames(names_dmp_path::String)
+function importnames(names_dmp_path::String; db_size::Int=default_db_size)
     namaes = Tuple{Int,String}[]
-    resize!(namaes, default_db_size)
+    resize!(namaes, db_size)
 
     f = open(names_dmp_path, "r")
     c = 0
     for line in eachline(f)
-        cols = split(line, "\t")
-        if cols[7] == "scientific name"
-            taxid = parse(Int, cols[1])
-            name = cols[3]
+        cols = split(line, "\t", limit=8)
+        @assert length(cols) > 7
+        if @inbounds cols[7] == "scientific name"
+            @inbounds taxid = parse(Int, cols[1])
+            @inbounds name = cols[3]
 
             c+=1
-            namaes[c] = (taxid, name)
+            @inbounds namaes[c] = (taxid, name)
         end
     end
     close(f)
