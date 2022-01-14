@@ -85,5 +85,5 @@ function importnames(names_dmp_path::String)
     end
     close(f)
     resize!(namaes, c)
-    return namaes
+    return Dict(namaes)
 end
