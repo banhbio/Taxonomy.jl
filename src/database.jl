@@ -1,3 +1,5 @@
+const default_db_size = 2500000
+
 struct DB
     nodes_dmp::String
     names_dmp::String
@@ -40,10 +42,13 @@ function DB(db_path::String, nodes_dmp::String, names_dmp::String)
 end
 
 function importnodes(nodes_dmp_path::String)
-    parents = Dict{Int,Int}()
-    ranks = Dict{Int,Symbol}()
+    parents = Tuple{Int,Int}[]
+    ranks = Tuple{Int,Symbol}[]
+    resize!(parents, default_db_size)
+    resize!(ranks, default_db_size)
 
     f = open(nodes_dmp_path, "r")
+    c = 0
     for line in eachline(f)
         cols = split(line, "\t")
         taxid = parse(Int, cols[1])
@@ -51,25 +56,34 @@ function importnodes(nodes_dmp_path::String)
         rank = Symbol(cols[5])
 
         parent != taxid || continue
-
-        parents[taxid] = parent
-        ranks[taxid] = rank
+            
+        c += 1
+        parents[c] = (taxid, parent)
+        ranks[c] = (taxid, rank)
     end
+    resize!(parents, c)
+    resize!(ranks, c)
     close(f)
-    return parents, ranks
+    return Dict(parents), Dict(ranks)
 end
 
 function importnames(names_dmp_path::String)
-    namaes = Dict{Int,String}()
+    namaes = Tuple{Int,String}[]
+    resize!(namaes, default_db_size)
+
     f = open(names_dmp_path, "r")
+    c = 0
     for line in eachline(f)
         cols = split(line, "\t")
         if cols[7] == "scientific name"
             taxid = parse(Int, cols[1])
             name = cols[3]
-            namaes[taxid] = name
+
+            c+=1
+            namaes[c] = (taxid, name)
         end
     end
     close(f)
+    resize!(namaes, c)
     return namaes
 end
