@@ -44,10 +44,8 @@ function DB(db_path::String, nodes_dmp::String, names_dmp::String)
 end
 
 function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
-    parents = Tuple{Int,Int}[]
-    ranks = Tuple{Int, Symbol}[]
-    resize!(parents, db_size)
-    resize!(ranks, db_size)
+    parents = Vector{Tuple{Int,Int}}(undef, db_size)
+    ranks = Vector{Tuple{Int, Symbol}}(undef, db_size)
 
     f = open(nodes_dmp_path, "r")
     c = 0
@@ -71,8 +69,7 @@ function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
 end
 
 function importnames(names_dmp_path::String; db_size::Int=default_db_size)
-    namaes = Tuple{Int,String}[]
-    resize!(namaes, db_size)
+    namaes = Vector{Tuple{Int,String}}(undef, db_size)
 
     f = open(names_dmp_path, "r")
     c = 0
