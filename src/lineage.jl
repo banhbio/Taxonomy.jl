@@ -141,6 +141,10 @@ function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill
 end
 
 print_lineage(lineage::Lineage; kwargs...) = print_lineage(stdout::IO, lineage; kwargs...)
+print_lineage(io::IO, taxon::Taxon; kwargs...) = print_lineage(io, Lineage(taxon); kwargs...)
+print_lineage(taxon::Taxon; kwargs...) = print_lineage(stdout::IO, Lineage(taxon);kwargs...)
+
+Base.show(io::IO, lineage::Lineage) = print_lineage(io, lineage)
 
 """
     isdescendant(descendant::Taxon, ancestor::Taxon)
