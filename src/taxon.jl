@@ -18,7 +18,6 @@ AbstractTrees.nodetype(::Type{Taxon}) = Taxon
 
 Return the `Taxon` object that is the parent of the given `Taxon` object.
 """
-
 function AbstractTrees.parent(taxon::Taxon)
    parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
    if parent_taxid === nothing
@@ -33,7 +32,6 @@ end
 
 Return the vector of `Taxon` objects that are children of the given `Taxon` object.
 """
-
 function AbstractTrees.children(taxon::Taxon)
     children_taxid = findall(isequal(taxon.taxid), taxon.db.parents)
     children_taxon = map(x -> Taxon(x, taxon.db), children_taxid)
@@ -57,11 +55,10 @@ function Taxon(name::String, db::DB)
 end
 
 """
-    get(db::DB, taxid::Int, default)
+    get(db::Taxonomy.DB, taxid::Int, default)
 
 Return the `Taxon` object stored for the given taxid, or the given default value if no mapping for the taxid is present.
 """
-
 function Base.get(db::DB, taxid::Int, default)
     try
         return Taxon(taxid, db)
@@ -71,11 +68,10 @@ function Base.get(db::DB, taxid::Int, default)
 end
 
 """
-    get(db::DB, name::String, default)
+    get(db::Taxonomy.DB, name::String, default)
 
 Return the `Taxon` object stored for the given name, or the given default value if no mapping for the name is present.
 """
-
 function Base.get(db::DB, name::String, default)
     try
         return Taxon(name, db)
@@ -89,7 +85,6 @@ end
 
 Return the taxid of the given `Taxon` object.
 """
-
 taxid(taxon::Taxon) = taxon.taxid
 
 struct UnclassifiedTaxon <:AbstractTaxon
@@ -111,7 +106,6 @@ Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(String(
 Return the rank of the given `Taxon` object.
 It also works for an `UnclassifiedTaxon` object.
 """
-
 function rank(taxon::AbstractTaxon)
     taxon.rank
 end
