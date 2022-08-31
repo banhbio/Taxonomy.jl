@@ -63,6 +63,11 @@ Base.getindex(l::Lineage, idx::From{Symbol}) = getindex(l, From(l.index[idx.firs
 Base.getindex(l::Lineage, idx::Until{Int}) = l[1:idx.last]
 Base.getindex(l::Lineage, idx::Until{Symbol}) = getindex(l, Until(l.index[idx.last]))
 
+"""
+    get(db::Taxonomy.DB, idx::Union{Int,Symbol}, default)
+
+Return the Taxon object stored for the given taxid or rank (i.e. :phylum), or the given default value if no mapping for the taxid is present.
+"""
 function Base.get(l::Lineage, idx::Union{Int,Symbol}, default::Any)
     try
         return getindex(l,idx)

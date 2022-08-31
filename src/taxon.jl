@@ -110,6 +110,12 @@ function rank(taxon::AbstractTaxon)
     taxon.rank
 end
 
+"""
+    name(taxon::AbstractTaxon)
+
+Return the name of the given `Taxon` object.
+It also works for an `UnclassifiedTaxon` object.
+"""
 function name(taxon::AbstractTaxon)
     taxon.name
 end
