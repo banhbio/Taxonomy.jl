@@ -24,7 +24,7 @@ jobs:
         julia --project=docs -e '
           using Pkg;
           Pkg.develop(PackageSpec(path=pwd()));
-          pkg"add Taxonomy#master";
+          pkg"add Taxonomy#main";
           Pkg.instantiate();
           using Documenter;
           using Taxonomy;
