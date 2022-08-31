@@ -7,8 +7,8 @@ function Lineage(taxon::Taxon)
     line = Taxon[]
     current_taxon = taxon
     push!(line,current_taxon)
-    while parent(current_taxon) !== nothing
-        current_taxon = parent(current_taxon)
+    while AbstractTrees.parent(current_taxon) !== nothing
+        current_taxon = AbstractTrees.parent(current_taxon)
         push!(line, current_taxon)
     end
     reverse!(line)
