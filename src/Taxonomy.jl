@@ -1,6 +1,4 @@
 module Taxonomy
-
-using AbstractTrees: isempty
 using AbstractTrees
 import DataAPI,
        DataAPI.All,

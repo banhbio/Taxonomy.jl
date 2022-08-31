@@ -7,9 +7,41 @@ struct Taxon <: AbstractTaxon
     db::DB
 end
 
+# define Traits
+AbstractTrees.ParentLinks(::Type{Taxon}) = StoredParents()
+AbstractTrees.ChildIndexing(::Type{Taxon}) = IndexedChildren()
+AbstractTrees.NodeType(::Type{Taxon}) = HasNodeType()
+AbstractTrees.nodetype(::Type{Taxon}) = Taxon
+
+"""
+    parent(taxon::Taxon)
+
+Return the `Taxon` object that is the parent of the given `Taxon` object.
+"""
+
+function AbstractTrees.parent(taxon::Taxon)
+   parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
+   if parent_taxid === nothing
+        return nothing
+   end
+   parent = Taxon(parent_taxid, taxon.db)
+   return parent
+end
+
+"""
+    children(taxon::Taxon)
+
+Return the vector of `Taxon` objects that are children of the given `Taxon` object.
+"""
+
+function AbstractTrees.children(taxon::Taxon)
+    children_taxid = findall(isequal(taxon.taxid), taxon.db.parents)
+    children_taxon = map(x -> Taxon(x, taxon.db), children_taxid)
+    return children_taxon
+end
+
 Base.show(io::IO, taxon::Taxon) = print(io, "$(taxon.taxid) [$(String(taxon.rank))] $(taxon.name)")
 AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
-AbstractTrees.nodetype(::Taxon) = Taxon
 
 function Taxon(taxid::Int, db::DB)
     name = db.names[taxid]
@@ -59,33 +91,6 @@ Return the taxid of the given `Taxon` object.
 """
 
 taxid(taxon::Taxon) = taxon.taxid
-
-"""
-    parent(taxon::Taxon)
-
-Return the `Taxon` object that is the parent of the given `Taxon` object.
-"""
-
-function Base.parent(taxon::Taxon)
-   parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
-   if parent_taxid === nothing
-        return nothing
-   end
-   parent = Taxon(parent_taxid, taxon.db)
-   return parent
-end
-
-"""
-    children(taxon::Taxon)
-
-Return the vector of `Taxon` objects that are children of the given `Taxon` object.
-"""
-
-function AbstractTrees.children(taxon::Taxon)
-    children_taxid = findall(isequal(taxon.taxid), taxon.db.parents)
-    children_taxon = map(x -> Taxon(x, taxon.db), children_taxid)
-    return children_taxon
-end
 
 struct UnclassifiedTaxon <:AbstractTaxon
     name::String
