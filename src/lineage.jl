@@ -7,8 +7,8 @@ function Lineage(taxon::Taxon)
     line = Taxon[]
     current_taxon = taxon
     push!(line,current_taxon)
-    while parent(current_taxon) !== nothing
-        current_taxon = parent(current_taxon)
+    while AbstractTrees.parent(current_taxon) !== nothing
+        current_taxon = AbstractTrees.parent(current_taxon)
         push!(line, current_taxon)
     end
     reverse!(line)
@@ -151,8 +151,8 @@ Base.show(io::IO, lineage::Lineage) = print_lineage(io, lineage)
 
 Return true if the former taxon is a descendant of the latter taxon.
 """
-
-isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lineage(descendant)
+# overload because native AbstractTrees.isdescendant is too slow
+AbstractTrees.isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lineage(descendant)
 
 """
     isancestor(ancestor::Taxon, descendant::Taxon)
@@ -160,4 +160,4 @@ isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lineage(descendan
 Return true if the former taxon is an ancestor of the latter taxon.
 """
 
-isancestor(ancestor::Taxon, descendant::Taxon) = isdescendant(descendant, ancestor)
+isancestor(ancestor::Taxon, descendant::Taxon) = AbstractTrees.isdescendant(descendant, ancestor)
