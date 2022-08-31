@@ -93,10 +93,3 @@ end
     @test lca([human,gorilla]) == lca(human,gorilla) == Taxon(207598, db)
     @test lca([human,gorilla,pan]) == lca(human,gorilla,pan) == Taxon(207598, db)
 end
-
-@testset "tree.jl" begin
-    human = Taxon(9606, db)
-    gorilla = Taxon(9593, db)
-    tree = topolgoy([human, gorilla])
-    @test tree.node == Taxon(207598, db)
-end
