@@ -21,7 +21,6 @@ DB(db_path::String, nodes_dmp::String, names_dmp::String)
 Create DB(taxonomy database) object from nodes.dmp and names.dmp files.
 You can specify the paths of the nodes.dmp and names.dmp files, or the directory where they exist and the names.
 """
-
 function DB(nodes_dmp::String, names_dmp::String)
     @assert isfile(nodes_dmp)
     @assert isfile(names_dmp)

@@ -9,7 +9,6 @@ export CanonicalRank,
        Lineage,
        taxid, name, rank, parent, children, lca,
        reformat, print_lineage, isdescendant, isancestor,
-       children, print_tree,
        All, Between, Cols,
        From, Until
 

@@ -8,16 +8,23 @@ Taxonomy.jl is a julia package to handle NCBI-formatted taxonomic databases.
 
 Now, this package only supports `scientific name`.
 
-Installation
-------------
+## Installation
 Install Taxonomy.jl as follows:
 ```
-julia -e 'using Pkg; Pkg.add("https://github.com/banhbio/Taxonomy.jl")'
+julia -e 'using Pkg; Pkg.add("Taxonomy")'
 ```
 
-Usage
------
-First, you need to download taxonomic data from NCBI's servers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz) and store this data to `Taxonomy.DB` object.
+## Usage
+
+### Download database
+First, you need to download taxonomic data from NCBI's servers.
+```
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+tar xzvf taxdump.tar.gz
+```
+
+### Create `Taxonomy.DB` object
+ You can create `Taxonomy.DB` object to store the data.
 
 ```julia
 # Load the package
@@ -28,6 +35,7 @@ julia> db = Taxonomy.DB("db/nodes.dmp","db/names.dmp") # Create a Taxonomy.DB ob
 julia> db = Taxonomy.DB("/your/path/to/db","nodes.dmp","names.dmp") # Alternatively, create the object from the path to the directory and the name of each files
 ```
 
+### Taxon
 You can construct a `Taxon` object from its taxonomic identifier and the `Taxonomy.DB` object.
 
 
@@ -41,7 +49,8 @@ julia> gorilla = Taxon(9593, db) # species Gorilla gorilla
 julia> bacillus = Taxon(1386,db) # genus Bacillus
 1386 [genus] Bacillus
 ```
-Each `Taxon` object has 4-field `taxid`, `name`, `rank` and `db`. The filed `db` is hidden in the `print()` fuction, etc.
+
+Each `Taxon` object has 4-field `taxid`, `name`, `rank` and `db`.
 
 ```julia
 julia> @show human
@@ -59,7 +68,9 @@ human.rank = :species
 julia> @show human.db
 human.db = Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 ```
+
 You can get a variety of information, such as rank, parent and children by using functions.
+
 ```julia
 julia> rank(gorilla)
 :species
@@ -67,6 +78,7 @@ julia> rank(gorilla)
 julia> parent(gorilla)
 9592 [genus] Gorilla
 ```
+
 ```julia
 julia> children(bacillus)
 249-element Array{Taxon,1}:
@@ -83,9 +95,17 @@ julia> children(bacillus)
  1522308 [species] Bacillus niameyensis
  324767 [species] Bacillus infantis
 ```
+
+Also, you can get the lowest common ancestor (LCA) of taxa.
 ```julia
 julia> lca(human, gorilla)
 207598 [subfamily] Homininae
+
+julia> lca(human, gorilla, bacillus) # You can input as many as you want.
+131567 [no rank] cellular organisms
+
+julia> lca([human, gorilla, bacillus]) # Vector of taxon is also ok.
+131567 [no rank] cellular organisms
 ```
 
 Fuctions from `AbstractTrees.jl` can also be used.
@@ -118,7 +138,11 @@ julia> print_tree(homininae)
       ├─ 406788 [subspecies] Gorilla gorilla diehli
       └─ 9595 [subspecies] Gorilla gorilla gorilla
 ```
+
+### Lineage
+
 Lineage information can be acquired by using `Lineage()`.
+
 ```julia
 julia> lineage = Lineage(gorilla)
 32-element Lineage:
@@ -138,7 +162,9 @@ julia> lineage = Lineage(gorilla)
  9592 [genus] Gorilla
  9593 [species] Gorilla gorilla
 ```
+
 Struct `Lineage` stores linage informaction in `Vector`-like format.
+
 ```julia
 julia> lineage[1]
 1 [no rank] root
@@ -149,7 +175,9 @@ julia> lineage[9]
 julia> lineage[end]
 9593 [species] Gorilla gorilla
 ```
-You can also access `Lineage` using `Symbol`, such as `:superkingdom`, `:family`, `:genus`, `:species` and etc.(Only Symbols in CanonicalRank can be used).
+
+You can also access a `Taxon` in the `Lineage` using `Symbol`, such as `:superkingdom`, `:family`, `:genus`, `:species` and etc.(Only Symbols in CanonicalRank can be used).
+
 ```julia
 julia> CanonicalRank
 10-element Array{Symbol,1}:
@@ -170,7 +198,9 @@ julia> lineage[:order]
 julia> lineage[:genus]
 9592 [genus] Gorilla
 ```
+
 You can use `Between`, `From`, `Until`, `Cols` and `All` selectors in more complex rank selection scenarios.
+
 ```julia
 julia> lineage[Between(:order,:genus)]
 8-element Lineage:
@@ -208,7 +238,9 @@ julia> lineage[Until(:class)]
  32524 [clade] Amniota
  40674 [class] Mammalia
 ```
+
 Reformation of the lineage to your ranks can be performed by using `reformat()`.
+
 ```julia
 julia> myrank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species]
 
@@ -221,8 +253,10 @@ julia> reformat(lineage, myrank)
  9604 [family] Hominidae
  9592 [genus] Gorilla
  9593 [species] Gorilla gorilla
- ```
- If there is no corresponding taxon in the lineage to your ranks, then `UnclassifiedTaxon` will be stored.
+```
+
+If there is no corresponding taxon in the lineage to your ranks, then `UnclassifiedTaxon` will be stored.
+
 ```julia
 julia> uncultured_bacillales = Taxon(157472,db)
 57472 [species] uncultured Bacillales bacterium
