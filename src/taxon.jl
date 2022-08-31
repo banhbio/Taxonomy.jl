@@ -1,4 +1,4 @@
-abstract type  AbstractTaxon end
+abstract type AbstractTaxon end
 
 struct Taxon <: AbstractTaxon
     taxid::Int
