@@ -38,6 +38,29 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
     @test get(db, 9999999, nothing) === nothing
 end
 
+@testset "AbstractTrees.jl" begin
+    human = Taxon(9606,db)
+    @test treesize(human) == 3
+    @test treebreadth(human) == 2
+    @test treeheight(human) == 1
+
+    denisova = Taxon(741158, db)
+    neanderthalensis = Taxon(63221, db)
+    
+    @test ischild(denisova, human)
+    @test !ischild(neanderthalensis, denisova)
+    @test !ischild(human, denisova)
+
+    @test isdescendant(denisova, human)
+    @test !isdescendant(neanderthalensis, denisova)
+    @test !isdescendant(human, denisova)
+
+    @test eltype(PreOrderDFS(human)) == Taxon
+    @test [n for n in PreOrderDFS(human)] == [human, denisova, neanderthalensis]
+    @test [n for n in PostOrderDFS(human)] == [denisova, neanderthalensis, human]
+    @test [n for n in Leaves(human)] == [denisova, neanderthalensis]
+end
+
 @testset "lineage.jl" begin
     human = Taxon(9606,db)
     lineage = Lineage(human)
