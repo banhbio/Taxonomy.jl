@@ -7,7 +7,7 @@ import DataAPI,
 export CanonicalRank,
        AbstractTaxon, Taxon, UnclassifiedTaxon,
        Lineage,
-       taxid, name, rank, parent, children, lca,
+       taxid, name, rank, parent, get, children, lca,
        reformat, print_lineage, isdescendant, isancestor,
        All, Between, Cols,
        From, Until
