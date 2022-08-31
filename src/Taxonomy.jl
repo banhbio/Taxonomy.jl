@@ -11,7 +11,7 @@ export CanonicalRank,
        reformat, print_lineage, isdescendant, isancestor,
        PhyloTree,
        topolgoy,
-       children, print_tree, Leaves,
+       children, parent, print_tree,
        All, Between, Cols,
        From, Until
 
