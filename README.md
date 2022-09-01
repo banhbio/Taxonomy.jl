@@ -8,6 +8,10 @@ Taxonomy.jl is a julia package to handle NCBI-formatted taxonomic databases.
 
 Now, this package only supports `scientific name`.
 
+## Notes for v0.2
+- Moved AbstractTrees.jl v0.3 -> AbstractTrees.jl v0.4, following the breaking changes.
+- Add API documents.
+
 ## Installation
 Install Taxonomy.jl as follows:
 ```
