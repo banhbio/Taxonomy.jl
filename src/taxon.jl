@@ -1,9 +1,9 @@
 abstract type AbstractTaxon end
 
-struct Taxon <: AbstractTaxon
+struct Taxon{T} <: AbstractTaxon where T<:Rank
     taxid::Int
     name::String
-    rank::Symbol
+    rank::T
     db::DB
 end
 
@@ -38,12 +38,13 @@ function AbstractTrees.children(taxon::Taxon)
     return children_taxon
 end
 
-Base.show(io::IO, taxon::Taxon) = print(io, "$(taxon.taxid) [$(String(taxon.rank))] $(taxon.name)")
+Base.show(io::IO, taxon::Taxon) = print(io, "$(taxon.taxid) [$(taxon.rank)] $(taxon.name)")
 AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 
 function Taxon(taxid::Int, db::DB)
     name = db.names[taxid]
-    rank = get(db.ranks, taxid, Symbol("no rank"))
+    rank = Rank(get(db.ranks, taxid, Symbol("no rank")))
+    
     return Taxon(taxid, name, rank, db)
 end
 
@@ -89,7 +90,7 @@ taxid(taxon::Taxon) = taxon.taxid
 
 struct UnclassifiedTaxon <:AbstractTaxon
     name::String
-    rank::Symbol
+    rank::Rank
     source::Taxon
 end
 
@@ -98,7 +99,7 @@ function UnclassifiedTaxon(rank, source)
     UnclassifiedTaxon(name, rank, source)
 end
 
-Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(String(taxon.rank))] $(taxon.name)")
+Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(String(rank(taxon.rank)))] $(taxon.name)")
 
 """
     rank(taxon::AbstractTaxon)
@@ -119,3 +120,8 @@ It also works for an `UnclassifiedTaxon` object.
 function name(taxon::AbstractTaxon)
     taxon.name
 end
+
+Base.isless(x1::CanonicalRank, x2::Taxon) = isless(x1, rank(x2))
+Base.isless(x1::Type{<:CanonicalRank}, x2::Taxon) = isless(x1(), x2)
+Base.isless(x1::Taxon, x2::CanonicalRank) = isless(rank(x1), x2)
+Base.isless(x1::Taxon, x2::Type{<:CanonicalRank}) = isless(x1, x2())
