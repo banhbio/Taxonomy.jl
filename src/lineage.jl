@@ -14,7 +14,7 @@ function Lineage(taxon::Taxon)
     reverse!(line)
     rankline = map(rank, line)
     index = Dict{Symbol,Int}()
-    for crank in CanonicalRank
+    for crank in CanonicalRanks
         position = findfirst(x -> x == crank, rankline)
         position === nothing ? continue : index[crank] = position
     end
