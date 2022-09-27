@@ -59,6 +59,22 @@ end
     @test [n for n in Leaves(human)] == [denisova, neanderthalensis]
 end
 
+@testset "rank.jl" begin
+    human = Taxon(9606, db)
+    denisova = Taxon(741158, db)
+    homininae = Taxon(314295, db)
+
+    @test strain < species < genus
+    @test human < genus
+    @test !(human < species)
+    @test denisova < species
+    @test homininae < order
+    @test !(homininae < species)
+    
+    unclassified_human_subspecies = UnclassifiedTaxon(:subspecies, human)
+    @test unclassified_human_subspecies < species
+end
+
 @testset "lineage.jl" begin
     human = Taxon(9606,db)
     lineage = Lineage(human)
