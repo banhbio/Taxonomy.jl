@@ -44,11 +44,13 @@ Base.isless(x1::CanonicalRank, x2::CanonicalRank) = isless(Integer(x1), Integer(
 Base.isless(x1::Type{<:CanonicalRank}, x2::Type{<:CanonicalRank}) = isless(x1(), x2())
 
 function Base.isless(x1::AbstractTaxon, x2::CanonicalRank)
+    r = rank(x1) |> Rank
+    r isa CanonicalRank && return isless(r, x2)
     p = AbstractTrees.parent(x1)
     while true
         isnothing(x1) && return false
         r = rank(x1) |> Rank
-        r isa CanonicalRank && return isless(r, x2)
+        r isa CanonicalRank && return isless(Integer(r)-1, Integer(x2))
         x1 = p
         p = AbstractTrees.parent(x1)
     end
