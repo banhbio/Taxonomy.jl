@@ -10,15 +10,13 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
 
     human = Taxon(9606,db)
     @test typeof(human) == Taxon
-    @test human.name == "Homo sapiens"
-    @test human.taxid == 9606
-    @test human.rank == :species
+    @test taxid(human) == 9606
+    @test name(human) == "Homo sapiens"
+    @test rank(human) == :species
     @test sprint(io -> show(io, human)) == "9606 [species] Homo sapiens"
 
     @test get(db, 9606, nothing) == human
 
-    @test taxid(human) == human.taxid
-    @test rank(human) == human.rank
     @test AbstractTrees.parent(human) == Taxon(9605,db)
     @test children(human) == [Taxon(741158,db), Taxon(63221,db)]
     denisova = Taxon(741158, db)
@@ -27,9 +25,9 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
 
     unclassified_human_subspecies = UnclassifiedTaxon(:subspecies, human)
     @test typeof(unclassified_human_subspecies) == UnclassifiedTaxon
-    @test unclassified_human_subspecies.name == "unclassified Homo sapiens subspecies"
-    @test unclassified_human_subspecies.rank == :subspecies
-    @test unclassified_human_subspecies.source == human
+    @test name(unclassified_human_subspecies) == "unclassified Homo sapiens subspecies"
+    @test rank(unclassified_human_subspecies) == :subspecies
+    @test source(unclassified_human_subspecies) == human
     @test sprint(io -> show(io, unclassified_human_subspecies)) == "Unclassified [subspecies] unclassified Homo sapiens subspecies"
 
     @test rank(unclassified_human_subspecies) == unclassified_human_subspecies.rank
@@ -59,6 +57,22 @@ end
     @test [n for n in PreOrderDFS(human)] == [human, denisova, neanderthalensis]
     @test [n for n in PostOrderDFS(human)] == [denisova, neanderthalensis, human]
     @test [n for n in Leaves(human)] == [denisova, neanderthalensis]
+end
+
+@testset "rank.jl" begin
+    human = Taxon(9606, db)
+    denisova = Taxon(741158, db)
+    homininae = Taxon(314295, db)
+
+    @test Rank(:strain) < Rank(:species) < Rank(:genus)
+    @test human < Rank(:genus)
+    @test !(human < Rank(:species))
+    @test denisova < Rank(:species)
+    @test homininae < Rank(:order)
+    @test !(homininae < Rank(:species))
+    
+    unclassified_human_subspecies = UnclassifiedTaxon(:subspecies, human)
+    @test unclassified_human_subspecies < Rank(:species)
 end
 
 @testset "lineage.jl" begin

@@ -14,7 +14,7 @@ function Lineage(taxon::Taxon)
     reverse!(line)
     rankline = map(rank, line)
     index = Dict{Symbol,Int}()
-    for crank in CanonicalRank
+    for crank in CanonicalRanks
         position = findfirst(x -> x == crank, rankline)
         position === nothing ? continue : index[crank] = position
     end
@@ -153,7 +153,6 @@ Base.show(io::IO, lineage::Lineage) = print_lineage(io, lineage)
     isdescendant(descendant::Taxon, ancestor::Taxon)
 
 Return true if the former taxon is a descendant of the latter taxon.
-This function is overloaded because native AbstractTrees.isdescendant is too slow
 """
 AbstractTrees.isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lineage(descendant)
 
