@@ -64,15 +64,15 @@ end
     denisova = Taxon(741158, db)
     homininae = Taxon(314295, db)
 
-    @test strain < species < genus
-    @test human < genus
-    @test !(human < species)
-    @test denisova < species
-    @test homininae < order
-    @test !(homininae < species)
+    @test Rank(:strain) < Rank(:species) < Rank(:genus)
+    @test human < Rank(:genus)
+    @test !(human < Rank(:species))
+    @test denisova < Rank(:species)
+    @test homininae < Rank(:order)
+    @test !(homininae < Rank(:species))
     
     unclassified_human_subspecies = UnclassifiedTaxon(:subspecies, human)
-    @test unclassified_human_subspecies < species
+    @test unclassified_human_subspecies < Rank(:species)
 end
 
 @testset "lineage.jl" begin
