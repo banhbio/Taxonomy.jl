@@ -152,13 +152,13 @@ Base.show(io::IO, lineage::Lineage) = print_lineage(io, lineage)
 """
     isdescendant(descendant::Taxon, ancestor::Taxon)
 
-Return true if the former taxon is a descendant of the latter taxon.
+Return `true` if the former taxon is a descendant of the latter taxon.
 """
 AbstractTrees.isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lineage(descendant)
 
 """
     isancestor(ancestor::Taxon, descendant::Taxon)
 
-Return true if the former taxon is an ancestor of the latter taxon.
+Return `true` if the former taxon is an ancestor of the latter taxon.
 """
 isancestor(ancestor::Taxon, descendant::Taxon) = AbstractTrees.isdescendant(descendant, ancestor)
