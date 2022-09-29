@@ -66,6 +66,7 @@ end
 
     @test Rank(:strain) < Rank(:species) < Rank(:genus)
     @test human < Rank(:genus)
+    @test human <= Rank(:species)
     @test !(human < Rank(:species))
     @test denisova < Rank(:species)
     @test homininae < Rank(:order)
