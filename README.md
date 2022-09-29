@@ -10,9 +10,13 @@ Taxonomy.jl is a julia package to handle NCBI-formatted taxonomic databases.
 
 Now, this package only supports `scientific name`.
 
+## Notes for v0.3
+- Change the field attributes of the `Taxon` struct. Now,only the taxid and DB information is stored.
+- Add `isless` (`<`) comparison for `Taxon` ranks. See the API document for details.
+
 ## Notes for v0.2
 - Moved AbstractTrees.jl v0.3 -> AbstractTrees.jl v0.4, following the breaking changes.
-- Add API documents.
+- Add API document.
 
 ## Installation
 Install Taxonomy.jl as follows:
@@ -29,8 +33,8 @@ wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 tar xzvf taxdump.tar.gz
 ```
 
-### Create `Taxonomy.DB` object
- You can create `Taxonomy.DB` object to store the data.
+### Create `Taxonomy.DB`
+ You can create `Taxonomy.DB` to store the data.
 
 ```julia
 # Load the package
@@ -42,7 +46,7 @@ julia> db = Taxonomy.DB("/your/path/to/db","nodes.dmp","names.dmp") # Alternativ
 ```
 
 ### Taxon
-You can construct a `Taxon` object from its taxonomic identifier and the `Taxonomy.DB` object.
+You can construct a `Taxon` from its taxonomic identifier and the `Taxonomy.DB`.
 
 
 ```julia
@@ -56,33 +60,23 @@ julia> bacillus = Taxon(1386,db) # genus Bacillus
 1386 [genus] Bacillus
 ```
 
-Each `Taxon` object has 4-field `taxid`, `name`, `rank` and `db`.
+You can get a variety of information, such as taxid, rank, parent and children by using functions for `Taxon`.
 
 ```julia
 julia> @show human
 human = 9606 [species] Homo sapiens
 
-julia> @show human.taxid
-human.taxid = 9606
+julia> taxid(human)
+9606
 
-julia> @show human.name
-human.name = "Homo sapiens"
+julia> name(human)
+"Homo sapiens"
 
-julia> @show human.rank
-human.rank = :species
-
-julia> @show human.db
-human.db = Taxonomy.DB("db/nodes.dmp","db/names.dmp")
-```
-
-You can get a variety of information, such as rank, parent and children by using functions.
-
-```julia
-julia> rank(gorilla)
+julia> rank(human)
 :species
 
-julia> parent(gorilla)
-9592 [genus] Gorilla
+julia> AbstractTrees.parent(human)
+9605 [genus] Homo
 ```
 
 ```julia
@@ -182,22 +176,9 @@ julia> lineage[end]
 9593 [species] Gorilla gorilla
 ```
 
-You can also access a `Taxon` in the `Lineage` using `Symbol`, such as `:superkingdom`, `:family`, `:genus`, `:species` and etc.(Only Symbols in CanonicalRank can be used).
+You can also access a `Taxon` in the `Lineage` using `Symbol`, such as `:superkingdom`, `:family`, `:genus`, `:species` and etc.(Only Symbols in `CanonicalRanks` can be used).
 
 ```julia
-julia> CanonicalRank
-10-element Array{Symbol,1}:
- :superkingdom
- :kingdom
- :phylum
- :class
- :order
- :family
- :genus
- :species
- :subspecies
- :strain
-
 julia> lineage[:order]
 9443 [order] Primates
 
