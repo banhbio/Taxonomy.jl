@@ -23,6 +23,11 @@ Base.Integer(::subspecies) = 0
 
 Base.Integer(T::Type{<:CanonicalRank}) = Integer(T())
 
+"""
+    Rank(sym::Symbol)
+Return `CanonicalRank(sym)` if sym is in `CanonicalRanks`. Return `UnCanonicalRank(sym)` if not.
+`CanonicalRank(sym)` can be used for `isless` comparison.
+"""
 function Rank(s::Symbol)
     if s in CanonicalRanks
         return @eval $s()
@@ -30,6 +35,13 @@ function Rank(s::Symbol)
         return UnCanonicalRank(s)
     end
 end
+
+"""
+    Rank(taxon::Taxon)
+Return `CanonicalRank` made from `rank(taxon)` if `rank(taxon)` is in `CanonicalRanks`. Return `UnCanonicalRank(rank)` if not.
+`CanonicalRank(taxon)` can be used for `isless` comparison.
+"""
+Rank(taxon::AbstractTaxon) = rank(taxon) |> Rank
 
 const CanonicalRankSet = subtypes(CanonicalRank)
 
@@ -40,8 +52,17 @@ end
 rank(ucr::UnCanonicalRank) = ucr.rank
 Base.show(io::IO, r::Rank) = print(io, String(rank(r)))
 
+"""
+    isless(taxon::AbstractTaxon, rank::CanonicalRank)
+
+Example
+```julia
+julia> Taxon(9606 , db) < Rank(:genus)
+true
+```
+Return `true` if the rank of the former `Taxon` is less than the later rank.
+"""
 Base.isless(x1::CanonicalRank, x2::CanonicalRank) = isless(Integer(x1), Integer(x2))
-Base.isless(x1::Type{<:CanonicalRank}, x2::Type{<:CanonicalRank}) = isless(x1(), x2())
 
 function Base.isless(x1::AbstractTaxon, x2::CanonicalRank)
     r = rank(x1) |> Rank
@@ -56,4 +77,4 @@ function Base.isless(x1::AbstractTaxon, x2::CanonicalRank)
     end
 end
 
-Base.isless(x1::AbstractTaxon, x2::Type{<:CanonicalRank}) = isless(x1, x2())
+Base.:<=(x1::AbstractTaxon, x2::CanonicalRank) = Rank(x1) <= x2
