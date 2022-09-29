@@ -12,7 +12,7 @@ Now, this package only supports `scientific name`.
 
 ## Notes for v0.3
 - Change the field attributes of the `Taxon` struct. Now,only the taxid and DB information is stored.
-- Add `isless` (`<`) comparison for `Taxon` ranks. See the API document for details.
+- Add `isless` (`<`) and less-than-or-equals (`<=` or `≤`) comparison for `Taxon` ranks. See the API document for details.
 
 ## Notes for v0.2
 - Moved AbstractTrees.jl v0.3 -> AbstractTrees.jl v0.4, following the breaking changes.
