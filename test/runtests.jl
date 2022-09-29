@@ -18,7 +18,7 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
     @test get(db, 9606, nothing) == human
 
     @test AbstractTrees.parent(human) == Taxon(9605,db)
-    @test children(human) == [Taxon(741158,db), Taxon(63221,db)]
+    @test Set(children(human)) == Set([Taxon(63221,db), Taxon(741158, db)])
     denisova = Taxon(741158, db)
     @test children(denisova) == Taxon[]
     @test isempty(children(denisova))
@@ -54,9 +54,9 @@ end
     @test !isdescendant(human, denisova)
 
     @test eltype(PreOrderDFS(human)) == Taxon
-    @test [n for n in PreOrderDFS(human)] == [human, denisova, neanderthalensis]
-    @test [n for n in PostOrderDFS(human)] == [denisova, neanderthalensis, human]
-    @test [n for n in Leaves(human)] == [denisova, neanderthalensis]
+    @test Set([n for n in PreOrderDFS(human)]) == Set([human, neanderthalensis, denisova])
+    @test Set([n for n in PostOrderDFS(human)]) == Set([neanderthalensis, denisova, human])
+    @test Set([n for n in Leaves(human)]) == Set([neanderthalensis, denisova])
 end
 
 @testset "rank.jl" begin
