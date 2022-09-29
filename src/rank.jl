@@ -25,8 +25,8 @@ Base.Integer(T::Type{<:CanonicalRank}) = Integer(T())
 
 """
     Rank(sym::Symbol)
-Return CanonicalRank(sym) if sym is in `CanonicalRanks`. Return UnCanonicalRank(sym) if not.
-CanonicalRank(sym) can be used for `isless` comparison.
+Return `CanonicalRank(sym)` if sym is in `CanonicalRanks`. Return `UnCanonicalRank(sym)` if not.
+`CanonicalRank(sym)` can be used for `isless` comparison.
 """
 function Rank(s::Symbol)
     if s in CanonicalRanks
@@ -37,9 +37,9 @@ function Rank(s::Symbol)
 end
 
 """
-    Rank(sym::Symbol)
-Return CanonicalRank(sym) if sym is in `CanonicalRanks`. Return UnCanonicalRank(sym) if not.
-CanonicalRank(sym) can be used for `isless` comparison.
+    Rank(taxon::Taxon)
+Return `CanonicalRank` made from `rank(taxon)` if `rank(taxon)` is in `CanonicalRanks`. Return `UnCanonicalRank(rank)` if not.
+`CanonicalRank(taxon)` can be used for `isless` comparison.
 """
 Rank(taxon::AbstractTaxon) = rank(taxon) |> Rank
 
