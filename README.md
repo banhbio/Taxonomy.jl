@@ -6,6 +6,8 @@
 [![CI](https://github.com/banhbio/Taxonomy.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/banhbio/Taxonomy.jl/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/banhbio/Taxonomy.jl/branch/main/graph/badge.svg?token=2A8WQRHRLC)](https://codecov.io/gh/banhbio/Taxonomy.jl)
 
+[![DOI](https://zenodo.org/badge/341212699.svg)](https://zenodo.org/badge/latestdoi/341212699)
+
 Taxonomy.jl is a julia package to handle NCBI-formatted taxonomic databases.
 
 Now, this package only supports `scientific name`.
