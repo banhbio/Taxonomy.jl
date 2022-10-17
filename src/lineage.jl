@@ -21,6 +21,7 @@ function Lineage(taxon::Taxon)
     return Lineage(line,index)
 end
 
+Base.IndexStyle(::Lineage) = IndexLinear()
 Base.size(l::Lineage) = size(l.line)
 Base.getindex(l::Lineage, i::Int) = getindex(l.line, i)
 Base.lastindex(l::Lineage) = lastindex(l.line)
@@ -33,13 +34,7 @@ function Base.getindex(l::Lineage, range::UnitRange{Int})
     return Lineage(line,idx)
 end
 
-function Base.getindex(l::Lineage, idx::All)
-    if isempty(idx.cols)
-        return l
-    else
-        return getindex(l, Cols(idx.cols))
-    end
-end
+Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(idx.cols))
 
 function Base.getindex(l::Lineage, idx::Cols)
     line = AbstractTaxon[]
