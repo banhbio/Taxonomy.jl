@@ -1,15 +1,15 @@
-struct Lineage <: AbstractVector{AbstractTaxon}
-    line::Vector{AbstractTaxon}
+struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
+    line::Vector{T}
     index::Dict{Symbol,Int}
 end
 
 function Lineage(taxon::Taxon)
     line = Taxon[]
     current_taxon = taxon
-    push!(line,current_taxon)
-    while AbstractTrees.parent(current_taxon) !== nothing
-        current_taxon = AbstractTrees.parent(current_taxon)
+    while true
         push!(line, current_taxon)
+        current_taxon = AbstractTrees.parent(current_taxon)
+        isnothing(current_taxon) && break
     end
     reverse!(line)
     rankline = map(rank, line)
