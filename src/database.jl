@@ -38,7 +38,7 @@ function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
     f = open(nodes_dmp_path, "r")
     @inbounds(for line in eachline(f)
         cols = split(line, "\t", limit=6)
-        cols[1] == cols[2] && continue
+        cols[1] == cols[3] && continue
 
         taxid = parse(Int, cols[1])
         parent = parse(Int, cols[3])

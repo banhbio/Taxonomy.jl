@@ -3,9 +3,9 @@ using InteractiveUtils
 abstract type Rank end
 abstract type CanonicalRank <: Rank end
 
-const CanonicalRanks = [:strain, :subspecies, :species, :genus, :family, :order, :class, :phylum, :kingdom, :superkingdom]
+const CanonicalRanks = [:superkingdom, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain]
 
-for (i, rank) in enumerate(CanonicalRanks[3:end])
+for (i, rank) in enumerate(reverse(CanonicalRanks[1:end-2]))
     @eval begin
         struct $rank <: CanonicalRank end
         rank(::$rank) = Symbol($rank)
