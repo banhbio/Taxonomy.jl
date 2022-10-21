@@ -5,32 +5,28 @@ using Test
 db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
 
 @testset "taxon.jl" begin
-    @test Taxon <: AbstractTaxon
-    @test UnclassifiedTaxon <: AbstractTaxon
-
     human = Taxon(9606,db)
-    @test typeof(human) == Taxon
-    @test taxid(human) == 9606
-    @test name(human) == "Homo sapiens"
-    @test rank(human) == :species
-    @test sprint(io -> show(io, human)) == "9606 [species] Homo sapiens"
+    @test @inferred(taxid(human)) == 9606
+    @test @inferred(name(human)) == "Homo sapiens"
+    @test @inferred(rank(human)) == :species
+    @test @inferred(sprint(io -> show(io, human))) == "9606 [species] Homo sapiens"
 
-    @test get(db, 9606, nothing) == human
+    @test @inferred(Nothing, get(db, 9606, nothing)) == human
 
-    @test AbstractTrees.parent(human) == Taxon(9605,db)
-    @test Set(children(human)) == Set([Taxon(63221,db), Taxon(741158, db)])
+    @test @inferred(Nothing, AbstractTrees.parent(human)) == Taxon(9605,db)
+    @test @inferred(Set(children(human))) == Set([Taxon(63221,db), Taxon(741158, db)])
     denisova = Taxon(741158, db)
-    @test children(denisova) == Taxon[]
-    @test isempty(children(denisova))
+    @test @inferred(children(denisova)) == Taxon[]
+    @test @inferred(isempty(children(denisova)))
 
     unclassified_human_subspecies = UnclassifiedTaxon(:subspecies, human)
     @test typeof(unclassified_human_subspecies) == UnclassifiedTaxon
-    @test name(unclassified_human_subspecies) == "unclassified Homo sapiens subspecies"
-    @test rank(unclassified_human_subspecies) == :subspecies
-    @test source(unclassified_human_subspecies) == human
-    @test sprint(io -> show(io, unclassified_human_subspecies)) == "Unclassified [subspecies] unclassified Homo sapiens subspecies"
+    @test @inferred(name(unclassified_human_subspecies)) == "unclassified Homo sapiens subspecies"
+    @test @inferred(rank(unclassified_human_subspecies)) == :subspecies
+    @test @inferred(source(unclassified_human_subspecies)) == human
+    @test @inferred(sprint(io -> show(io, unclassified_human_subspecies))) == "Unclassified [subspecies] unclassified Homo sapiens subspecies"
 
-    @test rank(unclassified_human_subspecies) == unclassified_human_subspecies.rank
+    @test @inferred(rank(unclassified_human_subspecies)) == unclassified_human_subspecies.rank
 
     @test_throws KeyError Taxon(99999999, db)
     @test get(db, 9999999, nothing) === nothing
@@ -120,8 +116,8 @@ end
 
     human = Taxon(9606,db)
     primate = Taxon(9443,db)
-    @test isdescendant(human, primate)
-    @test isancestor(primate, human)
+    @test @inferred(isdescendant(human, primate))
+    @test @inferred(isancestor(primate, human))
 end
 
 @testset "lca.jl" begin
