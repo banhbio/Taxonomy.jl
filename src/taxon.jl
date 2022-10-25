@@ -12,7 +12,7 @@ end
 function Taxon(name::String, db::DB)
     taxid_canditates = findall(isequal(name), db.names)
     length(taxid_canditates) == 0 && error("There is no candidates for ",name)
-    length(taxid_canditates) == 1 && return new(taxid_canditates |> first, db)
+    length(taxid_canditates) == 1 && return new(only(taxid_canditates), db)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
 end 
 
