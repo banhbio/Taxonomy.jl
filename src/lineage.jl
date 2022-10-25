@@ -1,3 +1,5 @@
+const TaxonOrUnclassifiedTaxon = Union{Taxon, UnclassifiedTaxon}
+
 struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
     line::Vector{T}
     index::Dict{Symbol,Int}
@@ -5,20 +7,26 @@ end
 
 function Lineage(taxon::Taxon)
     line = Taxon[]
+    ranks = Symbol[]
+    rankpos = Int[]
     current_taxon = taxon
+    pos = 0
     while true
+        pos += 1
         push!(line, current_taxon)
+        current_rank = rank(current_taxon)
+        if current_rank in CanonicalRanks
+            ranks = push!(ranks, current_rank)
+            rankpos = push!(rankpos, pos)
+        end
         current_taxon = AbstractTrees.parent(current_taxon)
         isnothing(current_taxon) && break
     end
     reverse!(line)
-    rankline = map(rank, line)
-    index = Dict{Symbol,Int}()
-    for crank in CanonicalRanks
-        position = findfirst(x -> x == crank, rankline)
-        position === nothing ? continue : index[crank] = position
-    end
-    return Lineage(line,index)
+    reverse!(ranks)
+    reverse!(rankpos)
+    rankpos = .-(Ref(length(line)+1), rankpos)
+    return Lineage(line,Dict(Pair.(ranks, rankpos)))
 end
 
 Base.IndexStyle(::Lineage) = IndexLinear()
@@ -36,8 +44,8 @@ end
 
 Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(idx.cols))
 
-function Base.getindex(l::Lineage, idx::Cols)
-    line = AbstractTaxon[]
+function Base.getindex(l::Lineage{T}, idx::Cols) where T
+    line = T[]
     index = Dict{Symbol,Int}()
     count = 0
     for rank in idx.cols
@@ -77,7 +85,7 @@ end
 Return the `Lineage` object reformatted according to the given ranks.
 """
 function reformat(l::Lineage, ranks::Vector{Symbol})
-    line = AbstractTaxon[]
+    line = TaxonOrUnclassifiedTaxon[]
     idx = Dict{Symbol,Int}()
     count = 0
     for rank in ranks
@@ -95,6 +103,9 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
         end
         push!(line, taxon)
         idx[rank]=count
+    end
+    if all(isa.(line, Taxon))
+        line = convert.(Taxon, line)
     end
     return Lineage(line, idx)
 end
