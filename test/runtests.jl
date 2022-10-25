@@ -75,6 +75,7 @@ end
 @testset "lineage.jl" begin
     human = Taxon(9606,db)
     lineage = Lineage(human)
+    @test eltype(lineage) == Taxon
     @test lineage[1] == Taxon(1,db)
     @test size(lineage) == (32,)
     @test lineage[32] == lineage[end] == lineage[:species] == human
@@ -102,6 +103,7 @@ end
 
     primate = Taxon(9443,db)
     reformated_primate_lineage = reformat(Lineage(primate), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
+    @test eltype(reformated_primate_lineage) == Union{Taxon, UnclassifiedTaxon}
     @test reformated_primate_lineage[7] == UnclassifiedTaxon(:species, primate)
     @test sprint(io -> print_lineage(io, reformated_primate_lineage)) == "Eukaryota;Chordata;Mammalia;Primates;;;"
     @test sprint(io -> print_lineage(io, reformated_primate_lineage; skip=true)) == "Eukaryota;Chordata;Mammalia;Primates"
