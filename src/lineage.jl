@@ -2,7 +2,7 @@ const TaxonOrUnclassifiedTaxon = Union{Taxon, UnclassifiedTaxon}
 
 struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
     line::Vector{T}
-    index::Dict{Symbol,Int}
+    index::OrderedDict{Symbol,Int}
 end
 
 function Lineage(taxon::Taxon)
@@ -26,7 +26,7 @@ function Lineage(taxon::Taxon)
     reverse!(ranks)
     reverse!(rankpos)
     rankpos = .-(Ref(length(line)+1), rankpos)
-    return Lineage(line,Dict(Pair.(ranks, rankpos)))
+    return Lineage(line,OrderedDict(Pair.(ranks, rankpos)))
 end
 
 Base.IndexStyle(::Lineage) = IndexLinear()
@@ -38,7 +38,7 @@ Base.getindex(l::Lineage, s::Symbol) = l.line[l.index[s]]
 
 function Base.getindex(l::Lineage, range::UnitRange{Int})
     line = l.line[range]
-    idx = Dict(key => value - range.start + 1 for (key, value) in l.index if value in range)
+    idx = OrderedDict(key => value - range.start + 1 for (key, value) in l.index if value in range)
     return Lineage(line,idx)
 end
 
@@ -46,7 +46,7 @@ Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(i
 
 function Base.getindex(l::Lineage{T}, idx::Cols) where T
     line = T[]
-    index = Dict{Symbol,Int}()
+    index = OrderedDict{Symbol,Int}()
     count = 0
     for rank in idx.cols
         count += 1
@@ -86,7 +86,7 @@ Return the `Lineage` object reformatted according to the given ranks.
 """
 function reformat(l::Lineage, ranks::Vector{Symbol})
     line = TaxonOrUnclassifiedTaxon[]
-    idx = Dict{Symbol,Int}()
+    idx = OrderedDict{Symbol,Int}()
     count = 0
     for rank in ranks
         count += 1

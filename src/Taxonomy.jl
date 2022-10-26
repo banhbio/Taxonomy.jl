@@ -1,5 +1,6 @@
 module Taxonomy
 using AbstractTrees
+using OrderedCollections: OrderedDict
 import DataAPI,
        DataAPI.All,
        DataAPI.Between,
