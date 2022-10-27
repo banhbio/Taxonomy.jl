@@ -63,6 +63,7 @@ end
     @test Rank(:strain) < Rank(:species) < Rank(:genus)
     @test human < Rank(:genus)
     @test human <= Rank(:species)
+    @test human <= Rank(:genus)
     @test !(human < Rank(:species))
     @test denisova < Rank(:species)
     @test homininae < Rank(:order)
@@ -81,9 +82,10 @@ end
     @test lineage[32] == lineage[end] == lineage[:species] == human
     @test lineage[1:9] == lineage[Between(1, 9)]
     @test lineage[All()] == lineage
+    @test lineage[All(3, 24, 29)] == lineage[Cols(3, 24, 29)] == lineage[Cols(:superkingdom, :order, :family)] 
     @test lineage[Between(3, 29)] == lineage[Between(:superkingdom, 29)] == lineage[Between(3, :family)] == lineage[Between(:superkingdom, :family)]
-    @test lineage[From(9)] == lineage[From(:phylum)] == lineage[9:32]
-    @test lineage[Until(24)] == lineage[Until(:order)] == lineage[1:24]
+    @test lineage[From(9)] == lineage[From(:phylum)] == lineage[From("phylum")] == lineage[9:32]
+    @test lineage[Until(24)] == lineage[Until(:order)] == lineage[Until("order")] == lineage[1:24]
 
     @test get(lineage, 2, nothing) == Taxon(131567,db)
     @test get(lineage, :class, nothing) == Taxon(40674, db)
@@ -96,6 +98,8 @@ end
     @test sprint(io -> print_lineage(io, lineage; delim="+")) == "root+cellular organisms+Eukaryota+Opisthokonta+Metazoa+Eumetazoa+Bilateria+Deuterostomia+Chordata+Craniata+Vertebrata+Gnathostomata+Teleostomi+Euteleostomi+Sarcopterygii+Dipnotetrapodomorpha+Tetrapoda+Amniota+Mammalia+Theria+Eutheria+Boreoeutheria+Euarchontoglires+Primates+Haplorrhini+Simiiformes+Catarrhini+Hominoidea+Hominidae+Homininae+Homo+Homo sapiens"
 
     reformated_human_lineage = reformat(lineage,[:superkingdom,:phylum,:class,:order,:family,:genus,:species])
+    @test isformatted(reformated_human_lineage)
+    @test eltype(reformated_human_lineage) == Taxon
     @test reformated_human_lineage[1] == Taxon(2759, db)
     @test reformated_human_lineage[3] == Taxon(40674, db)
     @test reformated_human_lineage[7] == Taxon(9606, db)

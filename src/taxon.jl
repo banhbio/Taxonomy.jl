@@ -91,9 +91,14 @@ struct UnclassifiedTaxon <:AbstractTaxon
     source::Taxon
 end
 
-function UnclassifiedTaxon(rank, source)
+function UnclassifiedTaxon(rank, source::Taxon)
     namae = "unclassified " * name(source) * " " * String(rank)
     UnclassifiedTaxon(namae, rank, source)
+end
+
+function UnclassifiedTaxon(rank, source::UnclassifiedTaxon)
+    namae = "unclassified " * name(source.source) * " " * String(rank)
+    UnclassifiedTaxon(namae, rank, source.source)
 end
 
 Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(rank(taxon))] $(taxon.name)")
