@@ -7,7 +7,7 @@ import DataAPI,
        DataAPI.Cols
 export Rank, CanonicalRank, UnCanonicalRank, CanonicalRankSet, CanonicalRanks,
        AbstractTaxon, Taxon, UnclassifiedTaxon,
-       Lineage,
+       Lineage, isformatted,
        print_tree,
        taxid, name, rank, parent, get, children, lca, source,
        reformat, print_lineage, isdescendant, isancestor,

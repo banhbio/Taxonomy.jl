@@ -53,9 +53,9 @@ function Base.getindex(l::Lineage, range::UnitRange{Int})
     return Lineage(line, index, true)
 end
 
-Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(idx.cols))
+Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(idx.cols...))
 
-function Base.getindex(l::Lineage{T}, idx::Cols) where {T, N}
+function Base.getindex(l::Lineage{T}, idx::Cols) where T
     line = getindex.(Ref(l), collect(idx.cols))
     index = OrderedDict(rank(t) => i for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks))
     return Lineage(line, index, true)
