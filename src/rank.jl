@@ -77,4 +77,4 @@ function Base.isless(x1::AbstractTaxon, x2::CanonicalRank)
     end
 end
 
-Base.:<=(x1::AbstractTaxon, x2::CanonicalRank) = Rank(x1) <= x2
+Base.:<=(x1::AbstractTaxon, x2::CanonicalRank) = Rank(x1) == x2 ? true : x1 < x2
