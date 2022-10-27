@@ -36,7 +36,7 @@ function Lineage(taxon::Taxon)
     reverse!(line)
     reverse!(ranks)
     reverse!(rankpos)
-    rankpos = .-(length(line)+1, rankpos)
+    rankpos = length(line) + 1 .- rankpos
     return Lineage(line, OrderedDict(Pair.(ranks, rankpos)), false)
 end
 
