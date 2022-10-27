@@ -2,6 +2,17 @@ using Taxonomy
 using Taxonomy.AbstractTrees
 using Test
 
+@testset "dabase.jl" begin
+    @test isnothing(current_db())
+
+    db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
+    @test current_db() == db
+
+    db_1 = Taxonomy.DB("db_1/nodes.dmp", "db_1/names.dmp")
+    current_db!(db_1)
+    @test current_db() == db_1
+end
+
 db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
 
 @testset "taxon.jl" begin
@@ -13,10 +24,6 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
 
     @test @inferred(Nothing, get(db, 9606, nothing)) == human
     @test Taxon("Homo", db) == Taxon(9605, db)
-    @test Taxon("Viruses", db) == Taxon(10239, db)
-    @test_throws ErrorException Taxon("Drosophila", db)
-    @test_throws ErrorException Taxon("aaaaaaaaaa", db)
-
 
     @test @inferred(Nothing, AbstractTrees.parent(human)) == Taxon(9605,db)
     @test @inferred(Set(children(human))) == Set([Taxon(63221,db), Taxon(741158, db)])

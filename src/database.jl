@@ -1,15 +1,5 @@
 const default_db_size = 2500000
 
-struct DB
-    nodes_dmp::String
-    names_dmp::String
-    parents::Dict{Int,Int}
-    ranks::Dict{Int,Symbol}
-    names::Dict{Int,String}
-end
-
-Base.show(io::IO, db::DB) = print(io, "Taxonomy.DB(\"$(db.nodes_dmp)\",\"$(db.names_dmp)\")")
-
 """
     Taxonomy.DB
 
@@ -19,15 +9,26 @@ DB(nodes_dmp::String, names_dmp::String)
 ```
 Create DB(taxonomy database) object from nodes.dmp and names.dmp files.
 """
-function DB(nodes_dmp::String, names_dmp::String)
-    @assert isfile(nodes_dmp)
-    @assert isfile(names_dmp)
+struct DB
+    nodes_dmp::String
+    names_dmp::String
+    parents::Dict{Int,Int}
+    ranks::Dict{Int,Symbol}
+    names::Dict{Int,String}
+    function DB(nodes_dmp::String, names_dmp::String)
+        @assert isfile(nodes_dmp)
+        @assert isfile(names_dmp)
 
-    parents, ranks = importnodes(nodes_dmp)
-    names = importnames(names_dmp)
+        parents, ranks = importnodes(nodes_dmp)
+        names = importnames(names_dmp)
 
-    return DB(nodes_dmp, names_dmp, Dict(parents), Dict(ranks), Dict(names))
+        db = new(nodes_dmp, names_dmp, Dict(parents), Dict(ranks), Dict(names))
+        current_db!(db)
+        return db
+    end
 end
+
+Base.show(io::IO, db::DB) = print(io, "Taxonomy.DB(\"$(db.nodes_dmp)\",\"$(db.names_dmp)\")")
 
 function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
     taxids = Vector{Int}(undef, db_size)
@@ -75,3 +76,7 @@ function importnames(names_dmp_path::String; db_size::Int=default_db_size)
     close(f)
     return Pair{Int, String}.(taxids, names)
 end
+
+const _current_db = Ref{Union{Nothing, DB}}(nothing)
+current_db() = _current_db[]
+current_db!(db::DB) = (_current_db[] = db)
