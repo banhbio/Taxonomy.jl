@@ -14,8 +14,6 @@ struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
     reformatted::Bool
 end
 
-isformatted(Lineage) = Lineage.reformatted
-
 function Lineage(taxon::Taxon)
     line = Taxon[]
     ranks = Symbol[]
@@ -39,6 +37,13 @@ function Lineage(taxon::Taxon)
     rankpos = length(line) + 1 .- rankpos
     return Lineage(line, OrderedDict(Pair.(ranks, rankpos)), false)
 end
+
+"""
+    isformatted(lineage::Lineage)
+
+Return `true` if `lineage` is already formatted
+"""
+isformatted(Lineage) = Lineage.reformatted
 
 Base.IndexStyle(::Lineage) = IndexLinear()
 Base.size(l::Lineage) = size(l.line)
