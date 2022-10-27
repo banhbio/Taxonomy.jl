@@ -12,9 +12,12 @@ end
 function Taxon(name::String, db::DB)
     taxid_canditates = findall(isequal(name), db.names)
     length(taxid_canditates) == 0 && error("There is no candidates for ",name)
-    length(taxid_canditates) == 1 && return new(only(taxid_canditates), db)
+    length(taxid_canditates) == 1 && return Taxon(only(taxid_canditates), db)
     length(taxid_canditates) > 1 && error("There are several candidates for ",name)
 end 
+
+Taxon(idx::Int) = Taxon(idx, current_db())
+Taxon(name::String) = Taxon(name, current_db())
 
 """
     taxid(taxon::Taxon)
@@ -22,7 +25,21 @@ end
 Return the taxid of the given `Taxon` object.
 """
 taxid(taxon::Taxon) = taxon.taxid
+
+"""
+    name(taxon::AbstractTaxon)
+
+Return the name of the given `Taxon` object.
+It also works for an `UnclassifiedTaxon` object.
+"""
 name(taxon::Taxon) = taxon.db.names[taxid(taxon)]
+
+"""
+    rank(taxon::AbstractTaxon)
+
+Return the rank of the given `Taxon` object.
+It also works for an `UnclassifiedTaxon` object.
+"""
 rank(taxon::Taxon) = get(taxon.db.ranks, taxon.taxid, Symbol("no Rank"))
 
 # define Traits
@@ -102,21 +119,7 @@ function UnclassifiedTaxon(rank, source::UnclassifiedTaxon)
 end
 
 Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(rank(taxon))] $(taxon.name)")
-
-"""
-    rank(taxon::AbstractTaxon)
-
-Return the rank of the given `Taxon` object.
-It also works for an `UnclassifiedTaxon` object.
-"""
 rank(taxon::UnclassifiedTaxon) = taxon.rank
-
-"""
-    name(taxon::AbstractTaxon)
-
-Return the name of the given `Taxon` object.
-It also works for an `UnclassifiedTaxon` object.
-"""
 name(taxon::UnclassifiedTaxon) = taxon.name
 
 source(taxon::UnclassifiedTaxon) = taxon.source
