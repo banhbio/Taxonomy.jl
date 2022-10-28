@@ -1,12 +1,16 @@
 const TaxonOrUnclassifiedTaxon = Union{Taxon, UnclassifiedTaxon}
 
-struct ReformatError <: Exception
-    l
-end
+struct LineageReformatError <: Exception end
 
-Base.showerror(io::IO, re::ReformatError) = print(io, "$(re.l) is already reformatted")
+Base.showerror(io::IO, ::LineageReformatError) = print(io, "It is already reformatted")
 
-_R(l) = throw(ReformatError(l))
+_LR() = throw(LineageReformatError())
+
+struct LineageIndexError <: Exception end
+
+Base.showerror(io::IO, ::LineageIndexError) = print(io, "The index order is messed up.")
+
+_LI() = throw(LineageIndexError())
 
 struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
     line::Vector{T}
@@ -50,6 +54,21 @@ Base.size(l::Lineage) = size(l.line)
 Base.getindex(l::Lineage, i::Int) = getindex(l.line, i)
 Base.lastindex(l::Lineage) = lastindex(l.line)
 
+function _check_index_order(ranks::Vector{Symbol})
+    pseudo_index = .- Integer.(Rank.(ranks))
+    _check_index_order(pseudo_index)
+end
+
+function _check_index_order(ranks::Vector{Int})
+    flag = true
+    (p, rest) = Iterators.peel(ranks)
+    for r in rest
+        flag &= p <= r
+        p = r
+    end
+    flag ? (return nothing) : _LI()
+end
+
 Base.getindex(l::Lineage, s::Symbol) = l.line[l.index[s]]
 
 function Base.getindex(l::Lineage, range::UnitRange{Int})
@@ -61,7 +80,12 @@ end
 Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(idx.cols...))
 
 function Base.getindex(l::Lineage{T}, idx::Cols) where T
-    line = getindex.(Ref(l), collect(idx.cols))
+    index = map(collect(idx.cols)) do i
+        i isa Symbol ? l.index[i] : i
+    end
+    _check_index_order(index)
+
+    line = getindex.(Ref(l), index)
     index = OrderedDict(rank(t) => i for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks))
     return Lineage(line, index, true)
 end
@@ -94,8 +118,10 @@ end
 Return the `Lineage` object reformatted according to the given ranks.
 """
 function reformat(l::Lineage, ranks::Vector{Symbol})
-    if l.reformatted
-        _R(l)
+    _check_index_order(ranks)
+
+    if isformatted(l)
+        _LR()
     end
 
     len = length(ranks)

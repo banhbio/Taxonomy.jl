@@ -13,7 +13,8 @@ export current_db, current_db!,
        taxid, name, rank, parent, get, children, lca, source,
        reformat, print_lineage, isdescendant, isancestor,
        All, Between, Cols,
-       From, Until
+       From, Until,
+       LineageReformatError, LineageIndexError
 
 include("DataAPI.jl")
 include("database.jl")

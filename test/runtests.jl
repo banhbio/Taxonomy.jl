@@ -94,7 +94,7 @@ end
     @test lineage[32] == lineage[end] == lineage[:species] == human
     @test lineage[1:9] == lineage[Between(1, 9)]
     @test lineage[All()] == lineage
-    @test lineage[All(3, 24, 29)] == lineage[Cols(3, 24, 29)] == lineage[Cols(:superkingdom, :order, :family)] 
+    @test lineage[All(3, 24, 29)] == lineage[Cols(3, 24, 29)] == lineage[Cols(:superkingdom, 24, 29)] == lineage[Cols(:superkingdom, :order, :family)] 
     @test lineage[Between(3, 29)] == lineage[Between(:superkingdom, 29)] == lineage[Between(3, :family)] == lineage[Between(:superkingdom, :family)]
     @test lineage[From(9)] == lineage[From(:phylum)] == lineage[From("phylum")] == lineage[9:32]
     @test lineage[Until(24)] == lineage[Until(:order)] == lineage[Until("order")] == lineage[1:24]
@@ -103,6 +103,9 @@ end
     @test get(lineage, :class, nothing) == Taxon(40674, db)
     @test get(lineage, 99, nothing) === nothing
     @test get(lineage, :strain, nothing) === nothing
+    @test_throws LineageIndexError lineage[Cols(24, 3, 29)]
+    @test_throws LineageIndexError lineage[Cols(:order, 3, 29)]
+    @test_throws LineageIndexError lineage[Cols(:order, :superkingdom, :family)]
 
     @test sprint(io -> print_lineage(io, human)) == "root;cellular organisms;Eukaryota;Opisthokonta;Metazoa;Eumetazoa;Bilateria;Deuterostomia;Chordata;Craniata;Vertebrata;Gnathostomata;Teleostomi;Euteleostomi;Sarcopterygii;Dipnotetrapodomorpha;Tetrapoda;Amniota;Mammalia;Theria;Eutheria;Boreoeutheria;Euarchontoglires;Primates;Haplorrhini;Simiiformes;Catarrhini;Hominoidea;Hominidae;Homininae;Homo;Homo sapiens"
     @test sprint(io -> print_lineage(io, human; delim="+")) == "root+cellular organisms+Eukaryota+Opisthokonta+Metazoa+Eumetazoa+Bilateria+Deuterostomia+Chordata+Craniata+Vertebrata+Gnathostomata+Teleostomi+Euteleostomi+Sarcopterygii+Dipnotetrapodomorpha+Tetrapoda+Amniota+Mammalia+Theria+Eutheria+Boreoeutheria+Euarchontoglires+Primates+Haplorrhini+Simiiformes+Catarrhini+Hominoidea+Hominidae+Homininae+Homo+Homo sapiens"
@@ -110,7 +113,9 @@ end
     @test sprint(io -> print_lineage(io, lineage; delim="+")) == "root+cellular organisms+Eukaryota+Opisthokonta+Metazoa+Eumetazoa+Bilateria+Deuterostomia+Chordata+Craniata+Vertebrata+Gnathostomata+Teleostomi+Euteleostomi+Sarcopterygii+Dipnotetrapodomorpha+Tetrapoda+Amniota+Mammalia+Theria+Eutheria+Boreoeutheria+Euarchontoglires+Primates+Haplorrhini+Simiiformes+Catarrhini+Hominoidea+Hominidae+Homininae+Homo+Homo sapiens"
 
     reformated_human_lineage = reformat(lineage,[:superkingdom,:phylum,:class,:order,:family,:genus,:species])
+    @test_throws LineageIndexError reformat(lineage,[:species, :superkingdom,:phylum,:class,:order,:family,:genus])
     @test isformatted(reformated_human_lineage)
+    @test_throws LineageReformatError reformat(reformated_human_lineage, [:superkingdom])
     @test eltype(reformated_human_lineage) == Taxon
     @test reformated_human_lineage[1] == Taxon(2759, db)
     @test reformated_human_lineage[3] == Taxon(40674, db)
