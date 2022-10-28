@@ -130,6 +130,11 @@ end
     @test sprint(io -> print_lineage(io, reformatted_primate_lineage; skip=true)) == "Eukaryota;Chordata;Mammalia;Primates"
     @test sprint(io -> print_lineage(io, reformatted_primate_lineage; fill=true)) == "Eukaryota;Chordata;Mammalia;Primates;unclassified Primates family;unclassified Primates genus;unclassified Primates species"
 
+    euk = Taxon(2759)
+    reformatted_euk_lineage = reformat(Lineage(euk), [:superkingdom,:phylum])
+    @test namedtuple(reformatted_euk_lineage) == (superkingdom = Taxon(2759, db), phylum = UnclassifiedTaxon(:phylum, Taxon(2759, db)))
+    @test namedtuple(reformatted_euk_lineage; fill_by_missing = true) |> last |> ismissing
+
     co = Taxon(131567,db)
     reformatted_co_lineage = reformat(Lineage(co), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
     @test reformatted_co_lineage[7] == UnclassifiedTaxon(:species, co)

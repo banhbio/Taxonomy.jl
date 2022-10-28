@@ -11,7 +11,7 @@ export current_db, current_db!,
        Lineage, isformatted,
        print_tree,
        taxid, name, rank, parent, get, children, lca, source,
-       reformat, print_lineage, isdescendant, isancestor,
+       reformat, namedtuple, print_lineage, isdescendant, isancestor, 
        All, Between, Cols,
        From, Until,
        LineageReformatError, LineageIndexError
