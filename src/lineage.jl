@@ -1,20 +1,31 @@
 const TaxonOrUnclassifiedTaxon = Union{Taxon, UnclassifiedTaxon}
 
-struct ReformatError <: Exception
-    l
-end
+struct LineageReformatError <: Exception end
 
-Base.showerror(io::IO, re::ReformatError) = print(io, "$(re.l) is already reformatted")
+Base.showerror(io::IO, ::LineageReformatError) = print(io, "It is already reformatted.")
 
-_R(l) = throw(ReformatError(l))
+_LR() = throw(LineageReformatError())
 
+struct LineageIndexError <: Exception end
+
+Base.showerror(io::IO, ::LineageIndexError) = print(io, "The index order is messed up.")
+
+_LI() = throw(LineageIndexError())
+
+"""
+    Lineage{T<:AbstractTaxon} <: AbstractVector{T}
+
+A type that stores lineage information in `Vector`-like format.
+`T` represents element types, `Taxon` or `UnclassifiedTaxon`.
+
+- `getindex` is overloaded to get `Taxon` values. `Symbol`s such as `:superkingdom`, `:family`, `:genus`, `:species` in `CanonicalRanks` can be used. Also, `Between`, `From`, `Until`, `Cols` and `All` selectors can be used in more complex rank selection scenarios.
+- Once reformatted, it cannot be reformatted again. The status can be checked using `isreformatted(lineage)`.
+"""
 struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
     line::Vector{T}
     index::OrderedDict{Symbol,Int}
     reformatted::Bool
 end
-
-isformatted(Lineage) = Lineage.reformatted
 
 function Lineage(taxon::Taxon)
     line = Taxon[]
@@ -40,10 +51,32 @@ function Lineage(taxon::Taxon)
     return Lineage(line, OrderedDict(Pair.(ranks, rankpos)), false)
 end
 
+"""
+    isreformatted(lineage::Lineage)
+
+Return `true` if `lineage` is already reformatted.
+"""
+isreformatted(lineage::Lineage) = lineage.reformatted
+
 Base.IndexStyle(::Lineage) = IndexLinear()
 Base.size(l::Lineage) = size(l.line)
 Base.getindex(l::Lineage, i::Int) = getindex(l.line, i)
 Base.lastindex(l::Lineage) = lastindex(l.line)
+
+function _check_index_order(ranks::Vector{Symbol})
+    pseudo_index = .- Integer.(Rank.(ranks))
+    _check_index_order(pseudo_index)
+end
+
+function _check_index_order(ranks::Vector{Int})
+    flag = true
+    (p, rest) = Iterators.peel(ranks)
+    for r in rest
+        flag &= p <= r
+        p = r
+    end
+    flag ? (return nothing) : _LI()
+end
 
 Base.getindex(l::Lineage, s::Symbol) = l.line[l.index[s]]
 
@@ -56,7 +89,12 @@ end
 Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(idx.cols...))
 
 function Base.getindex(l::Lineage{T}, idx::Cols) where T
-    line = getindex.(Ref(l), collect(idx.cols))
+    index = map(collect(idx.cols)) do i
+        i isa Symbol ? l.index[i] : i
+    end
+    _check_index_order(index)
+
+    line = getindex.(Ref(l), index)
     index = OrderedDict(rank(t) => i for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks))
     return Lineage(line, index, true)
 end
@@ -87,10 +125,14 @@ end
     reformat(l::Lineage, ranks::Vector{Symbol})
 
 Return the `Lineage` object reformatted according to the given ranks.
+If there id no corresponding taxon in the lineage to the rank, `UnclassifiedTaxon` will be stored.
+Once a `Lineage` is reformatted, it cannot be reformatted again.
 """
 function reformat(l::Lineage, ranks::Vector{Symbol})
-    if l.reformatted
-        _R(l)
+    _check_index_order(ranks)
+
+    if isreformatted(l)
+        _LR()
     end
 
     len = length(ranks)
@@ -123,24 +165,22 @@ end
     namedtuple(lineage::Lineage; kwargs...)
 
 Return a NamedTuple whose filednames is ranks (in the `CanonicalRanks`) of the `lineage`.
+This function is useful for converting `Lineage` to `DataFrame`, for example.
 
 # Arguments
 
 * `fill_by_missing::Bool = false` - If `true`, fills missing instead of `UnclassifiedTaxon`.
 """
 function namedtuple(l::Lineage; fill_by_missing::Bool=false)
-    names = first.(collect(l.index))
-    values = getindex.(Ref(l), names)
+    ranks = first.(collect(l.index))
+    values = getindex.(Ref(l), ranks)
+
     if fill_by_missing
         values = map(values) do val
-            if val isa UnclassifiedTaxon
-                return missing
-            else
-                return val
-            end
+            val isa UnclassifiedTaxon ? missing : val
         end
     end
-    return NamedTuple{Tuple(names)}(values)
+    return NamedTuple{Tuple(ranks)}(values)
 end
 
 """
@@ -152,7 +192,7 @@ Print a formatted representation of the lineage to the given `IO` object.
 # Arguments
 
 * `delim::AbstractString = ";"` - The delimiter between taxon fields.
-* `fill::Bool = false` - If `true`, prints `UnclassifiedTaxon`. only availavle when skip is false
+* `fill::Bool = false` - If `true`, prints `UnclassifiedTaxon`. only availavle when skip is false.
 * `skip::Bool`= false` - If `true`, skip printing `UnclassifiedTaxon` and delimiter.
 """
 function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill::Bool=false, skip::Bool=false)

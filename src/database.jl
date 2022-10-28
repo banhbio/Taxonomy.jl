@@ -78,5 +78,16 @@ function importnames(names_dmp_path::String; db_size::Int=default_db_size)
 end
 
 const _current_db = Ref{Union{Nothing, DB}}(nothing)
+"""
+    current_db()
+
+Return the current active database or the last database that got created.
+"""
 current_db() = _current_db[]
+
+"""
+    current_db!(db::Taxonomy.DB)
+
+Set `db` as the current active database.
+"""
 current_db!(db::DB) = (_current_db[] = db)

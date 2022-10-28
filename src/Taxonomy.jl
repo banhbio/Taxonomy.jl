@@ -8,12 +8,13 @@ import DataAPI,
 export current_db, current_db!,
        Rank, CanonicalRank, UnCanonicalRank, CanonicalRankSet, CanonicalRanks,
        AbstractTaxon, Taxon, UnclassifiedTaxon,
-       Lineage, isformatted,
+       Lineage, isreformatted,
        print_tree,
        taxid, name, rank, parent, get, children, lca, source,
-       reformat, print_lineage, isdescendant, isancestor,
+       reformat, namedtuple, print_lineage, isdescendant, isancestor, 
        All, Between, Cols,
-       From, Until
+       From, Until,
+       LineageReformatError, LineageIndexError
 
 include("DataAPI.jl")
 include("database.jl")
