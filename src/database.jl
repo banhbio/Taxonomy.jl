@@ -81,13 +81,13 @@ const _current_db = Ref{Union{Nothing, DB}}(nothing)
 """
     current_db()
 
-Return the current active database or the last database that got created
+Return the current active database or the last database that got created.
 """
 current_db() = _current_db[]
 
 """
     current_db!(db::Taxonomy.DB)
 
-Set `db` as the current active database
+Set `db` as the current active database.
 """
 current_db!(db::DB) = (_current_db[] = db)

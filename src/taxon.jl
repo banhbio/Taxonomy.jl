@@ -1,5 +1,12 @@
 abstract type AbstractTaxon end
 
+"""
+    Taxon(taxid::Int, db::Taxonomy.DB)
+    Taxon(taxid::Int)
+
+Construct a `Taxon` from its `taxid`.
+Omitting `db` automatically calls `current_db()`, which is usually the database that was last created.
+"""
 struct Taxon <: AbstractTaxon 
     taxid::Int
     db::DB
@@ -9,11 +16,19 @@ struct Taxon <: AbstractTaxon
     end
 end
 
+"""
+    Taxon(name::AbstractString, db::Taxonomy.DB)
+    Taxon(name::AbstractString)
+
+Construct a `Taxon` from its `name`. `name` must match to the scientific name exactly.
+Throws an error if there is no match or multiple candidates.
+Omitting `db` automatically calls `current_db()`, which is usually the database that was last created.
+"""
 function Taxon(name::String, db::DB)
     taxid_canditates = findall(isequal(name), db.names)
-    length(taxid_canditates) == 0 && error("There is no candidates for ",name)
+    length(taxid_canditates) == 0 && error("There is no candidate for $name")
     length(taxid_canditates) == 1 && return Taxon(only(taxid_canditates), db)
-    length(taxid_canditates) > 1 && error("There are several candidates for ",name)
+    length(taxid_canditates) > 1 && error("There are several candidates for $name. Candidates: $taxid_canditates")
 end 
 
 Taxon(idx::Int) = Taxon(idx, current_db())

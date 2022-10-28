@@ -114,7 +114,7 @@ end
 
     reformatted_human_lineage = reformat(lineage,[:superkingdom,:phylum,:class,:order,:family,:genus,:species])
     @test_throws LineageIndexError reformat(lineage,[:species, :superkingdom,:phylum,:class,:order,:family,:genus])
-    @test isformatted(reformatted_human_lineage)
+    @test isreformatted(reformatted_human_lineage)
     @test_throws LineageReformatError reformat(reformatted_human_lineage, [:superkingdom])
     @test eltype(reformatted_human_lineage) == Taxon
     @test reformatted_human_lineage[1] == Taxon(2759, db)
