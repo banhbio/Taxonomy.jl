@@ -193,7 +193,7 @@ Print a formatted representation of the lineage to the given `IO` object.
 
 * `delim::AbstractString = ";"` - The delimiter between taxon fields.
 * `fill::Bool = false` - If `true`, prints `UnclassifiedTaxon`. only availavle when skip is false.
-* `skip::Bool`= false` - If `true`, skip printing `UnclassifiedTaxon` and delimiter.
+* `skip::Bool = false` - If `true`, skip printing `UnclassifiedTaxon` and delimiter.
 """
 function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill::Bool=false, skip::Bool=false)
     name_line = String[] 
