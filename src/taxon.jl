@@ -15,24 +15,18 @@ struct Taxon <: AbstractTaxon
         return new(idx, db)
     end
 end
+Taxon(idx::Int) = Taxon(idx, current_db())
 
 """
-    Taxon(name::AbstractString, db::Taxonomy.DB)
-    Taxon(name::AbstractString)
+    name2taxids(name::AbstractString, db::Taxonomy.DB)
+    name2taxids(name::AbstractString)
 
-Construct a `Taxon` from its `name`. `name` must match to the scientific name exactly.
-Throws an error if there is no match or multiple candidates.
+Return a `Vector` of taxid from its `name`. `name` must match to the scientific name exactly.
+If multiple hits are found, return a multi-element `Vector`. If not, 1- or 0-element `Vector`. 
 Omitting `db` automatically calls `current_db()`, which is usually the database that was last created.
 """
-function Taxon(name::String, db::DB)
-    taxid_canditates = findall(isequal(name), db.names)
-    length(taxid_canditates) == 0 && error("There is no candidate for $name")
-    length(taxid_canditates) == 1 && return Taxon(only(taxid_canditates), db)
-    length(taxid_canditates) > 1 && error("There are several candidates for $name. Candidates: $taxid_canditates")
-end 
-
-Taxon(idx::Int) = Taxon(idx, current_db())
-Taxon(name::String) = Taxon(name, current_db())
+name2taxids(name::AbstractString, db::DB) = findall(isequal(name), db.names)
+name2taxids(name::AbstractString) = name2taxids(name, current_db())
 
 """
     taxid(taxon::Taxon)
