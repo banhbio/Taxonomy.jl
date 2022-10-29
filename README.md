@@ -7,16 +7,17 @@
 [![codecov](https://codecov.io/gh/banhbio/Taxonomy.jl/branch/main/graph/badge.svg?token=2A8WQRHRLC)](https://codecov.io/gh/banhbio/Taxonomy.jl)
 
 Taxonomy.jl is a julia package to handle NCBI-formatted taxonomic databases.
+The main features are:
+- Convert a name to taxids
+- Filter taxa by rank
+- Evaluate ancestor/descendant relationships between two taxa
+- Construct taxonomic lineage of the given taxon
+- Reformat lineage according to canonical ranks
+- Construct a `DataFrame` from lineages
+- Traverse taxonomic subtrees from a given taxon
+- Compute the lowest common ancestor (LCA) of given taxons
 
 Now, this package only supports `scientific name`.
-
-## Notes for v0.3
-- Change the field attributes of the `Taxon` struct. Now,only the taxid and DB information is stored.
-- Add `isless` (`<`) comparison for `Taxon` ranks. See the API document for details.
-
-## Notes for v0.2
-- Moved AbstractTrees.jl v0.3 -> AbstractTrees.jl v0.4, following the breaking changes.
-- Add API document.
 
 ## Installation
 Install Taxonomy.jl as follows:
@@ -24,47 +25,29 @@ Install Taxonomy.jl as follows:
 julia -e 'using Pkg; Pkg.add("Taxonomy")'
 ```
 
-## Usage
-
-### Download database
-First, you need to download taxonomic data from NCBI's servers.
+## Download database
+You need to download taxonomic data from NCBI's servers.
 ```
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 tar xzvf taxdump.tar.gz
 ```
 
-### Create `Taxonomy.DB`
- You can create `Taxonomy.DB` to store the data.
-
+## Usage
 ```julia
 # Load the package
 julia> using Taxonomy
 
 julia> db = Taxonomy.DB("db/nodes.dmp","db/names.dmp") # Create a Taxonomy.DB objext from the path to each file
-
-julia> db = Taxonomy.DB("/your/path/to/db","nodes.dmp","names.dmp") # Alternatively, create the object from the path to the directory and the name of each files
 ```
 
-### Taxon
-You can construct a `Taxon` from its taxonomic identifier and the `Taxonomy.DB`.
-
-
 ```julia
-julia> human = Taxon(9606, db) # species Homo sapiens
+# species Homo sapiens
+julia> human = Taxon(9606, db)
 9606 [species] Homo sapiens
 
-julia> gorilla = Taxon(9593, db) # species Gorilla gorilla
-9593 [species] Gorilla gorilla
-
-julia> bacillus = Taxon(1386,db) # genus Bacillus
-1386 [genus] Bacillus
-```
-
-You can get a variety of information, such as taxid, rank, parent and children by using functions for `Taxon`.
-
-```julia
-julia> @show human
-human = 9606 [species] Homo sapiens
+# omitting db automatically calls currnent_db()
+julia> human = Taxon(9606)
+9606 [species] Homo sapiens
 
 julia> taxid(human)
 9606
@@ -74,43 +57,28 @@ julia> name(human)
 
 julia> rank(human)
 :species
-
-julia> AbstractTrees.parent(human)
-9605 [genus] Homo
 ```
 
 ```julia
-julia> children(bacillus)
-249-element Array{Taxon,1}:
- 427072 [species] Bacillus chagannorensis
- 904295 [species] Bacillus ginsengisoli
- 1522318 [species] Bacillus kwashiorkori
- 1245522 [species] Bacillus thermophilus
- 1178786 [species] Bacillus thaonhiensis
- 1805474 [species] Bacillus mediterraneensis
- ⋮
- 324768 [species] Bacillus idriensis
- 745819 [species] Bacillus alkalicola
- 170350 [species] Bacillus deramificans
- 1522308 [species] Bacillus niameyensis
- 324767 [species] Bacillus infantis
+julia> ["Homo", "Viruses", "Drosophila"] .|> name2taxids |> Iterators.flatten .|> Taxon
+5-element Vector{Taxon}:
+ 9605 [genus] Homo
+ 10239 [superkingdom] Viruses
+ 7215 [genus] Drosophila
+ 2081351 [genus] Drosophila
+ 32281 [subgenus] Drosophila
 ```
 
-Also, you can get the lowest common ancestor (LCA) of taxa.
 ```julia
+julia> gorilla = Taxon(9592);
+
 julia> lca(human, gorilla)
 207598 [subfamily] Homininae
-
-julia> lca(human, gorilla, bacillus) # You can input as many as you want.
-131567 [no rank] cellular organisms
-
-julia> lca([human, gorilla, bacillus]) # Vector of taxon is also ok.
-131567 [no rank] cellular organisms
 ```
 
-Fuctions from `AbstractTrees.jl` can also be used.
 ```julia
 julia> homininae = lca(human, gorilla)
+
 julia> print_tree(homininae)
 207598 [subfamily] Homininae
 ├─ 9596 [genus] Pan
