@@ -278,7 +278,7 @@ Stacktrace:
 
 `Lineage` can be converted to `NamedTuple`, using `namedtuple`.
 
-Convered `NamedTuple` can be used as input into `DataFrame`
+Converted `NamedTuple` can be used as input into `DataFrame`
 ```julia
 julia> using DataFrames
 
