@@ -18,11 +18,11 @@ Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 ## Get taxonomic information from `Taxon`
 
 ```julia
-## Construct a Taxon from taxid and Taxonomy.DB
+# Construct a Taxon from taxid and Taxonomy.DB
 julia> human = Taxon(9606, db)
 9606 [species] Homo sapiens
 
-## Or, you can omit db from argument (current_db() loaded)
+# Or, you can omit db from argument (current_db() loaded)
 julia> human = Taxon(9606)
 9606 [species] Homo sapiens
 
@@ -48,8 +48,6 @@ julia> ["Homo", "Viruses", "Drosophila"] .|> name2taxids |> Iterators.flatten .|
  2081351 [genus] Drosophila
  32281 [subgenus] Drosophila
 ```
-
-## 
 
 ## Traverse taxonomic subtrees from a given `Taxon`
 
