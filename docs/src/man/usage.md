@@ -122,8 +122,8 @@ juliia> lca(human, gorilla)
 207598 [subfamily] Homininae
 
 julia> lca(human, gorilla, orangutan)
-9604 [family] Hominidae
-s
+9604 [family] Hominidaes
+
 julia> lca([human, gorilla, orangutan])
 9604 [family] Hominidae
 ```
