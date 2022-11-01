@@ -320,7 +320,7 @@ julia> taxa .|> Lineage .|> (x -> reformat(x, seven_rank)) .|> namedtuple |> Dat
    3 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia             9443 [order] Primates              9604 [family] Hominidae            9592 [genus] Gorilla               9593 [species] Gorilla gorilla
    4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  Unclassified [class] unclassifie…  Unclassified [order] unclassifie…  Unclassified [family] unclassifi…  Unclassified [genus] unclassifie…  2053489 [species] Candidatus Lok…
 
-# If set fill_by_missing to tue in namedtuple, then missing are stored in DataFeame
+# If set fill_by_missing to true in namedtuple, then missing are stored in DataFeame
 julia> taxa .|> Lineage .|> (x -> reformat(x, seven_rank)) .|> (x ->  namedtuple(x; fill_by_missing=true)) |> DataFrame
 4×7 DataFrame
  Row │ superkingdom                   phylum                             class                             order                          family                            genus                    species                           
