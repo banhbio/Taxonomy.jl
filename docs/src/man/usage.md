@@ -157,7 +157,7 @@ julia> taxa = [2759, 33208, 7711, 40674, 9443, 9604, 9605, 9606] .|> Taxon
  9605 [genus] Homo
  9606 [species] Homo sapiens
 
-# Filter `Taxon`s lower than a given rank
+# Filter Taxons lower than a given rank
 julia> filter(taxa) do taxon
            taxon < Rank(:class)
        end
