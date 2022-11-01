@@ -19,7 +19,7 @@ Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 
 ```julia
 # Construct a Taxon from taxid and Taxonomy.DB
-julia> human = Taxon(9606, db)
+julia> human = Taxon(9606)
 9606 [species] Homo sapiens
 
 # Or, you can omit db from argument (current_db() loaded)
@@ -244,7 +244,7 @@ julia> reformat(lineage, seven_rank)
 
 If there is no corresponding taxon in the lineage to your ranks, then `UnclassifiedTaxon` will be stored.
 ```julia
-julia> uncultured_bacillales = Taxon(157472,db)
+julia> uncultured_bacillales = Taxon(157472)
 57472 [species] uncultured Bacillales bacterium
 
 julia> reformatted_bacillales_lineage = reformat(Lineage(uncultured_bacillales), seven_rank)
