@@ -18,11 +18,11 @@ Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 ## Get taxonomic information from `Taxon`
 
 ```julia
-## Construct a Taxon from taxid and Taxonomy.DB
-julia> human = Taxon(9606, db)
+# Construct a Taxon from taxid and Taxonomy.DB
+julia> human = Taxon(9606)
 9606 [species] Homo sapiens
 
-## Or, you can omit db from argument (current_db() loaded)
+# Or, you can omit db from argument (current_db() loaded)
 julia> human = Taxon(9606)
 9606 [species] Homo sapiens
 
@@ -48,8 +48,6 @@ julia> ["Homo", "Viruses", "Drosophila"] .|> name2taxids |> Iterators.flatten .|
  2081351 [genus] Drosophila
  32281 [subgenus] Drosophila
 ```
-
-## 
 
 ## Traverse taxonomic subtrees from a given `Taxon`
 
@@ -124,8 +122,8 @@ juliia> lca(human, gorilla)
 207598 [subfamily] Homininae
 
 julia> lca(human, gorilla, orangutan)
-9604 [family] Hominidae
-s
+9604 [family] Hominidaes
+
 julia> lca([human, gorilla, orangutan])
 9604 [family] Hominidae
 ```
@@ -159,7 +157,7 @@ julia> taxa = [2759, 33208, 7711, 40674, 9443, 9604, 9605, 9606] .|> Taxon
  9605 [genus] Homo
  9606 [species] Homo sapiens
 
-# Filter `Taxon`s lower than a given rank
+# Filter Taxons lower than a given rank
 julia> filter(taxa) do taxon
            taxon < Rank(:class)
        end
@@ -246,7 +244,7 @@ julia> reformat(lineage, seven_rank)
 
 If there is no corresponding taxon in the lineage to your ranks, then `UnclassifiedTaxon` will be stored.
 ```julia
-julia> uncultured_bacillales = Taxon(157472,db)
+julia> uncultured_bacillales = Taxon(157472)
 57472 [species] uncultured Bacillales bacterium
 
 julia> reformatted_bacillales_lineage = reformat(Lineage(uncultured_bacillales), seven_rank)
@@ -280,7 +278,7 @@ Stacktrace:
 
 `Lineage` can be converted to `NamedTuple`, using `namedtuple`.
 
-Convered `NamedTuple` can be used as input into `DataFrame`
+Converted `NamedTuple` can be used as input into `DataFrame`
 ```julia
 julia> using DataFrames
 
