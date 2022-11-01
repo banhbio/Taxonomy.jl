@@ -19,7 +19,7 @@ Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 
 ```julia
 # Construct a Taxon from taxid and Taxonomy.DB
-julia> human = Taxon(9606)
+julia> human = Taxon(9606, db)
 9606 [species] Homo sapiens
 
 # Or, you can omit db from argument (current_db() loaded)
