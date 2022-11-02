@@ -112,7 +112,7 @@ julia> print_tree(Taxon(9604))
          ├─ 46359 [subspecies] Gorilla beringei graueri
          └─ 1159185 [subspecies] Gorilla beringei beringei
 ```
-**Note:** Use the child-to-parent traverse as much as possible since the parent-to-child is very slow compared to the child-to-parent
+**Note:** Use the child-to-parent traverse (`AbstrcatTrees.parent`) as much as possible since it is quite faster than parent-to-child traverse (`children` and iterators from `AbstractTrees.jl`).
 
 ## Find lowest common ancestor (LCA)
 ```julia
@@ -127,7 +127,6 @@ julia> lca(human, gorilla, orangutan)
 julia> lca([human, gorilla, orangutan])
 9604 [family] Hominidae
 ```
-
 
 ## Evaluate ancestor/descendant relationships between two `Taxon`s
 ```julia
