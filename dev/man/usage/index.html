@@ -92,9 +92,11 @@ julia&gt; print_tree(Taxon(9604))
 juliia&gt; lca(human, gorilla)
 207598 [subfamily] Homininae
 
+# lca is a &quot;varargs&quot; function
 julia&gt; lca(human, gorilla, orangutan)
 9604 [family] Hominidaes
 
+# Vector input is also available
 julia&gt; lca([human, gorilla, orangutan])
 9604 [family] Hominidae</code></pre><h2 id="Evaluate-ancestor/descendant-relationships-between-two-Taxons"><a class="docs-heading-anchor" href="#Evaluate-ancestor/descendant-relationships-between-two-Taxons">Evaluate ancestor/descendant relationships between two <code>Taxon</code>s</a><a id="Evaluate-ancestor/descendant-relationships-between-two-Taxons-1"></a><a class="docs-heading-anchor-permalink" href="#Evaluate-ancestor/descendant-relationships-between-two-Taxons" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; viruses = Taxon(10239)
 10239 [superkingdom] Viruses
@@ -165,7 +167,35 @@ julia&gt; lineage[:genus]
 9605 [genus] Homo
 
 julia&gt; lineage[:species]
-9606 [species] Homo sapiens</code></pre><p><code>Between</code>, <code>From</code>, <code>Until</code>, <code>Cols</code> and <code>All</code> selectors are available in more complex rank selection scenarios.</p><h2 id="Reformat-Lineage"><a class="docs-heading-anchor" href="#Reformat-Lineage">Reformat <code>Lineage</code></a><a id="Reformat-Lineage-1"></a><a class="docs-heading-anchor-permalink" href="#Reformat-Lineage" title="Permalink"></a></h2><p>Reformation of <code>Linage</code> to your ranks can be performed by using <code>reformat()</code>.</p><pre><code class="language-julia hljs">julia&gt; seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
+9606 [species] Homo sapiens</code></pre><p><code>Between</code>, <code>From</code>, <code>Until</code>, <code>Cols</code> and <code>All</code> selectors are available in more complex rank selection scenarios.</p><pre><code class="language-julia hljs">julia&gt; lineage[Between(:order, :family)]
+6-element Lineage{Taxon}:
+ 9443 [order] Primates
+ 376913 [suborder] Haplorrhini
+ 314293 [infraorder] Simiiformes
+ 9526 [parvorder] Catarrhini
+ 314295 [superfamily] Hominoidea
+ 9604 [family] Hominidae
+
+julia&gt; lineage[From(:family)]
+4-element Lineage{Taxon}:
+ 9604 [family] Hominidae
+ 207598 [subfamily] Homininae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+
+julia&gt; lineage[Until(:kingdom)]
+5-element Lineage{Taxon}:
+ 1 [no Rank] root
+ 131567 [no rank] cellular organisms
+ 2759 [superkingdom] Eukaryota
+ 33154 [clade] Opisthokonta
+ 33208 [kingdom] Metazoa
+
+julia&gt; lineage[Cols(:superkingdom, :genus, :species)]
+3-element Lineage{Taxon}:
+ 2759 [superkingdom] Eukaryota
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens</code></pre><h2 id="Reformat-Lineage"><a class="docs-heading-anchor" href="#Reformat-Lineage">Reformat <code>Lineage</code></a><a id="Reformat-Lineage-1"></a><a class="docs-heading-anchor-permalink" href="#Reformat-Lineage" title="Permalink"></a></h2><p>Reformation of <code>Linage</code> to your ranks can be performed by using <code>reformat()</code>.</p><pre><code class="language-julia hljs">julia&gt; seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
 
 julia&gt; reformat(lineage, seven_rank)
 7-element Lineage{Taxon}:
@@ -244,4 +274,4 @@ julia&gt; taxa .|&gt; Lineage .|&gt; (x -&gt; reformat(x, seven_rank)) .|&gt; (x
    1 │ 2 [superkingdom] Bacteria      1224 [phylum] Proteobacteria       1236 [class] Gammaproteobacteria  72274 [order] Pseudomonadales  135621 [family] Pseudomonadaceae  286 [genus] Pseudomonas  287 [species] Pseudomonas aerugi…
    2 │ 2 [superkingdom] Bacteria      1239 [phylum] Firmicutes           91061 [class] Bacilli             1385 [order] Bacillales        missing                           missing                  157472 [species] uncultured Baci…
    3 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia            9443 [order] Primates          9604 [family] Hominidae           9592 [genus] Gorilla     9593 [species] Gorilla gorilla
-   4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  missing                           missing                        missing                           missing                  2053489 [species] Candidatus Lok…</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Monday 7 November 2022 06:33">Monday 7 November 2022</span>. Using Julia version 1.8.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+   4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  missing                           missing                        missing                           missing                  2053489 [species] Candidatus Lok…</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Monday 7 November 2022 07:12">Monday 7 November 2022</span>. Using Julia version 1.8.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
