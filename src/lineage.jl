@@ -174,7 +174,6 @@ This function is useful for converting `Lineage` to `DataFrame`, for example.
 function namedtuple(l::Lineage; fill_by_missing::Bool=false)
     ranks = first.(collect(l.index))
     values = getindex.(Ref(l), ranks)
-
     if fill_by_missing
         values = map(values) do val
             val isa UnclassifiedTaxon ? missing : val
