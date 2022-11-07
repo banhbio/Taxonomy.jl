@@ -6,7 +6,7 @@
 # Load the package
 julia> using Taxonomy
 
-# Construct a Taxonomy.DB objext from the path to each file
+# Construct a Taxonomy.DB object from the path to each file
 julia> db = Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 
@@ -67,7 +67,7 @@ julia> collect(AbastractTrees.PreOrderDFS(human))
  741158 [subspecies] Homo sapiens subsp. 'Denisova'
  63221 [subspecies] Homo sapiens neanderthalensis
 
-# print subtree
+# Print subtree
 julia> print_tree(Taxon(9604))
 9604 [family] Hominidae
 ├─ 2922387 [no rank] unclassified Hominidae

@@ -174,7 +174,6 @@ This function is useful for converting `Lineage` to `DataFrame`, for example.
 function namedtuple(l::Lineage; fill_by_missing::Bool=false)
     ranks = first.(collect(l.index))
     values = getindex.(Ref(l), ranks)
-
     if fill_by_missing
         values = map(values) do val
             val isa UnclassifiedTaxon ? missing : val
@@ -196,28 +195,18 @@ Print a formatted representation of the lineage to the given `IO` object.
 * `skip::Bool = false` - If `true`, skip printing `UnclassifiedTaxon` and delimiter.
 """
 function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill::Bool=false, skip::Bool=false)
-    name_line = String[] 
-    for taxon in lineage
-        if typeof(taxon) == UnclassifiedTaxon
-            if skip
-                continue
-            end
+    taxa = collect(lineage)
+    skip && filter!(taxon -> !(taxon isa UnclassifiedTaxon), taxa)
 
-            if fill
-                push!(name_line, name(taxon))
-            else
-                push!(name_line, "")
-            end
+    names = map(taxa) do taxon
+        if taxon isa UnclassifiedTaxon
+            fill ? name(taxon) : ""
         else
-            push!(name_line, name(taxon))
+            name(taxon)
         end
     end
 
-    if isempty(name_line)
-        return nothing
-    end
-
-    l = foldl((x,y) -> x*delim*y, name_line)
+    l = join(names, delim)
     print(io, l)
     return nothing
 end
