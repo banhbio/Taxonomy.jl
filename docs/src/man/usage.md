@@ -361,4 +361,3 @@ julia> taxa .|> Lineage .|> (x -> reformat(x, seven_rank)) .|> (x ->  namedtuple
    3 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia            9443 [order] Primates          9604 [family] Hominidae           9592 [genus] Gorilla     9593 [species] Gorilla gorilla
    4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  missing                           missing                        missing                           missing                  2053489 [species] Candidatus Lok…
 ```
-
