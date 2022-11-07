@@ -121,9 +121,11 @@ julia> human = Taxon(9606); gorilla = Taxon(9592); orangutan = Taxon(9600);
 juliia> lca(human, gorilla)
 207598 [subfamily] Homininae
 
+# lca is a "varargs" function
 julia> lca(human, gorilla, orangutan)
 9604 [family] Hominidaes
 
+# Vector input is also available
 julia> lca([human, gorilla, orangutan])
 9604 [family] Hominidae
 ```
@@ -224,6 +226,37 @@ julia> lineage[:species]
 ```
 
 `Between`, `From`, `Until`, `Cols` and `All` selectors are available in more complex rank selection scenarios.
+```julia
+julia> lineage[Between(:order, :family)]
+6-element Lineage{Taxon}:
+ 9443 [order] Primates
+ 376913 [suborder] Haplorrhini
+ 314293 [infraorder] Simiiformes
+ 9526 [parvorder] Catarrhini
+ 314295 [superfamily] Hominoidea
+ 9604 [family] Hominidae
+
+julia> lineage[From(:family)]
+4-element Lineage{Taxon}:
+ 9604 [family] Hominidae
+ 207598 [subfamily] Homininae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+
+julia> lineage[Until(:kingdom)]
+5-element Lineage{Taxon}:
+ 1 [no Rank] root
+ 131567 [no rank] cellular organisms
+ 2759 [superkingdom] Eukaryota
+ 33154 [clade] Opisthokonta
+ 33208 [kingdom] Metazoa
+
+julia> lineage[Cols(:superkingdom, :genus, :species)]
+3-element Lineage{Taxon}:
+ 2759 [superkingdom] Eukaryota
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+```
 
 ## Reformat `Lineage`
 Reformation of `Linage` to your ranks can be performed by using `reformat()`.
