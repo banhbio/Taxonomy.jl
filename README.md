@@ -9,6 +9,7 @@
 
 Taxonomy.jl is a julia package to handle NCBI-formatted taxonomic databases.
 The main features are:
+- Get various information on a given taxon
 - Convert a name to taxids
 - Traverse taxonomic subtrees from a given taxon
 - Compute the lowest common ancestor (LCA) of given taxa
