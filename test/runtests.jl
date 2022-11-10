@@ -130,6 +130,9 @@ end
     @test sprint(io -> print_lineage(io, reformatted_primate_lineage; skip=true)) == "Eukaryota;Chordata;Mammalia;Primates"
     @test sprint(io -> print_lineage(io, reformatted_primate_lineage; fill=true)) == "Eukaryota;Chordata;Mammalia;Primates;unclassified Primates family;unclassified Primates genus;unclassified Primates species"
 
+    denisova = Taxon(741158, db)
+    @test reformat(Lineage(denisova), [:species, :subspecies])[:strain] ==  reformat(Lineage(denisova), [:species, :strain])[:subspecies]
+
     euk = Taxon(2759)
     reformatted_euk_lineage = reformat(Lineage(euk), [:superkingdom,:phylum])
     @test namedtuple(reformatted_euk_lineage) == (superkingdom = Taxon(2759, db), phylum = UnclassifiedTaxon(:phylum, Taxon(2759, db)))
