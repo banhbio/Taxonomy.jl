@@ -23,7 +23,8 @@ A type that stores lineage information in `Vector`-like format.
 """
 struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
     line::Vector{T}
-    index::OrderedDict{Symbol,Int}
+    ranks::Vector{Symbol}
+    index::OrderedDict{Int,Int}
     reformatted::Bool
 end
 
@@ -48,7 +49,7 @@ function Lineage(taxon::Taxon)
     reverse!(ranks)
     reverse!(rankpos)
     rankpos = length(line) + 1 .- rankpos
-    return Lineage(line, OrderedDict(Pair.(ranks, rankpos)), false)
+    return Lineage(line, ranks, OrderedDict{Int,Int}(Pair.(Integer.(Rank.(ranks)), rankpos)), false)
 end
 
 """
@@ -78,35 +79,43 @@ function _check_index_order(ranks::Vector{Int})
     flag ? (return nothing) : _LI()
 end
 
-Base.getindex(l::Lineage, s::Symbol) = l.line[l.index[s]]
+Base.getindex(l::Lineage, s::Symbol) = getindex(l, Rank(s))
+Base.getindex(l::Lineage, r::CanonicalRank) = getindex(l, l.index[Integer(r)])
+Base.getindex(l::Lineage, ur::UnCanonicalRank) = KeyError(ur) |> throw
 
 function Base.getindex(l::Lineage, range::UnitRange{Int})
     line = getindex.(Ref(l), range)
-    index = OrderedDict(rank(t) => i for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks))
-    return Lineage(line, index, true)
+    pos = [(rank(t), i) for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks)]
+    ranks = first.(pos)
+    rankpos = last.(pos)
+    index = OrderedDict{Int, Int}(Pair.(Integer.(Rank.(ranks)), rankpos))
+    return Lineage(line, ranks,  index, true)
 end
 
 Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(idx.cols...))
 
 function Base.getindex(l::Lineage{T}, idx::Cols) where T
     index = map(collect(idx.cols)) do i
-        i isa Symbol ? l.index[i] : i
+        i isa Symbol ? l.index[Integer(Rank(i))] : i
     end
     _check_index_order(index)
 
     line = getindex.(Ref(l), index)
-    index = OrderedDict(rank(t) => i for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks))
-    return Lineage(line, index, true)
+    pos = [(rank(t), i) for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks)]
+    ranks = first.(pos)
+    rankpos = last.(pos)
+    index = OrderedDict{Int, Int}(Pair.(Integer.(Rank.(ranks)), rankpos))
+    return Lineage(line, ranks, index, true)
 end
 
 Base.getindex(l::Lineage, idx::Between{Int,Int}) = l[idx.first:idx.last]
-Base.getindex(l::Lineage, idx::Between{Symbol,Int}) = getindex(l, Between(l.index[idx.first], idx.last))
-Base.getindex(l::Lineage, idx::Between{Int,Symbol}) = getindex(l, Between(idx.first, l.index[idx.last]))
-Base.getindex(l::Lineage, idx::Between{Symbol,Symbol}) = getindex(l, Between(l.index[idx.first], l.index[idx.last]))
+Base.getindex(l::Lineage, idx::Between{Symbol,Int}) = getindex(l, Between(l.index[Integer(Rank(idx.first))], idx.last))
+Base.getindex(l::Lineage, idx::Between{Int,Symbol}) = getindex(l, Between(idx.first, l.index[Integer(Rank(idx.last))]))
+Base.getindex(l::Lineage, idx::Between{Symbol,Symbol}) = getindex(l, Between(l.index[Integer(Rank(idx.first))], l.index[Integer(Rank(idx.last))]))
 Base.getindex(l::Lineage, idx::From{Int}) = l[idx.first:end]
-Base.getindex(l::Lineage, idx::From{Symbol}) = getindex(l, From(l.index[idx.first]))
+Base.getindex(l::Lineage, idx::From{Symbol}) = getindex(l, From(l.index[Integer(Rank(idx.first))]))
 Base.getindex(l::Lineage, idx::Until{Int}) = l[1:idx.last]
-Base.getindex(l::Lineage, idx::Until{Symbol}) = getindex(l, Until(l.index[idx.last]))
+Base.getindex(l::Lineage, idx::Until{Symbol}) = getindex(l, Until(l.index[Integer(Rank(idx.last))]))
 
 """
     get(db::Taxonomy.DB, idx::Union{Int,Symbol}, default)
@@ -137,14 +146,14 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
 
     len = length(ranks)
     line = Vector{TaxonOrUnclassifiedTaxon}(undef, len)
-    previous_ranks = first.(collect(l.index))
+    previous_ranks = l.ranks
 
     if isempty(previous_ranks)
         ut_source = l[end]
     end
 
     for (i, rank) in enumerate(ranks)
-        if rank in previous_ranks
+        if Integer(Rank(rank)) in Integer.(Rank.(previous_ranks))
             taxon = getindex(l, rank)
             if taxon isa UnclassifiedTaxon
                 taxon = UnclassifiedTaxon(rank, ut_source)
@@ -158,7 +167,7 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
     if all(isa.(line, Taxon))
         line = convert.(Taxon, line)
     end
-    return Lineage(line, OrderedDict(Pair.(ranks, 1:len)), true)
+    return Lineage(line, ranks, OrderedDict{Int, Int}(Pair.(Integer.(Rank.(ranks)), 1:len)), true)
 end
 
 """
@@ -172,7 +181,7 @@ This function is useful for converting `Lineage` to `DataFrame`, for example.
 * `fill_by_missing::Bool = false` - If `true`, fills missing instead of `UnclassifiedTaxon`.
 """
 function namedtuple(l::Lineage; fill_by_missing::Bool=false)
-    ranks = first.(collect(l.index))
+    ranks = l.ranks
     values = getindex.(Ref(l), ranks)
     if fill_by_missing
         values = map(values) do val
