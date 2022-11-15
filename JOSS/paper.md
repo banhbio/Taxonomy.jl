@@ -108,7 +108,7 @@ Community composition analysis, including metagenomic analysis, uses tables that
 
 In addition, `Taxonomy.jl` provides a `reformat` function to convert a `Lineage` to the given rank e.g., the 7-level format (superkingdom, phylum, class, order, family, genus, and species) or 8-level format with an additional strain/subspecies rank. If there is no taxon corresponding to the rank in the lineage, the `UnclassifiedTaxon` object with the name of the taxon of the higher rank will be stored. This standardization allows multiple lineages to have consistent ranks.
 
-The `Lineage` type can be converted to the `NamedTuple` type with rank as the key via the `namedtuple` function. This NamedTuple can be used as input to a `DataFrame` type in `DataFrames.jl`, for example, allowing for downstream analysis and visualization.
+The `Lineage` type can be converted to the `NamedTuple` type with rank as the key via the `namedtuple` function. This `NamedTuple` can be used as input to a `DataFrame` type in `DataFrames.jl`, for example, allowing for downstream analysis and visualization.
 
 # Acknowledgments
 
