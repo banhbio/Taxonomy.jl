@@ -62,11 +62,11 @@ julia> Taxon(9606)
 ```
 
 The following operations are defined as functions with `Taxon` or `Taxonomy.DB`:
-- **FIXME : add function name ** Get various information on a given taxon (name, rank and parent-child relationships, etc.)
-- **FIXME : add function name ** Convert a name to Taxids
-- **FIXME : add function name ** Compute the lowest common ancestor (LCA) of given taxa
-- **FIXME : add function name ** Evaluate ancestor-descendant relationships between two taxa
-- **FIXME : add function name ** Filter taxa by a rank range
+- `name`, `rank`, `AbstractTrees.parent`, `chirdren`, etc.: Get various information on a given taxon (name, rank, parent-child relationships, etc.)
+- `name2taxids`: Convert a name to Taxids
+- `lca`: Compute the lowest common ancestor (LCA) of given taxa
+- `isancestor` and `isdescendant`: Evaluate ancestor-descendant relationships between two taxa
+- `isless` (`<`) with `CanonicalRank` type: Filter taxa by a rank range
 
 The hierarchical structure of the NCBI Taxonomy is organized as a rooted tree with each taxon as a node. Therefore, the `Taxonomy.DB` type can also be viewed as a rooted tree with the `Taxon` type as a node. We implemented an interface to handle the tree structures using `AbstractTrees.jl`. This allows users to use the functions defined in `AbstractTrees.jl`, as in the example below, and to traverse the tree in a user-defined way.
 
