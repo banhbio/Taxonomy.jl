@@ -28,12 +28,32 @@ Base.Integer(T::Type{<:CanonicalRank}) = Integer(T())
 Return `CanonicalRank(sym)` if sym is in `CanonicalRanks`. Return `UnCanonicalRank(sym)` if not.
 `CanonicalRank(sym)` can be used for `isless` comparison.
 """
-function Rank(s::Symbol)
-    if s in CanonicalRanks
-        return @eval $s()
-    else
-        return UnCanonicalRank(s)
+Rank
+
+function gen_rank_codes()
+    codes = map(CanonicalRanks) do r
+        compare = Meta.parse("s == :$r")
+        re = :(return $r())
+        Expr(:if, compare, re)
     end
+    return Expr(:block, codes...)
+end
+
+@eval function Rank(s::Symbol)
+    # it will generate
+    #=
+    if s == :superkingdom
+        return superkingdom()
+    end
+    ...
+    if s == :strain
+        return strain()
+    end
+
+    return UnCanonicalRank(s)
+    =#
+    $(gen_rank_codes())
+    return UnCanonicalRank(s)
 end
 
 """

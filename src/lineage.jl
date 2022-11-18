@@ -134,26 +134,25 @@ end
     reformat(l::Lineage, ranks::Vector{Symbol})
 
 Return the `Lineage` object reformatted according to the given ranks.
-If there id no corresponding taxon in the lineage to the rank, `UnclassifiedTaxon` will be stored.
+If there is no corresponding taxon in the lineage to the rank, `UnclassifiedTaxon` will be stored.
 Once a `Lineage` is reformatted, it cannot be reformatted again.
 """
 function reformat(l::Lineage, ranks::Vector{Symbol})
     _check_index_order(ranks)
 
-    if isreformatted(l)
-        _LR()
-    end
+    isreformatted(l) && _LR()
 
     len = length(ranks)
     line = Vector{TaxonOrUnclassifiedTaxon}(undef, len)
     previous_ranks = l.ranks
+    previuos_ranks_ints = Integer.(Rank.(previous_ranks))
 
     if isempty(previous_ranks)
         ut_source = l[end]
     end
 
     for (i, rank) in enumerate(ranks)
-        if Integer(Rank(rank)) in Integer.(Rank.(previous_ranks))
+        if Integer(Rank(rank)) in previuos_ranks_ints
             taxon = getindex(l, rank)
             if taxon isa UnclassifiedTaxon
                 taxon = UnclassifiedTaxon(rank, ut_source)
