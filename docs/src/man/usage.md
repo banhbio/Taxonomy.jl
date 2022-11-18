@@ -130,7 +130,7 @@ julia> lca([human, gorilla, orangutan])
 9604 [family] Hominidae
 ```
 
-## Evaluate ancestor/descendant relationships between two `Taxon`s
+## Evaluate ancestor-descendant relationships between two `Taxon`s
 ```julia
 julia> viruses = Taxon(10239)
 10239 [superkingdom] Viruses
@@ -145,7 +145,7 @@ julia> isdescendant(human, viruses)
 false
 ```
 
-## Filter `Taxon`s from rank range
+## Filter `Taxon`s by a rank range
 ```julia
 julia> taxa = [2759, 33208, 7711, 40674, 9443, 9604, 9605, 9606] .|> Taxon
 8-element Vector{Taxon}:
@@ -259,7 +259,7 @@ julia> lineage[Cols(:superkingdom, :genus, :species)]
 ```
 
 ## Reformat `Lineage`
-Reformation of `Linage` to your ranks can be performed by using `reformat()`.
+Reformation of `Linage` to your ranks can be performed by using `reformat`.
 ```julia
 julia> seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
 
@@ -274,7 +274,28 @@ julia> reformat(lineage, seven_rank)
  9606 [species] Homo sapiens
 ```
 
-If there is no corresponding taxon in the lineage to your ranks, then `UnclassifiedTaxon` will be stored.
+The `:subspecies`/`:strain` are internally treated as the same rank, so that users can ignore ambiguities tn the rank below species.
+```julia
+julia> eight_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species, :strain];
+
+julia> denisova = Taxon(741158); l = Lineage(denisova);
+
+julia> rl = reformat(l, eight_rank)
+8-element Lineage{Taxon}:
+ 2759 [superkingdom] Eukaryota
+ 7711 [phylum] Chordata
+ 40674 [class] Mammalia
+ 9443 [order] Primates
+ 9604 [family] Hominidae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+ 741158 [subspecies] Homo sapiens subsp. 'Denisova'
+
+julia> rl[:subspecies] == rl[:strain]
+true
+```
+
+If there is no corresponding taxon to your ranks in the linneage, then `UnclassifiedTaxon` will be stored.
 ```julia
 julia> uncultured_bacillales = Taxon(157472)
 57472 [species] uncultured Bacillales bacterium
