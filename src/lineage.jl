@@ -145,13 +145,14 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
     len = length(ranks)
     line = Vector{TaxonOrUnclassifiedTaxon}(undef, len)
     previous_ranks = l.ranks
+    previuos_ranks_ints = Integer.(Rank.(previous_ranks))
 
     if isempty(previous_ranks)
         ut_source = l[end]
     end
 
     for (i, rank) in enumerate(ranks)
-        if Integer(Rank(rank)) in Integer.(Rank.(previous_ranks))
+        if Integer(Rank(rank)) in previuos_ranks_ints
             taxon = getindex(l, rank)
             if taxon isa UnclassifiedTaxon
                 taxon = UnclassifiedTaxon(rank, ut_source)
