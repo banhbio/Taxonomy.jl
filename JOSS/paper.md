@@ -18,7 +18,7 @@ authors:
 affiliations:
  - name: Bioinformatics Center, Institute for Chemical Research, Kyoto University, Gokasho, Uji, Kyoto, 611-0011, Japan 
    index: 1
-date: XXX November 2022
+date: 19 November 2022
 bibliography: paper.bib
 
 ---
