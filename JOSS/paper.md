@@ -1,5 +1,5 @@
 ---
-title: 'Taxonomy.jl: A Julia package to handle NCBI-formatted taxonomic databases'
+title: 'Taxonomy.jl: A Julia package to handle the NCBI Taxonomy database'
 tags:
   - Julia
   - taxonomy
