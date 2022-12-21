@@ -1,11 +1,12 @@
 module Taxonomy
 using AbstractTrees
 using OrderedCollections: OrderedDict
+using StringDistances
 import DataAPI,
        DataAPI.All,
        DataAPI.Between,
        DataAPI.Cols
-export AbstractTrees,
+export AbstractTrees, StringDistances,
        current_db, current_db!,
        Rank, CanonicalRank, UnCanonicalRank, CanonicalRankSet, CanonicalRanks,
        AbstractTaxon, Taxon, UnclassifiedTaxon,
