@@ -24,6 +24,12 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
 
     @test @inferred(Nothing, get(db, 9606, nothing)) == human
     @test @inferred(name2taxids("Homo", db)) == [9605]
+    @test @inferred(name2taxids("Homo")) == [9605]
+
+    similar = first(similarnames("Homo sapiens"))
+    @test similar.taxid == 9606
+    @test similar.name == "Homo sapiens"
+    @test similar.similarity == 1.0
 
     @test @inferred(Nothing, AbstractTrees.parent(human)) == Taxon(9605,db)
     @test @inferred(Set(children(human))) == Set([Taxon(63221,db), Taxon(741158, db)])
