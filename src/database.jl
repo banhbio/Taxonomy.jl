@@ -19,8 +19,11 @@ struct DB
         @assert isfile(nodes_dmp)
         @assert isfile(names_dmp)
 
-        parents, ranks = importnodes(nodes_dmp)
-        names = importnames(names_dmp)
+        _nodes = Threads.@spawn importnodes(nodes_dmp)
+        _names = Threads.@spawn importnames(names_dmp)
+
+        parents, ranks = fetch(_nodes)
+        names = fetch(_names)
 
         db = new(nodes_dmp, names_dmp, Dict(parents), Dict(ranks), Dict(names))
         current_db!(db)
@@ -36,21 +39,21 @@ function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
     ranks = Vector{Symbol}(undef, db_size)
 
     c = 0
-    f = open(nodes_dmp_path, "r")
-    @inbounds(for line in eachline(f)
-        cols = split(line, "\t", limit=6)
-        cols[1] == cols[3] && continue
+    open(nodes_dmp_path, "r") do f
+        @inbounds(for line in eachline(f)
+            cols = split(line, "\t", limit=6)
+            cols[1] == cols[3] && continue
 
-        taxid = parse(Int, cols[1])
-        parent = parse(Int, cols[3])
-        rank = Symbol(cols[5])
+            taxid = parse(Int, cols[1])
+            parent = parse(Int, cols[3])
+            rank = Symbol(cols[5])
 
-        c += 1
-        taxids[c] = taxid
-        parents[c] = parent
-        ranks[c] = rank
-    end)
-    close(f)
+            c += 1
+            taxids[c] = taxid
+            parents[c] = parent
+            ranks[c] = rank
+        end)
+    end
     resize!(taxids, c)
     resize!(parents, c)
     resize!(ranks, c)
@@ -61,19 +64,19 @@ function importnames(names_dmp_path::String; db_size::Int=default_db_size)
     taxids = Vector{Int}(undef, db_size)
     names = Vector{String}(undef, db_size)
 
-    f = open(names_dmp_path, "r")
     c = 0
-    @inbounds(for line in eachline(f)
-        cols = split(line, "\t", limit=8)
-        cols[7] != "scientific name" && continue
-    
-        c+=1
-        taxids[c] = parse(Int, cols[1])
-        names[c] = String(cols[3])
-    end)
+    open(names_dmp_path, "r") do f
+        @inbounds(for line in eachline(f)
+            cols = split(line, "\t", limit=8)
+            cols[7] != "scientific name" && continue
+
+            c+=1
+            taxids[c] = parse(Int, cols[1])
+            names[c] = String(cols[3])
+        end)
+    end
     resize!(taxids, c)
     resize!(names, c)
-    close(f)
     return Pair{Int, String}.(taxids, names)
 end
 
