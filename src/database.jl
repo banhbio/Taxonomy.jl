@@ -40,7 +40,7 @@ function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
 
     c = 0
     open(nodes_dmp_path, "r") do f
-        @inbounds(for line in eachline(f)
+        for line in eachline(f)
             cols = split(line, "\t", limit=6)
             cols[1] == cols[3] && continue
 
@@ -49,10 +49,10 @@ function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
             rank = Symbol(cols[5])
 
             c += 1
-            taxids[c] = taxid
-            parents[c] = parent
-            ranks[c] = rank
-        end)
+            @inbounds taxids[c] = taxid
+            @inbounds parents[c] = parent
+            @inbounds ranks[c] = rank
+        end
     end
     resize!(taxids, c)
     resize!(parents, c)
@@ -66,14 +66,14 @@ function importnames(names_dmp_path::String; db_size::Int=default_db_size)
 
     c = 0
     open(names_dmp_path, "r") do f
-        @inbounds(for line in eachline(f)
+        for line in eachline(f)
             cols = split(line, "\t", limit=8)
             cols[7] != "scientific name" && continue
 
             c+=1
-            taxids[c] = parse(Int, cols[1])
-            names[c] = String(cols[3])
-        end)
+            @inbounds taxids[c] = parse(Int, cols[1])
+            @inbounds names[c] = String(cols[3])
+        end
     end
     resize!(taxids, c)
     resize!(names, c)
