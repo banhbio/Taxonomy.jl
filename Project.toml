@@ -15,6 +15,7 @@ Tar = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
 
 [compat]
 AbstractTrees = "0.4.3"
+CodecZlib = "0.7"
 DataAPI = "1.6"
 OrderedCollections = "1"
 StringDistances = "0.11"
