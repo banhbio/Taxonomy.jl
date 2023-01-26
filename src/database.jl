@@ -36,21 +36,20 @@ function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
     ranks = Vector{Symbol}(undef, db_size)
 
     c = 0
-    f = open(nodes_dmp_path, "r")
-    @inbounds(for line in eachline(f)
-        cols = split(line, "\t", limit=6)
-        cols[1] == cols[3] && continue
+    open(nodes_dmp_path, "r") do f
+        for line in eachline(f)
+            cols = split(line, "\t", limit=6)
 
-        taxid = parse(Int, cols[1])
-        parent = parse(Int, cols[3])
-        rank = Symbol(cols[5])
+            taxid = parse(Int, cols[1])
+            parent = parse(Int, cols[3])
+            rank = Symbol(cols[5])
 
-        c += 1
-        taxids[c] = taxid
-        parents[c] = parent
-        ranks[c] = rank
-    end)
-    close(f)
+            c += 1
+            @inbounds taxids[c] = taxid
+            @inbounds parents[c] = parent
+            @inbounds ranks[c] = rank
+        end
+    end
     resize!(taxids, c)
     resize!(parents, c)
     resize!(ranks, c)

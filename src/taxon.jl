@@ -86,7 +86,7 @@ Return the `Taxon` object that is the parent of the given `Taxon` object.
 """
 function AbstractTrees.parent(taxon::Taxon)
    parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
-   if parent_taxid === nothing
+   if parent_taxid == taxon.taxid
         return nothing
    end
    parent = Taxon(parent_taxid, taxon.db)
