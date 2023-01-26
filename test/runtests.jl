@@ -1,16 +1,25 @@
 using Taxonomy
 using Taxonomy.AbstractTrees
+using Downloads
+using Tar
+using CodecZlib
 using Test
+
+if !isdir("./db")
+    Downloads.download("ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz", "./taxdump.tar.gz")
+    tar_gz = open("./taxdump.tar.gz")
+    tar = GzipDecompressorStream(tar_gz)
+    Tar.extract(tar, "./db")
+    close(tar)
+else
+    @warn "Start test with existing database"
+end
 
 @testset "dabase.jl" begin
     @test isnothing(current_db())
 
     db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
     @test current_db() == db
-
-    db_1 = Taxonomy.DB("db_1/nodes.dmp", "db_1/names.dmp")
-    current_db!(db_1)
-    @test current_db() == db_1
 end
 
 db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")

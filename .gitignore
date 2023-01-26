@@ -1,4 +1,6 @@
 /Manifest.toml
 /docs/build/
 /db
+/test/db
+/test/taxdump.tar.gz
 /.vscode
