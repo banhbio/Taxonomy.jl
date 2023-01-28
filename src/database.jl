@@ -62,14 +62,14 @@ function importnames(names_dmp_path::String; db_size::Int=default_db_size)
 
     f = open(names_dmp_path, "r")
     c = 0
-    @inbounds(for line in eachline(f)
+    for line in eachline(f)
         cols = split(line, "\t", limit=8)
         cols[7] != "scientific name" && continue
     
         c+=1
-        taxids[c] = parse(Int, cols[1])
-        names[c] = String(cols[3])
-    end)
+        @inbounds taxids[c] = parse(Int, cols[1])
+        @inbounds names[c] = String(cols[3])
+    end
     resize!(taxids, c)
     resize!(names, c)
     close(f)
