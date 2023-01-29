@@ -16,7 +16,7 @@ else
 end
 
 @testset "dabase.jl" begin
-    @test isnothing(current_db())
+    @test_throws ErrorException isnothing(current_db())
 
     db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
     @test current_db() == db
