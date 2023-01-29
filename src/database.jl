@@ -62,14 +62,14 @@ function importnames(names_dmp_path::String; db_size::Int=default_db_size)
 
     f = open(names_dmp_path, "r")
     c = 0
-    @inbounds(for line in eachline(f)
+    for line in eachline(f)
         cols = split(line, "\t", limit=8)
         cols[7] != "scientific name" && continue
     
         c+=1
-        taxids[c] = parse(Int, cols[1])
-        names[c] = String(cols[3])
-    end)
+        @inbounds taxids[c] = parse(Int, cols[1])
+        @inbounds names[c] = String(cols[3])
+    end
     resize!(taxids, c)
     resize!(names, c)
     close(f)
@@ -82,7 +82,12 @@ const _current_db = Ref{Union{Nothing, DB}}(nothing)
 
 Return the current active database or the last database that got created.
 """
-current_db() = _current_db[]
+function current_db()
+    if isnothing(_current_db[])
+        error("Taxonomy.DB is not found. Please run Taxonomy.DB(nodes_dmp::String, names_dmp::String) before proceeding")
+    end
+    _current_db[]
+end
 
 """
     current_db!(db::Taxonomy.DB)
