@@ -82,7 +82,12 @@ const _current_db = Ref{Union{Nothing, DB}}(nothing)
 
 Return the current active database or the last database that got created.
 """
-current_db() = _current_db[]
+function current_db()
+    if isnothing(_current_db[])
+        error("Taxonomy.DB is not found. Please run Taxonomy.DB(nodes_dmp::String, names_dmp::String) before proceeding")
+    end
+    _current_db[]
+end
 
 """
     current_db!(db::Taxonomy.DB)
