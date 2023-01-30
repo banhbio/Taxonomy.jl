@@ -18,9 +18,11 @@ struct DB
     function DB(nodes_dmp::String, names_dmp::String)
         @assert isfile(nodes_dmp)
         @assert isfile(names_dmp)
+        _nodes = Threads.@spawn importnodes(nodes_dmp)
+        _names = Threads.@spawn importnames(names_dmp)
 
-        parents, ranks = importnodes(nodes_dmp)
-        names = importnames(names_dmp)
+        parents, ranks = fetch(_nodes)
+        names = fetch(_names)
 
         db = new(nodes_dmp, names_dmp, Dict(parents), Dict(ranks), Dict(names))
         current_db!(db)
