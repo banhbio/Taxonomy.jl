@@ -15,7 +15,7 @@ else
     @warn "Start test with existing database"
 end
 
-@testset "dabase.jl" begin
+@testset "database.jl" begin
     @test_throws ErrorException isnothing(current_db())
 
     db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
