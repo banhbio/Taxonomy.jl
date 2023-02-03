@@ -5,13 +5,10 @@ version = "0.4.3"
 
 [deps]
 AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
-CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
 DataAPI = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
-Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 StringDistances = "88034a9c-02f8-509d-84a9-84ec65e18404"
-Tar = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
 
 [compat]
 AbstractTrees = "0.4.3"
@@ -23,6 +20,9 @@ julia = "1.5"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+Tar = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
 
 [targets]
-test = ["Test"]
+test = ["Test", "CodecZlib", "Downloads", "Tar"]
