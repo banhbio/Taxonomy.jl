@@ -1,4 +1,4 @@
-const default_db_size = 2500000
+const default_db_size = 4000000
 
 """
     Taxonomy.DB
