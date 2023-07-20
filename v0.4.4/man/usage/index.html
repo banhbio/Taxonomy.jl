@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Usage · Taxonomy.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="https://banhbio.github.io/Taxonomy.jl/man/usage/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Taxonomy.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li class="is-active"><a class="tocitem" href>Usage</a><ul class="internal"><li><a class="tocitem" href="#Construct-Database"><span>Construct Database</span></a></li><li><a class="tocitem" href="#Get-taxonomic-information-from-Taxon"><span>Get taxonomic information from <code>Taxon</code></span></a></li><li><a class="tocitem" href="#Construct-Taxons-from-names"><span>Construct <code>Taxon</code>s from names</span></a></li><li><a class="tocitem" href="#Traverse-taxonomic-subtrees-from-a-given-Taxon"><span>Traverse taxonomic subtrees from a given <code>Taxon</code></span></a></li><li><a class="tocitem" href="#Find-lowest-common-ancestor-(LCA)"><span>Find lowest common ancestor (LCA)</span></a></li><li><a class="tocitem" href="#Evaluate-ancestor-descendant-relationships-between-two-Taxons"><span>Evaluate ancestor-descendant relationships between two <code>Taxon</code>s</span></a></li><li><a class="tocitem" href="#Filter-Taxons-by-a-rank-range"><span>Filter <code>Taxon</code>s by a rank range</span></a></li><li><a class="tocitem" href="#Treat-taxonomic-Lineage"><span>Treat taxonomic <code>Lineage</code></span></a></li><li><a class="tocitem" href="#Reformat-Lineage"><span>Reformat <code>Lineage</code></span></a></li><li><a class="tocitem" href="#Convert-Lineages-to-DataFrame"><span>Convert <code>Lineage</code>s to <code>DataFrame</code></span></a></li></ul></li><li><a class="tocitem" href="../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Usage</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Usage</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/banhbio/Taxonomy.jl/blob/main/docs/src/man/usage.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Usage"><a class="docs-heading-anchor" href="#Usage">Usage</a><a id="Usage-1"></a><a class="docs-heading-anchor-permalink" href="#Usage" title="Permalink"></a></h1><h2 id="Construct-Database"><a class="docs-heading-anchor" href="#Construct-Database">Construct Database</a><a id="Construct-Database-1"></a><a class="docs-heading-anchor-permalink" href="#Construct-Database" title="Permalink"></a></h2><pre><code class="language-julia hljs"># Load the package
+julia&gt; using Taxonomy
+
+# Construct a Taxonomy.DB object from the path to each file
+julia&gt; db = Taxonomy.DB(&quot;db/nodes.dmp&quot;,&quot;db/names.dmp&quot;)
+Taxonomy.DB(&quot;db/nodes.dmp&quot;,&quot;db/names.dmp&quot;)
+
+# Taxonomy.DB object is automatically stored in current_db()
+julia&gt; current_db()
+Taxonomy.DB(&quot;db/nodes.dmp&quot;,&quot;db/names.dmp&quot;)</code></pre><h2 id="Get-taxonomic-information-from-Taxon"><a class="docs-heading-anchor" href="#Get-taxonomic-information-from-Taxon">Get taxonomic information from <code>Taxon</code></a><a id="Get-taxonomic-information-from-Taxon-1"></a><a class="docs-heading-anchor-permalink" href="#Get-taxonomic-information-from-Taxon" title="Permalink"></a></h2><pre><code class="language-julia hljs"># Construct a Taxon from taxid and Taxonomy.DB
+julia&gt; human = Taxon(9606, db)
+9606 [species] Homo sapiens
+
+# Or, you can omit db from argument (current_db() loaded)
+julia&gt; human = Taxon(9606)
+9606 [species] Homo sapiens
+
+julia&gt; taxid(human)
+9606
+
+julia&gt; name(human)
+&quot;Homo sapiens&quot;
+
+julia&gt; rank(human)
+:species</code></pre><h2 id="Construct-Taxons-from-names"><a class="docs-heading-anchor" href="#Construct-Taxons-from-names">Construct <code>Taxon</code>s from names</a><a id="Construct-Taxons-from-names-1"></a><a class="docs-heading-anchor-permalink" href="#Construct-Taxons-from-names" title="Permalink"></a></h2><p>Name must match to the scientific name excatly</p><pre><code class="language-julia hljs">julia&gt; [&quot;Homo&quot;, &quot;Viruses&quot;, &quot;Drosophila&quot;] .|&gt; name2taxids |&gt; Iterators.flatten .|&gt; Taxon
+5-element Vector{Taxon}:
+ 9605 [genus] Homo
+ 10239 [superkingdom] Viruses
+ 7215 [genus] Drosophila
+ 2081351 [genus] Drosophila
+ 32281 [subgenus] Drosophila</code></pre><h2 id="Traverse-taxonomic-subtrees-from-a-given-Taxon"><a class="docs-heading-anchor" href="#Traverse-taxonomic-subtrees-from-a-given-Taxon">Traverse taxonomic subtrees from a given <code>Taxon</code></a><a id="Traverse-taxonomic-subtrees-from-a-given-Taxon-1"></a><a class="docs-heading-anchor-permalink" href="#Traverse-taxonomic-subtrees-from-a-given-Taxon" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; children(human)
+2-element Vector{Taxon}:
+ 741158 [subspecies] Homo sapiens subsp. &#39;Denisova&#39;
+ 63221 [subspecies] Homo sapiens neanderthalensis
+
+julia&gt; AbstractTrees.parent(human)
+9605 [genus] Homo
+
+# Collect all Taxon in subtree using PreOderDFS iterator from AbstractTrees.jl
+julia&gt; collect(AbastractTrees.PreOrderDFS(human))
+3-element Vector{Taxon}:
+ 9606 [species] Homo sapiens
+ 741158 [subspecies] Homo sapiens subsp. &#39;Denisova&#39;
+ 63221 [subspecies] Homo sapiens neanderthalensis
+
+# Print subtree
+julia&gt; print_tree(Taxon(9604))
+9604 [family] Hominidae
+├─ 2922387 [no rank] unclassified Hominidae
+│  └─ 2922388 [species] Hominidae sp.
+├─ 607660 [subfamily] Ponginae
+│  └─ 9599 [genus] Pongo
+│     ├─ 502961 [species] Pongo abelii x pygmaeus
+│     ├─ 9600 [species] Pongo pygmaeus
+│     │  ├─ 9602 [subspecies] Pongo pygmaeus pygmaeus
+│     │  ├─ 2753605 [subspecies] Pongo pygmaeus morio
+│     │  └─ 2753606 [subspecies] Pongo pygmaeus wurmbii
+│     ├─ 9601 [species] Pongo abelii
+│     ├─ 2624844 [no rank] unclassified Pongo
+│     │  └─ 9603 [species] Pongo sp.
+│     └─ 2051901 [species] Pongo tapanuliensis
+├─ 2883640 [no rank] Hominidae intergeneric hybrids
+│  └─ 2883641 [species] Homo sapiens x Pan troglodytes tetraploid cell line
+└─ 207598 [subfamily] Homininae
+   ├─ 9596 [genus] Pan
+   │  ├─ 9597 [species] Pan paniscus
+   │  └─ 9598 [species] Pan troglodytes
+   │     ├─ 37011 [subspecies] Pan troglodytes troglodytes
+   │     ├─ 37010 [subspecies] Pan troglodytes schweinfurthii
+   │     ├─ 756884 [subspecies] Pan troglodytes ellioti
+   │     ├─ 1294088 [subspecies] Pan troglodytes verus x troglodytes
+   │     └─ 37012 [subspecies] Pan troglodytes verus
+   ├─ 9605 [genus] Homo
+   │  ├─ 2665952 [no rank] environmental samples
+   │  │  └─ 2665953 [species] Homo sapiens environmental sample
+   │  ├─ 2813598 [no rank] unclassified Homo
+   │  │  └─ 2813599 [species] Homo sp.
+   │  ├─ 9606 [species] Homo sapiens
+   │  │  ├─ 741158 [subspecies] Homo sapiens subsp. &#39;Denisova&#39;
+   │  │  └─ 63221 [subspecies] Homo sapiens neanderthalensis
+   │  └─ 1425170 [species] Homo heidelbergensis
+   └─ 9592 [genus] Gorilla
+      ├─ 9593 [species] Gorilla gorilla
+      │  ├─ 183511 [subspecies] Gorilla gorilla uellensis
+      │  ├─ 406788 [subspecies] Gorilla gorilla diehli
+      │  └─ 9595 [subspecies] Gorilla gorilla gorilla
+      └─ 499232 [species] Gorilla beringei
+         ├─ 46359 [subspecies] Gorilla beringei graueri
+         └─ 1159185 [subspecies] Gorilla beringei beringei</code></pre><p><strong>Note:</strong> Use the child-to-parent traverse (<code>AbstrcatTrees.parent</code>) as much as possible since it is quite faster than parent-to-child traverse (<code>children</code> and iterators from <code>AbstractTrees.jl</code>).</p><h2 id="Find-lowest-common-ancestor-(LCA)"><a class="docs-heading-anchor" href="#Find-lowest-common-ancestor-(LCA)">Find lowest common ancestor (LCA)</a><a id="Find-lowest-common-ancestor-(LCA)-1"></a><a class="docs-heading-anchor-permalink" href="#Find-lowest-common-ancestor-(LCA)" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; human = Taxon(9606); gorilla = Taxon(9592); orangutan = Taxon(9600);
+
+juliia&gt; lca(human, gorilla)
+207598 [subfamily] Homininae
+
+# lca is a &quot;varargs&quot; function
+julia&gt; lca(human, gorilla, orangutan)
+9604 [family] Hominidaes
+
+# Vector input is also available
+julia&gt; lca([human, gorilla, orangutan])
+9604 [family] Hominidae</code></pre><h2 id="Evaluate-ancestor-descendant-relationships-between-two-Taxons"><a class="docs-heading-anchor" href="#Evaluate-ancestor-descendant-relationships-between-two-Taxons">Evaluate ancestor-descendant relationships between two <code>Taxon</code>s</a><a id="Evaluate-ancestor-descendant-relationships-between-two-Taxons-1"></a><a class="docs-heading-anchor-permalink" href="#Evaluate-ancestor-descendant-relationships-between-two-Taxons" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; viruses = Taxon(10239)
+10239 [superkingdom] Viruses
+
+julia&gt; sars_cov2 = Taxon(2697049)
+2697049 [no rank] Severe acute respiratory syndrome coronavirus 2
+
+julia&gt; isancestor(viruses, sars_cov2)
+true
+
+julia&gt; isdescendant(human, viruses)
+false</code></pre><h2 id="Filter-Taxons-by-a-rank-range"><a class="docs-heading-anchor" href="#Filter-Taxons-by-a-rank-range">Filter <code>Taxon</code>s by a rank range</a><a id="Filter-Taxons-by-a-rank-range-1"></a><a class="docs-heading-anchor-permalink" href="#Filter-Taxons-by-a-rank-range" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; taxa = [2759, 33208, 7711, 40674, 9443, 9604, 9605, 9606] .|&gt; Taxon
+8-element Vector{Taxon}:
+ 2759 [superkingdom] Eukaryota
+ 33208 [kingdom] Metazoa
+ 7711 [phylum] Chordata
+ 40674 [class] Mammalia
+ 9443 [order] Primates
+ 9604 [family] Hominidae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+
+# Filter Taxons lower than a given rank
+julia&gt; filter(taxa) do taxon
+           taxon &lt; Rank(:class)
+       end
+4-element Vector{Taxon}:
+ 9443 [order] Primates
+ 9604 [family] Hominidae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+
+julia&gt; filter(taxa) do taxon
+           taxon &lt;= Rank(:species)
+       end
+1-element Vector{Taxon}:
+ 9606 [species] Homo sapiens</code></pre><h2 id="Treat-taxonomic-Lineage"><a class="docs-heading-anchor" href="#Treat-taxonomic-Lineage">Treat taxonomic <code>Lineage</code></a><a id="Treat-taxonomic-Lineage-1"></a><a class="docs-heading-anchor-permalink" href="#Treat-taxonomic-Lineage" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; lineage = Lineage(human)
+32-element Lineage{Taxon}:
+ 1 [no Rank] root
+ 131567 [no rank] cellular organisms
+ 2759 [superkingdom] Eukaryota
+ 33154 [clade] Opisthokonta
+ 33208 [kingdom] Metazoa
+ 6072 [clade] Eumetazoa
+ 33213 [clade] Bilateria
+ 33511 [clade] Deuterostomia
+ 7711 [phylum] Chordata
+ ⋮
+ 9443 [order] Primates
+ 376913 [suborder] Haplorrhini
+ 314293 [infraorder] Simiiformes
+ 9526 [parvorder] Catarrhini
+ 314295 [superfamily] Hominoidea
+ 9604 [family] Hominidae
+ 207598 [subfamily] Homininae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens</code></pre><p><code>Taxon</code> information are stored in <code>Vector</code>-like format</p><pre><code class="language-julia hljs">julia&gt; lineage[1]
+1 [no Rank] root
+
+julia&gt; lineage[9]
+7711 [phylum] Chordata
+
+julia&gt; lineage[end]
+9606 [species] Homo sapiens</code></pre><p><code>Symbol</code>s such as <code>:phylum</code>, <code>:genus</code> and <code>:species</code> (<code>Symbol</code>s in <code>CanonicalRanks</code>) are available to access each <code>Taxon</code></p><pre><code class="language-julia hljs">julia&gt; lineage[:phylum]
+7711 [phylum] Chordata
+
+julia&gt; lineage[:genus]
+9605 [genus] Homo
+
+julia&gt; lineage[:species]
+9606 [species] Homo sapiens</code></pre><p><code>Between</code>, <code>From</code>, <code>Until</code>, <code>Cols</code> and <code>All</code> selectors are available in more complex rank selection scenarios.</p><pre><code class="language-julia hljs">julia&gt; lineage[Between(:order, :family)]
+6-element Lineage{Taxon}:
+ 9443 [order] Primates
+ 376913 [suborder] Haplorrhini
+ 314293 [infraorder] Simiiformes
+ 9526 [parvorder] Catarrhini
+ 314295 [superfamily] Hominoidea
+ 9604 [family] Hominidae
+
+julia&gt; lineage[From(:family)]
+4-element Lineage{Taxon}:
+ 9604 [family] Hominidae
+ 207598 [subfamily] Homininae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+
+julia&gt; lineage[Until(:kingdom)]
+5-element Lineage{Taxon}:
+ 1 [no Rank] root
+ 131567 [no rank] cellular organisms
+ 2759 [superkingdom] Eukaryota
+ 33154 [clade] Opisthokonta
+ 33208 [kingdom] Metazoa
+
+julia&gt; lineage[Cols(:superkingdom, :genus, :species)]
+3-element Lineage{Taxon}:
+ 2759 [superkingdom] Eukaryota
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens</code></pre><h2 id="Reformat-Lineage"><a class="docs-heading-anchor" href="#Reformat-Lineage">Reformat <code>Lineage</code></a><a id="Reformat-Lineage-1"></a><a class="docs-heading-anchor-permalink" href="#Reformat-Lineage" title="Permalink"></a></h2><p>Reformation of <code>Linage</code> to your ranks can be performed by using <code>reformat</code>.</p><pre><code class="language-julia hljs">julia&gt; seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
+
+julia&gt; reformat(lineage, seven_rank)
+7-element Lineage{Taxon}:
+ 2759 [superkingdom] Eukaryota
+ 7711 [phylum] Chordata
+ 40674 [class] Mammalia
+ 9443 [order] Primates
+ 9604 [family] Hominidae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens</code></pre><p>The <code>:subspecies</code>/<code>:strain</code> are internally treated as the same rank, so that users can ignore ambiguities tn the rank below species.</p><pre><code class="language-julia hljs">julia&gt; eight_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species, :strain];
+
+julia&gt; denisova = Taxon(741158); l = Lineage(denisova);
+
+julia&gt; rl = reformat(l, eight_rank)
+8-element Lineage{Taxon}:
+ 2759 [superkingdom] Eukaryota
+ 7711 [phylum] Chordata
+ 40674 [class] Mammalia
+ 9443 [order] Primates
+ 9604 [family] Hominidae
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+ 741158 [subspecies] Homo sapiens subsp. &#39;Denisova&#39;
+
+julia&gt; rl[:subspecies] == rl[:strain]
+true</code></pre><p>If there is no corresponding taxon to your ranks in the linneage, then <code>UnclassifiedTaxon</code> will be stored.</p><pre><code class="language-julia hljs">julia&gt; uncultured_bacillales = Taxon(157472)
+57472 [species] uncultured Bacillales bacterium
+
+julia&gt; reformatted_bacillales_lineage = reformat(Lineage(uncultured_bacillales), seven_rank)
+7-element Lineage:
+ 2 [superkingdom] Bacteria
+ 1239 [phylum] Firmicutes
+ 91061 [class] Bacilli
+ 1385 [order] Bacillales
+ Unclassified [family] unclassified Bacillales family
+ Unclassified [genus] unclassified Bacillales genus
+ 157472 [species] uncultured Bacillales bacterium</code></pre><p>Once reformatted, <code>Lineage</code> cannnot be reformatted again.</p><pre><code class="language-julia hljs">julia&gt; isreformatted(reformatted_bacillales_lineage)
+true
+
+julia&gt; reformat(reformatted_bacillales_lineage, seven_rank)
+ERROR: It is already reformatted.
+Stacktrace:
+ [1] _LR()
+   @ Taxonomy ~/.julia/dev/Taxonomy.jl/src/lineage.jl:7
+ [2] reformat(l::Lineage{Union{Taxon, UnclassifiedTaxon}}, ranks::Vector{Symbol})
+   @ Taxonomy ~/.julia/dev/Taxonomy.jl/src/lineage.jl:135
+ [3] top-level scope
+   @ REPL[103]:1</code></pre><h2 id="Convert-Lineages-to-DataFrame"><a class="docs-heading-anchor" href="#Convert-Lineages-to-DataFrame">Convert <code>Lineage</code>s to <code>DataFrame</code></a><a id="Convert-Lineages-to-DataFrame-1"></a><a class="docs-heading-anchor-permalink" href="#Convert-Lineages-to-DataFrame" title="Permalink"></a></h2><p><code>Lineage</code> can be converted to <code>NamedTuple</code>, using <code>namedtuple</code>.</p><p>Converted <code>NamedTuple</code> can be used as input into <code>DataFrame</code></p><pre><code class="language-julia hljs">julia&gt; using DataFrames
+
+julia&gt; seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
+
+julia&gt; taxa = [9606, 562, 187878, 212035, 2697049] .|&gt; Taxon
+5-element Vector{Taxon}:
+ 9606 [species] Homo sapiens
+ 562 [species] Escherichia coli
+ 187878 [species] Thermococcus gammatolerans
+ 212035 [species] Acanthamoeba polyphaga mimivirus
+ 2697049 [no rank] Severe acute respiratory syndrome coronavirus 2
+
+julia&gt; taxa .|&gt; Lineage .|&gt; (x -&gt; reformat(x, seven_rank)) .|&gt; namedtuple |&gt; DataFrame
+5×7 DataFrame
+ Row │ superkingdom                   phylum                             class                             order                           family                           genus                           species                           
+     │ Taxon                          Taxon                              Taxon                             Taxon                           Taxon                            Taxon                           Taxon                             
+─────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia            9443 [order] Primates           9604 [family] Hominidae          9605 [genus] Homo               9606 [species] Homo sapiens
+   2 │ 2 [superkingdom] Bacteria      1224 [phylum] Proteobacteria       1236 [class] Gammaproteobacteria  91347 [order] Enterobacterales  543 [family] Enterobacteriaceae  561 [genus] Escherichia         562 [species] Escherichia coli
+   3 │ 2157 [superkingdom] Archaea    28890 [phylum] Euryarchaeota       183968 [class] Thermococci        2258 [order] Thermococcales     2259 [family] Thermococcaceae    2263 [genus] Thermococcus       187878 [species] Thermococcus ga…
+   4 │ 10239 [superkingdom] Viruses   2732007 [phylum] Nucleocytoviric…  2732523 [class] Megaviricetes     2732554 [order] Imitervirales   549779 [family] Mimiviridae      315393 [genus] Mimivirus        212035 [species] Acanthamoeba po…
+   5 │ 10239 [superkingdom] Viruses   2732408 [phylum] Pisuviricota      2732506 [class] Pisoniviricetes   76804 [order] Nidovirales       11118 [family] Coronaviridae     694002 [genus] Betacoronavirus  694009 [species] Severe acute re…
+
+# Dealing with UnclassifiedTaxon as missing value
+
+julia&gt; taxa = [287, 157472, 9593, 2053489] .|&gt; Taxon
+
+# By deafult, UnclassifiedTaxon are stored 
+julia&gt; taxa .|&gt; Lineage .|&gt; (x -&gt; reformat(x, seven_rank)) .|&gt; namedtuple |&gt; DataFrame
+4×7 DataFrame
+ Row │ superkingdom                   phylum                             class                              order                              family                             genus                              species                           
+     │ Taxon                          Taxon                              Abstract…                          Abstract…                          Abstract…                          Abstract…                          Taxon                             
+─────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ 2 [superkingdom] Bacteria      1224 [phylum] Proteobacteria       1236 [class] Gammaproteobacteria   72274 [order] Pseudomonadales      135621 [family] Pseudomonadaceae   286 [genus] Pseudomonas            287 [species] Pseudomonas aerugi…
+   2 │ 2 [superkingdom] Bacteria      1239 [phylum] Firmicutes           91061 [class] Bacilli              1385 [order] Bacillales            Unclassified [family] unclassifi…  Unclassified [genus] unclassifie…  157472 [species] uncultured Baci…
+   3 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia             9443 [order] Primates              9604 [family] Hominidae            9592 [genus] Gorilla               9593 [species] Gorilla gorilla
+   4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  Unclassified [class] unclassifie…  Unclassified [order] unclassifie…  Unclassified [family] unclassifi…  Unclassified [genus] unclassifie…  2053489 [species] Candidatus Lok…
+
+# If set fill_by_missing to true in namedtuple, then missing are stored in DataFrame
+julia&gt; taxa .|&gt; Lineage .|&gt; (x -&gt; reformat(x, seven_rank)) .|&gt; (x -&gt;  namedtuple(x; fill_by_missing=true)) |&gt; DataFrame
+4×7 DataFrame
+ Row │ superkingdom                   phylum                             class                             order                          family                            genus                    species                           
+     │ Taxon                          Taxon                              Taxon?                            Taxon?                         Taxon?                            Taxon?                   Taxon                             
+─────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 │ 2 [superkingdom] Bacteria      1224 [phylum] Proteobacteria       1236 [class] Gammaproteobacteria  72274 [order] Pseudomonadales  135621 [family] Pseudomonadaceae  286 [genus] Pseudomonas  287 [species] Pseudomonas aerugi…
+   2 │ 2 [superkingdom] Bacteria      1239 [phylum] Firmicutes           91061 [class] Bacilli             1385 [order] Bacillales        missing                           missing                  157472 [species] uncultured Baci…
+   3 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia            9443 [order] Primates          9604 [family] Hominidae           9592 [genus] Gorilla     9593 [species] Gorilla gorilla
+   4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  missing                           missing                        missing                           missing                  2053489 [species] Candidatus Lok…</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Thursday 20 July 2023 11:52">Thursday 20 July 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
