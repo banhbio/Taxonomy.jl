@@ -109,8 +109,8 @@ end
     @test lineage[32] == lineage[end] == lineage[:species] == human
     @test lineage[1:9] == lineage[Between(1, 9)]
     @test lineage[All()] == lineage
-    @test lineage[All(3, 24, 29)] == lineage[Cols(3, 24, 29)] == lineage[Cols(:superkingdom, 24, 29)] == lineage[Cols(:superkingdom, :order, :family)] 
-    @test lineage[Between(3, 29)] == lineage[Between(:superkingdom, 29)] == lineage[Between(3, :family)] == lineage[Between(:superkingdom, :family)]
+    @test lineage[All(3, 24, 29)] == lineage[Cols(3, 24, 29)] == lineage[Cols(:domain, 24, 29)] == lineage[Cols(:domain, :order, :family)] 
+    @test lineage[Between(3, 29)] == lineage[Between(:domain, 29)] == lineage[Between(3, :family)] == lineage[Between(:domain, :family)]
     @test lineage[From(9)] == lineage[From(:phylum)] == lineage[From("phylum")] == lineage[9:32]
     @test lineage[Until(24)] == lineage[Until(:order)] == lineage[Until("order")] == lineage[1:24]
 
@@ -120,17 +120,17 @@ end
     @test get(lineage, :strain, nothing) === nothing
     @test_throws LineageIndexError lineage[Cols(24, 3, 29)]
     @test_throws LineageIndexError lineage[Cols(:order, 3, 29)]
-    @test_throws LineageIndexError lineage[Cols(:order, :superkingdom, :family)]
+    @test_throws LineageIndexError lineage[Cols(:order, :domain, :family)]
 
     @test sprint(io -> print_lineage(io, human)) == "root;cellular organisms;Eukaryota;Opisthokonta;Metazoa;Eumetazoa;Bilateria;Deuterostomia;Chordata;Craniata;Vertebrata;Gnathostomata;Teleostomi;Euteleostomi;Sarcopterygii;Dipnotetrapodomorpha;Tetrapoda;Amniota;Mammalia;Theria;Eutheria;Boreoeutheria;Euarchontoglires;Primates;Haplorrhini;Simiiformes;Catarrhini;Hominoidea;Hominidae;Homininae;Homo;Homo sapiens"
     @test sprint(io -> print_lineage(io, human; delim="+")) == "root+cellular organisms+Eukaryota+Opisthokonta+Metazoa+Eumetazoa+Bilateria+Deuterostomia+Chordata+Craniata+Vertebrata+Gnathostomata+Teleostomi+Euteleostomi+Sarcopterygii+Dipnotetrapodomorpha+Tetrapoda+Amniota+Mammalia+Theria+Eutheria+Boreoeutheria+Euarchontoglires+Primates+Haplorrhini+Simiiformes+Catarrhini+Hominoidea+Hominidae+Homininae+Homo+Homo sapiens"
     @test sprint(io -> print_lineage(io, lineage)) == "root;cellular organisms;Eukaryota;Opisthokonta;Metazoa;Eumetazoa;Bilateria;Deuterostomia;Chordata;Craniata;Vertebrata;Gnathostomata;Teleostomi;Euteleostomi;Sarcopterygii;Dipnotetrapodomorpha;Tetrapoda;Amniota;Mammalia;Theria;Eutheria;Boreoeutheria;Euarchontoglires;Primates;Haplorrhini;Simiiformes;Catarrhini;Hominoidea;Hominidae;Homininae;Homo;Homo sapiens"
     @test sprint(io -> print_lineage(io, lineage; delim="+")) == "root+cellular organisms+Eukaryota+Opisthokonta+Metazoa+Eumetazoa+Bilateria+Deuterostomia+Chordata+Craniata+Vertebrata+Gnathostomata+Teleostomi+Euteleostomi+Sarcopterygii+Dipnotetrapodomorpha+Tetrapoda+Amniota+Mammalia+Theria+Eutheria+Boreoeutheria+Euarchontoglires+Primates+Haplorrhini+Simiiformes+Catarrhini+Hominoidea+Hominidae+Homininae+Homo+Homo sapiens"
 
-    reformatted_human_lineage = reformat(lineage,[:superkingdom,:phylum,:class,:order,:family,:genus,:species])
-    @test_throws LineageIndexError reformat(lineage,[:species, :superkingdom,:phylum,:class,:order,:family,:genus])
+    reformatted_human_lineage = reformat(lineage,[:domain,:phylum,:class,:order,:family,:genus,:species])
+    @test_throws LineageIndexError reformat(lineage,[:species, :domain,:phylum,:class,:order,:family,:genus])
     @test isreformatted(reformatted_human_lineage)
-    @test_throws LineageReformatError reformat(reformatted_human_lineage, [:superkingdom])
+    @test_throws LineageReformatError reformat(reformatted_human_lineage, [:domain])
     @test eltype(reformatted_human_lineage) == Taxon
     @test reformatted_human_lineage[1] == Taxon(2759, db)
     @test reformatted_human_lineage[3] == Taxon(40674, db)
@@ -138,7 +138,7 @@ end
     @test sprint(io -> print_lineage(io, reformatted_human_lineage) ) == "Eukaryota;Chordata;Mammalia;Primates;Hominidae;Homo;Homo sapiens"
 
     primate = Taxon(9443,db)
-    reformatted_primate_lineage = reformat(Lineage(primate), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
+    reformatted_primate_lineage = reformat(Lineage(primate), [:domain,:phylum,:class,:order,:family,:genus,:species])
     @test eltype(reformatted_primate_lineage) == Union{Taxon, UnclassifiedTaxon}
     @test reformatted_primate_lineage[7] == UnclassifiedTaxon(:species, primate)
     @test sprint(io -> print_lineage(io, reformatted_primate_lineage)) == "Eukaryota;Chordata;Mammalia;Primates;;;"
@@ -149,16 +149,16 @@ end
     @test reformat(Lineage(denisova), [:species, :subspecies])[:strain] ==  reformat(Lineage(denisova), [:species, :strain])[:subspecies]
 
     euk = Taxon(2759)
-    reformatted_euk_lineage = reformat(Lineage(euk), [:superkingdom,:phylum])
-    @test namedtuple(reformatted_euk_lineage) == (superkingdom = Taxon(2759, db), phylum = UnclassifiedTaxon(:phylum, Taxon(2759, db)))
+    reformatted_euk_lineage = reformat(Lineage(euk), [:domain,:phylum])
+    @test namedtuple(reformatted_euk_lineage) == (domain = Taxon(2759, db), phylum = UnclassifiedTaxon(:phylum, Taxon(2759, db)))
     @test namedtuple(reformatted_euk_lineage; fill_by_missing = true) |> last |> ismissing
 
     co = Taxon(131567,db)
-    reformatted_co_lineage = reformat(Lineage(co), [:superkingdom,:phylum,:class,:order,:family,:genus,:species])
+    reformatted_co_lineage = reformat(Lineage(co), [:domain,:phylum,:class,:order,:family,:genus,:species])
     @test reformatted_co_lineage[7] == UnclassifiedTaxon(:species, co)
     @test sprint(io -> print_lineage(io, reformatted_co_lineage)) == ";;;;;;"
     @test sprint(io -> print_lineage(io, reformatted_co_lineage; skip=true)) == ""
-    @test sprint(io -> print_lineage(io, reformatted_co_lineage; fill=true)) == "unclassified cellular organisms superkingdom;unclassified cellular organisms phylum;unclassified cellular organisms class;unclassified cellular organisms order;unclassified cellular organisms family;unclassified cellular organisms genus;unclassified cellular organisms species"
+    @test sprint(io -> print_lineage(io, reformatted_co_lineage; fill=true)) == "unclassified cellular organisms domain;unclassified cellular organisms phylum;unclassified cellular organisms class;unclassified cellular organisms order;unclassified cellular organisms family;unclassified cellular organisms genus;unclassified cellular organisms species"
 
     human = Taxon(9606,db)
     primate = Taxon(9443,db)
