@@ -3,7 +3,7 @@ using InteractiveUtils
 abstract type Rank end
 abstract type CanonicalRank <: Rank end
 
-const CanonicalRanks = [:superkingdom, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain]
+const CanonicalRanks = [:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain]
 
 for (i, rank) in enumerate(reverse(CanonicalRanks[1:end-2]))
     @eval begin
