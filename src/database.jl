@@ -120,7 +120,7 @@ thrown so that the caller explicitly decides when to rebuild via
 """
 function current_name2taxids_db()
     if isnothing(_current_name2taxids_db[])
-        error("Name-to-taxids cache is empty. Please run current_name2taxids_db!() first.")
+        current_name2taxids_db!()
     end
     return _current_name2taxids_db[]
 end

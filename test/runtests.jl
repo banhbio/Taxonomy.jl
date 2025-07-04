@@ -37,6 +37,7 @@ db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
     @test @inferred(Nothing, get(db, 9606, nothing)) == human
     @test @inferred(name2taxids("Homo", db)) == [9605]
     @test @inferred(name2taxids("Homo")) == [9605]
+    @test name2taxids("ThisNameDoesNotExist") == Int[]
 
     similar = first(similarnames("Homo sapiens"))
     @test similar.taxid == 9606
