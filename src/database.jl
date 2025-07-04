@@ -96,7 +96,7 @@ const _current_name2taxids_db = Ref{Union{Nothing, Dict{String, Vector{Int}}}}(n
 (Re)build and cache an inverted mapping from **scientific name** → **Vector{Int}**
 for the active taxonomy database returned by `current_db()`.
 
-Returns the freshly‑built dictionary.
+Returns the freshly-built dictionary.
 """
 function current_name2taxids_db!()
     db = current_db()                 # throws if no DB active
