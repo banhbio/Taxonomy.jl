@@ -1,4 +1,7 @@
 name: CI
+permissions:
+  contents: write # Allow GITHUB_TOKEN to push docs via HTTPS
+
 on:
   push:
     branches: [ main ]
@@ -49,11 +52,20 @@ jobs:
   docs:
     name: Documentation
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed for Documenter to push to gh-pages with GITHUB_TOKEN
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1.11'
+
+      # Replace any SSH remote with HTTPS authenticated by GITHUB_TOKEN.
+      - name: Force HTTPS for git pushes
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
+          git config --global --add safe.directory $(pwd)
+
       - run: |
           julia --project=docs -e '
             using Pkg
@@ -62,4 +74,5 @@ jobs:
       - run: julia --project=docs docs/make.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          # If you still plan to use an SSH deploy key uncomment the next line, otherwise leave it blank.
+          # DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
