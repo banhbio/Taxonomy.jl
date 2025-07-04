@@ -89,9 +89,50 @@ function current_db()
     _current_db[]
 end
 
+const _current_name2taxids_db = Ref{Union{Nothing, Dict{String, Vector{Int}}}}(nothing)
+"""
+    current_name2taxids_db!()
+
+(Re)build and cache an inverted mapping from **scientific name** → **Vector{Int}**
+for the active taxonomy database returned by `current_db()`.
+
+Returns the freshly‑built dictionary.
+"""
+function current_name2taxids_db!()
+    db = current_db()                 # throws if no DB active
+
+    mapping = Dict{String, Vector{Int}}()
+    for (taxid, name) in db.names
+        push!(get!(mapping, name, Int[]), taxid)
+    end
+
+    _current_name2taxids_db[] = mapping
+    return mapping
+end
+
+"""
+    current_name2taxids_db()
+
+Return the cached **name ⇒ taxids** dictionary.  If the cache has not yet been
+built — i.e. `_current_name2taxids[] === nothing` — an informative `error` is
+thrown so that the caller explicitly decides when to rebuild via
+`current_name2taxids_db!()`.
+"""
+function current_name2taxids_db()
+    if isnothing(_current_name2taxids_db[])
+        error("Name-to-taxids cache is empty. Please run current_name2taxids_db!() first.")
+    end
+    return _current_name2taxids_db[]
+end
+
 """
     current_db!(db::Taxonomy.DB)
 
 Set `db` as the current active database.
+Must call `current_name2taxids_db!()` again for the new DB. 
 """
-current_db!(db::DB) = (_current_db[] = db)
+function current_db!(db::DB)
+    _current_db[] = db
+    _current_name2taxids_db[] = nothing   # error on access until rebuilt
+    return db
+end

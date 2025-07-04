@@ -20,6 +20,9 @@ end
 
     db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
     @test current_db() == db
+
+    current_name2taxids_db!()
+    @test haskey(current_name2taxids_db(), "Homo sapiens")
 end
 
 db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")

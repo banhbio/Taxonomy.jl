@@ -7,7 +7,7 @@ import DataAPI,
        DataAPI.Between,
        DataAPI.Cols
 export AbstractTrees, StringDistances,
-       current_db, current_db!,
+       current_db, current_db!, current_name2taxids_db, current_name2taxids_db!,
        Rank, CanonicalRank, UnCanonicalRank, CanonicalRankSet, CanonicalRanks,
        AbstractTaxon, Taxon, UnclassifiedTaxon,
        Lineage, isreformatted,
