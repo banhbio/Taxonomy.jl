@@ -16,6 +16,7 @@ struct DB
     ranks::Dict{Int,Symbol}
     names::Dict{Int,String}
     name2taxids::Ref{Union{Nothing, Dict{String, Vector{Int}}}}
+    children::Ref{Union{Nothing, Dict{Int, Vector{Int}}}}
     function DB(nodes_dmp::String, names_dmp::String)
         @assert isfile(nodes_dmp)
         @assert isfile(names_dmp)
@@ -24,7 +25,8 @@ struct DB
         names = importnames(names_dmp)
 
         name2taxids = Ref{Union{Nothing, Dict{String, Vector{Int}}}}(nothing)
-        db = new(nodes_dmp, names_dmp, Dict(parents), Dict(ranks), Dict(names), name2taxids)
+        children = Ref{Union{Nothing, Dict{Int, Vector{Int}}}}(nothing)
+        db = new(nodes_dmp, names_dmp, Dict(parents), Dict(ranks), Dict(names), name2taxids, children)
         current_db!(db)
         return db
     end
@@ -104,6 +106,24 @@ function name2taxids_db(db::DB)::Dict{String, Vector{Int}}
     mapping = db.name2taxids[]
     if isnothing(mapping)
         return name2taxids_db!(db)
+    end
+    return mapping
+end
+
+function children_db!(db::DB)::Dict{Int, Vector{Int}}
+    mapping = Dict{Int, Vector{Int}}()
+    for (taxid, parent) in db.parents
+        taxid == parent && continue
+        push!(get!(mapping, parent, Int[]), taxid)
+    end
+    db.children[] = mapping
+    return mapping
+end
+
+function children_db(db::DB)::Dict{Int, Vector{Int}}
+    mapping = db.children[]
+    if isnothing(mapping)
+        return children_db!(db)
     end
     return mapping
 end

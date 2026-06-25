@@ -103,7 +103,7 @@ end
 Return the vector of `Taxon` objects that are children of the given `Taxon` object.
 """
 function AbstractTrees.children(taxon::Taxon)
-    children_taxid = findall(isequal(taxon.taxid), taxon.db.parents)
+    children_taxid = get(children_db(taxon.db), taxon.taxid, Int[])
     children_taxon = map(x -> Taxon(x, taxon.db), children_taxid)
     return children_taxon
 end

@@ -112,7 +112,8 @@ julia> print_tree(Taxon(9604))
          ├─ 46359 [subspecies] Gorilla beringei graueri
          └─ 1159185 [subspecies] Gorilla beringei beringei
 ```
-**Note:** Use the child-to-parent traverse (`AbstractTrees.parent`) as much as possible since it is quite faster than parent-to-child traversal (`children` and iterators from `AbstractTrees.jl`).
+**Note:** The first parent-to-child traversal builds a lazy child index for the database.
+Subsequent calls to `children` and tree iterators from `AbstractTrees.jl` reuse that index.
 
 ## Find lowest common ancestor (LCA)
 ```julia
