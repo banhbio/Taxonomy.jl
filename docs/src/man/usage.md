@@ -215,6 +215,9 @@ julia> lineage[end]
 ```
 
 `Symbol`s such as `:phylum`, `:genus` and `:species` (`Symbol`s in `CanonicalRanks`) can be used to access each `Taxon`
+`CanonicalRanks` also supports `:domain`, `:superkingdom`, and `:realm`.
+`:domain`, `:superkingdom`, and `:realm` are treated as the same top-rank slot.
+Use one of them in a reformatted lineage; they are aliases for the top rank, not separate columns to request together.
 ```julia
 julia> lineage[:phylum]
 7711 [phylum] Chordata

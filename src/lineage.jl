@@ -147,9 +147,7 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
     previous_ranks = l.ranks
     previuos_ranks_ints = Integer.(Rank.(previous_ranks))
 
-    if isempty(previous_ranks)
-        ut_source = l[end]
-    end
+    ut_source = l[end]
 
     for (i, rank) in enumerate(ranks)
         if Integer(Rank(rank)) in previuos_ranks_ints

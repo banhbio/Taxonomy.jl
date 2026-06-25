@@ -3,23 +3,30 @@ using InteractiveUtils
 abstract type Rank end
 abstract type CanonicalRank <: Rank end
 
-const CanonicalRanks = [:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain]
+const CanonicalRankCodes = Pair{Symbol, Int}[
+    :domain => 9,
+    :superkingdom => 9,
+    :realm => 9,
+    :kingdom => 8,
+    :phylum => 7,
+    :class => 6,
+    :order => 5,
+    :family => 4,
+    :genus => 3,
+    :species => 2,
+    :subspecies => 1,
+    :strain => 1,
+]
 
-for (i, rank) in enumerate(reverse(CanonicalRanks[1:end-2]))
+const CanonicalRanks = first.(CanonicalRankCodes)
+
+for (rank_name, rank_code) in CanonicalRankCodes
     @eval begin
-        struct $rank <: CanonicalRank end
-        rank(::$rank) = Symbol($rank)
-        Base.Integer(::$rank) = $i
+        struct $rank_name <: CanonicalRank end
+        rank(::$rank_name) = Symbol($rank_name)
+        Base.Integer(::$rank_name) = $rank_code
     end
 end
-
-struct strain <: CanonicalRank end
-rank(::strain) = :strain
-Base.Integer(::strain) = 0
-
-struct subspecies <: CanonicalRank end
-rank(::subspecies) = :subspecies
-Base.Integer(::subspecies) = 0
 
 Base.Integer(T::Type{<:CanonicalRank}) = Integer(T())
 
@@ -27,6 +34,8 @@ Base.Integer(T::Type{<:CanonicalRank}) = Integer(T())
     Rank(sym::Symbol)
 Return `CanonicalRank(sym)` if sym is in `CanonicalRanks`. Return `UnCanonicalRank(sym)` if not.
 `CanonicalRank(sym)` can be used for `isless` comparison.
+`:domain`, `:superkingdom`, and `:realm` are treated as the same top-rank
+level.
 """
 Rank
 
@@ -60,6 +69,8 @@ end
     Rank(taxon::Taxon)
 Return `CanonicalRank` made from `rank(taxon)` if `rank(taxon)` is in `CanonicalRanks`. Return `UnCanonicalRank(rank)` if not.
 `CanonicalRank(taxon)` can be used for `isless` comparison.
+`:domain`, `:superkingdom`, and `:realm` can all be handled as canonical
+aliases for the same top-rank level.
 """
 Rank(taxon::AbstractTaxon) = rank(taxon) |> Rank
 
