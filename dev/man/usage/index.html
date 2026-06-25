@@ -8,7 +8,7 @@ Taxonomy.DB(&quot;db/nodes.dmp&quot;,&quot;db/names.dmp&quot;)
 
 # Taxonomy.DB object is automatically stored in current_db()
 julia&gt; current_db()
-Taxonomy.DB(&quot;db/nodes.dmp&quot;,&quot;db/names.dmp&quot;)</code></pre><h2 id="Get-taxonomic-information-from-Taxon"><a class="docs-heading-anchor" href="#Get-taxonomic-information-from-Taxon">Get taxonomic information from <code>Taxon</code></a><a id="Get-taxonomic-information-from-Taxon-1"></a><a class="docs-heading-anchor-permalink" href="#Get-taxonomic-information-from-Taxon" title="Permalink"></a></h2><pre><code class="language-julia hljs"># Construct a Taxon from a taxid and a Taxonomy.DB
+Taxonomy.DB(&quot;db/nodes.dmp&quot;,&quot;db/names.dmp&quot;)</code></pre><p><code>DB</code> validates that both input files exist and throws <code>ArgumentError</code> if either path is missing. Name lookup and child traversal indexes are built lazily on first use and cached per <code>DB</code> object.</p><h2 id="Get-taxonomic-information-from-Taxon"><a class="docs-heading-anchor" href="#Get-taxonomic-information-from-Taxon">Get taxonomic information from <code>Taxon</code></a><a id="Get-taxonomic-information-from-Taxon-1"></a><a class="docs-heading-anchor-permalink" href="#Get-taxonomic-information-from-Taxon" title="Permalink"></a></h2><pre><code class="language-julia hljs"># Construct a Taxon from a taxid and a Taxonomy.DB
 julia&gt; human = Taxon(9606, db)
 9606 [species] Homo sapiens
 
@@ -26,10 +26,10 @@ julia&gt; rank(human)
 :species</code></pre><h2 id="Construct-Taxons-from-names"><a class="docs-heading-anchor" href="#Construct-Taxons-from-names">Construct <code>Taxon</code>s from names</a><a id="Construct-Taxons-from-names-1"></a><a class="docs-heading-anchor-permalink" href="#Construct-Taxons-from-names" title="Permalink"></a></h2><p>Name must match to the scientific name exactly</p><pre><code class="language-julia hljs">julia&gt; [&quot;Homo&quot;, &quot;Viruses&quot;, &quot;Drosophila&quot;] .|&gt; name2taxids |&gt; Iterators.flatten .|&gt; Taxon
 5-element Vector{Taxon}:
  9605 [genus] Homo
- 10239 [superkingdom] Viruses
+ 10239 [acellular root] Viruses
  7215 [genus] Drosophila
  2081351 [genus] Drosophila
- 32281 [subgenus] Drosophila</code></pre><h2 id="Traverse-taxonomic-subtrees-from-a-given-Taxon"><a class="docs-heading-anchor" href="#Traverse-taxonomic-subtrees-from-a-given-Taxon">Traverse taxonomic subtrees from a given <code>Taxon</code></a><a id="Traverse-taxonomic-subtrees-from-a-given-Taxon-1"></a><a class="docs-heading-anchor-permalink" href="#Traverse-taxonomic-subtrees-from-a-given-Taxon" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; children(human)
+ 32281 [subgenus] Drosophila</code></pre><p><code>name2taxids(name, db)</code> uses the given <code>DB</code>; <code>name2taxids(name)</code> uses <code>current_db()</code>. Name lookup returns taxids, not <code>Taxon</code> objects, because one scientific name can map to multiple taxids. Use <code>Taxon.(name2taxids(name, db), Ref(db))</code> when <code>Taxon</code> objects are needed.</p><h2 id="Traverse-taxonomic-subtrees-from-a-given-Taxon"><a class="docs-heading-anchor" href="#Traverse-taxonomic-subtrees-from-a-given-Taxon">Traverse taxonomic subtrees from a given <code>Taxon</code></a><a id="Traverse-taxonomic-subtrees-from-a-given-Taxon-1"></a><a class="docs-heading-anchor-permalink" href="#Traverse-taxonomic-subtrees-from-a-given-Taxon" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; children(human)
 2-element Vector{Taxon}:
  741158 [subspecies] Homo sapiens subsp. &#39;Denisova&#39;
  63221 [subspecies] Homo sapiens neanderthalensis
@@ -98,8 +98,12 @@ julia&gt; lca(human, gorilla, orangutan)
 
 # Vector input is also available
 julia&gt; lca([human, gorilla, orangutan])
-9604 [family] Hominidae</code></pre><h2 id="Evaluate-ancestor-descendant-relationships-between-two-Taxons"><a class="docs-heading-anchor" href="#Evaluate-ancestor-descendant-relationships-between-two-Taxons">Evaluate ancestor-descendant relationships between two <code>Taxon</code>s</a><a id="Evaluate-ancestor-descendant-relationships-between-two-Taxons-1"></a><a class="docs-heading-anchor-permalink" href="#Evaluate-ancestor-descendant-relationships-between-two-Taxons" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; viruses = Taxon(10239)
-10239 [superkingdom] Viruses
+9604 [family] Hominidae
+
+# Single-taxon input returns that taxon
+julia&gt; lca(human)
+9606 [species] Homo sapiens</code></pre><p><code>lca</code> requires at least one <code>Taxon</code>; <code>lca()</code> and <code>lca(Taxon[])</code> throw <code>ArgumentError</code>.</p><h2 id="Evaluate-ancestor-descendant-relationships-between-two-Taxons"><a class="docs-heading-anchor" href="#Evaluate-ancestor-descendant-relationships-between-two-Taxons">Evaluate ancestor-descendant relationships between two <code>Taxon</code>s</a><a id="Evaluate-ancestor-descendant-relationships-between-two-Taxons-1"></a><a class="docs-heading-anchor-permalink" href="#Evaluate-ancestor-descendant-relationships-between-two-Taxons" title="Permalink"></a></h2><pre><code class="language-julia hljs">julia&gt; viruses = Taxon(10239)
+10239 [acellular root] Viruses
 
 julia&gt; sars_cov2 = Taxon(2697049)
 2697049 [no rank] Severe acute respiratory syndrome coronavirus 2
@@ -167,7 +171,7 @@ julia&gt; lineage[:genus]
 9605 [genus] Homo
 
 julia&gt; lineage[:species]
-9606 [species] Homo sapiens</code></pre><p>Taxonomy.jl provides <code>Between</code>, <code>From</code>, <code>Until</code>, <code>Cols</code> and <code>All</code> selectors for more complex rank selection scenarios. Use <code>All()</code> to select the full lineage, and use <code>Cols(...)</code> to select multiple positions or ranks.</p><pre><code class="language-julia hljs">julia&gt; lineage[All()]
+9606 [species] Homo sapiens</code></pre><p>Taxonomy.jl provides <code>Between</code>, <code>From</code>, <code>Until</code>, <code>Cols</code> and <code>All</code> selectors for more complex rank selection scenarios. Use <code>All()</code> to select the full lineage, and use <code>Cols(...)</code> to select multiple positions or ranks. These selectors are provided by Taxonomy.jl itself.</p><pre><code class="language-julia hljs">julia&gt; lineage[All()]
 32-element Lineage{Taxon}:
  1 [no Rank] root
  131567 [no rank] cellular organisms
@@ -204,7 +208,13 @@ julia&gt; lineage[Cols(:superkingdom, :genus, :species)]
 3-element Lineage{Taxon}:
  2759 [superkingdom] Eukaryota
  9605 [genus] Homo
- 9606 [species] Homo sapiens</code></pre><h2 id="Reformat-Lineage"><a class="docs-heading-anchor" href="#Reformat-Lineage">Reformat <code>Lineage</code></a><a id="Reformat-Lineage-1"></a><a class="docs-heading-anchor-permalink" href="#Reformat-Lineage" title="Permalink"></a></h2><p>Reformat <code>Lineage</code> by providing a vector of canonical rank symbols. The rank symbols <code>:domain</code>, <code>:superkingdom</code>, and <code>:realm</code> share the same top-rank slot. The rank symbols <code>:subspecies</code> and <code>:strain</code> share the same below-species slot. Only canonical rank symbols are supported. Use only one symbol from each alias group in a reformatted lineage.</p><pre><code class="language-julia hljs">julia&gt; seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
+ 9606 [species] Homo sapiens</code></pre><p>For viral lineages, <code>:domain</code>, <code>:superkingdom</code>, and <code>:realm</code> all select the same top-rank slot. The returned taxon can therefore have rank <code>:realm</code>.</p><pre><code class="language-julia hljs">julia&gt; sars_cov2_lineage = Lineage(Taxon(2697049));
+
+julia&gt; sars_cov2_lineage[:superkingdom] == sars_cov2_lineage[:realm]
+true
+
+julia&gt; sars_cov2_lineage[:realm]
+2559587 [realm] Riboviria</code></pre><h2 id="Reformat-Lineage"><a class="docs-heading-anchor" href="#Reformat-Lineage">Reformat <code>Lineage</code></a><a id="Reformat-Lineage-1"></a><a class="docs-heading-anchor-permalink" href="#Reformat-Lineage" title="Permalink"></a></h2><p>Reformat <code>Lineage</code> by providing a vector of canonical rank symbols. The rank symbols <code>:domain</code>, <code>:superkingdom</code>, and <code>:realm</code> share the same top-rank slot. The rank symbols <code>:subspecies</code> and <code>:strain</code> share the same below-species slot. Only canonical rank symbols are supported. Use only one symbol from each alias group in a reformatted lineage.</p><pre><code class="language-julia hljs">julia&gt; seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
 
 julia&gt; reformat(lineage, seven_rank)
 7-element Lineage{Taxon}:
@@ -252,7 +262,9 @@ Stacktrace:
  [2] reformat(l::Lineage{Union{Taxon, UnclassifiedTaxon}}, ranks::Vector{Symbol})
    @ Taxonomy ~/.julia/dev/Taxonomy.jl/src/lineage.jl:135
  [3] top-level scope
-   @ REPL[103]:1</code></pre><h2 id="Convert-Lineages-to-DataFrame"><a class="docs-heading-anchor" href="#Convert-Lineages-to-DataFrame">Convert <code>Lineage</code>s to <code>DataFrame</code></a><a id="Convert-Lineages-to-DataFrame-1"></a><a class="docs-heading-anchor-permalink" href="#Convert-Lineages-to-DataFrame" title="Permalink"></a></h2><p><code>Lineage</code> can be converted to a <code>NamedTuple</code> using <code>namedtuple</code>.</p><p>The resulting <code>NamedTuple</code> can be passed to <code>DataFrame</code></p><pre><code class="language-julia hljs">julia&gt; using DataFrames
+   @ REPL[103]:1</code></pre><p>Non-canonical ranks are rejected:</p><pre><code class="language-julia hljs">julia&gt; reformat(lineage, [:superkingdom, :clade, :species])
+ERROR: Non-canonical ranks are not supported in reformat: [:clade]</code></pre><p>Aliases for the same rank slot cannot be requested together:</p><pre><code class="language-julia hljs">julia&gt; reformat(lineage, [:domain, :superkingdom, :phylum])
+ERROR: Rank aliases cannot be requested together in reformat: [:domain, :superkingdom, :phylum]</code></pre><h2 id="Convert-Lineages-to-DataFrame"><a class="docs-heading-anchor" href="#Convert-Lineages-to-DataFrame">Convert <code>Lineage</code>s to <code>DataFrame</code></a><a id="Convert-Lineages-to-DataFrame-1"></a><a class="docs-heading-anchor-permalink" href="#Convert-Lineages-to-DataFrame" title="Permalink"></a></h2><p><code>Lineage</code> can be converted to a <code>NamedTuple</code> using <code>namedtuple</code>.</p><p>The resulting <code>NamedTuple</code> can be passed to <code>DataFrame</code> When a top-rank alias such as <code>:superkingdom</code> is requested, viral lineages may store a <code>realm</code> taxon in that column.</p><pre><code class="language-julia hljs">julia&gt; using DataFrames
 
 julia&gt; seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
 
@@ -272,8 +284,8 @@ julia&gt; taxa .|&gt; Lineage .|&gt; (x -&gt; reformat(x, seven_rank)) .|&gt; na
    1 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia            9443 [order] Primates           9604 [family] Hominidae          9605 [genus] Homo               9606 [species] Homo sapiens
    2 │ 2 [superkingdom] Bacteria      1224 [phylum] Proteobacteria       1236 [class] Gammaproteobacteria  91347 [order] Enterobacterales  543 [family] Enterobacteriaceae  561 [genus] Escherichia         562 [species] Escherichia coli
    3 │ 2157 [superkingdom] Archaea    28890 [phylum] Euryarchaeota       183968 [class] Thermococci        2258 [order] Thermococcales     2259 [family] Thermococcaceae    2263 [genus] Thermococcus       187878 [species] Thermococcus ga…
-   4 │ 10239 [superkingdom] Viruses   2732007 [phylum] Nucleocytoviric…  2732523 [class] Megaviricetes     2732554 [order] Imitervirales   549779 [family] Mimiviridae      315393 [genus] Mimivirus        212035 [species] Acanthamoeba po…
-   5 │ 10239 [superkingdom] Viruses   2732408 [phylum] Pisuviricota      2732506 [class] Pisoniviricetes   76804 [order] Nidovirales       11118 [family] Coronaviridae     694002 [genus] Betacoronavirus  694009 [species] Severe acute re…
+   4 │ 2732004 [realm] Varidnaviria   2732007 [phylum] Nucleocytoviric…  2732523 [class] Megaviricetes     2732554 [order] Imitervirales   549779 [family] Mimiviridae      315393 [genus] Mimivirus        3047343 [species] Mimivirus bra…
+   5 │ 2559587 [realm] Riboviria      2732408 [phylum] Pisuviricota      2732506 [class] Pisoniviricetes   76804 [order] Nidovirales       11118 [family] Coronaviridae     694002 [genus] Betacoronavirus  3418604 [species] Betacoronavir…
 
 # Dealing with UnclassifiedTaxon as missing value
 
@@ -299,4 +311,4 @@ julia&gt; taxa .|&gt; Lineage .|&gt; (x -&gt; reformat(x, seven_rank)) .|&gt; (x
    1 │ 2 [superkingdom] Bacteria      1224 [phylum] Proteobacteria       1236 [class] Gammaproteobacteria  72274 [order] Pseudomonadales  135621 [family] Pseudomonadaceae  286 [genus] Pseudomonas  287 [species] Pseudomonas aerugi…
    2 │ 2 [superkingdom] Bacteria      1239 [phylum] Firmicutes           91061 [class] Bacilli             1385 [order] Bacillales        missing                           missing                  157472 [species] uncultured Baci…
    3 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia            9443 [order] Primates          9604 [family] Hominidae           9592 [genus] Gorilla     9593 [species] Gorilla gorilla
-   4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  missing                           missing                        missing                           missing                  2053489 [species] Candidatus Lok…</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Thursday 25 June 2026 08:43">Thursday 25 June 2026</span>. Using Julia version 1.11.9.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+   4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  missing                           missing                        missing                           missing                  2053489 [species] Candidatus Lok…</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Thursday 25 June 2026 09:04">Thursday 25 June 2026</span>. Using Julia version 1.11.9.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
