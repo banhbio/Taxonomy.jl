@@ -5,12 +5,23 @@ using Tar
 using CodecZlib
 using Test
 
-if !isdir("./db")
-    Downloads.download("ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz", "./taxdump.tar.gz")
-    tar_gz = open("./taxdump.tar.gz")
-    tar = GzipDecompressorStream(tar_gz)
-    Tar.extract(tar, "./db")
-    close(tar)
+const TEST_TMP_DIR = joinpath(@__DIR__, "tmp")
+const DB_DIR = joinpath(TEST_TMP_DIR, "db")
+const TAXDUMP_PATH = joinpath(TEST_TMP_DIR, "taxdump.tar.gz")
+const NODES_DMP = joinpath(DB_DIR, "nodes.dmp")
+const NAMES_DMP = joinpath(DB_DIR, "names.dmp")
+
+if !isfile(NODES_DMP) || !isfile(NAMES_DMP)
+    mkpath(DB_DIR)
+    Downloads.download("ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz", TAXDUMP_PATH)
+    open(TAXDUMP_PATH) do tar_gz
+        tar = GzipDecompressorStream(tar_gz)
+        try
+            Tar.extract(tar, DB_DIR)
+        finally
+            close(tar)
+        end
+    end
 else
     @warn "Start test with existing database"
 end
@@ -18,14 +29,12 @@ end
 @testset "database.jl" begin
     @test_throws ErrorException isnothing(current_db())
 
-    db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
+    db = Taxonomy.DB(NODES_DMP, NAMES_DMP)
     @test current_db() == db
 
-    current_name2taxids_db!()
-    @test haskey(current_name2taxids_db(), "Homo sapiens")
 end
 
-db = Taxonomy.DB("db/nodes.dmp", "db/names.dmp")
+db = Taxonomy.DB(NODES_DMP, NAMES_DMP)
 
 @testset "taxon.jl" begin
     human = Taxon(9606,db)

@@ -3,4 +3,5 @@
 /db
 /test/db
 /test/taxdump.tar.gz
+/test/tmp/
 /.vscode

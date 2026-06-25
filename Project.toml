@@ -18,10 +18,10 @@ StringDistances = "0.11"
 julia = "1.6"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 Tar = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "CodecZlib", "Downloads", "Tar"]

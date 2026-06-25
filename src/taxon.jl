@@ -26,7 +26,7 @@ If multiple hits are found, return a multi-element `Vector`. If not, 1- or 0-ele
 Omitting `db` automatically calls `current_db()`, which is usually the database that was last created.
 """
 function name2taxids(name::AbstractString, db::DB)
-    mapping = current_name2taxids_db()
+    mapping = name2taxids_db(db)
     return get(mapping, name, Int[])
 end
 
@@ -103,7 +103,7 @@ end
 Return the vector of `Taxon` objects that are children of the given `Taxon` object.
 """
 function AbstractTrees.children(taxon::Taxon)
-    children_taxid = findall(isequal(taxon.taxid), taxon.db.parents)
+    children_taxid = get(children_db(taxon.db), taxon.taxid, Int[])
     children_taxon = map(x -> Taxon(x, taxon.db), children_taxid)
     return children_taxon
 end
@@ -119,19 +119,6 @@ Return the `Taxon` object stored for the given taxid, or the given default value
 function Base.get(db::DB, taxid::Int, default)
     try
         return Taxon(taxid, db)
-    catch
-        return default
-    end
-end
-
-"""
-    get(db::Taxonomy.DB, name::String, default)
-
-Return the `Taxon` object stored for the given name, or the given default value if no mapping for the name is present.
-"""
-function Base.get(db::DB, name::String, default)
-    try
-        return Taxon(name, db)
     catch
         return default
     end
