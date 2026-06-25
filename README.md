@@ -7,19 +7,19 @@
 
 [![DOI](https://zenodo.org/badge/341212699.svg)](https://zenodo.org/badge/latestdoi/341212699)
 
-Taxonomy.jl is a julia package to handle the NCBI Taxonomy database.
+Taxonomy.jl is a Julia package to handle the NCBI Taxonomy database.
 The main features are:
 - Get various information on a given taxon (name, rank, parent-child relationships, etc.)
-- Convert a name to Taxids
+- Convert a name to taxids
 - Traverse taxonomic subtrees from a given taxon
 - Compute the lowest common ancestor (LCA) of given taxa
 - Evaluate ancestor-descendant relationships between two taxa
 - Filter taxa by a rank range
-- Construct taxonomic lineage of the given taxon
+- Construct the taxonomic lineage of a given taxon
 - Reformat lineage according to canonical ranks
 - Construct a `DataFrame` from lineages
 
-Now, this package only supports `scientific name`.
+Currently, this package only supports `scientific name`.
 
 ## Installation
 Install Taxonomy.jl as follows:
@@ -27,7 +27,7 @@ Install Taxonomy.jl as follows:
 julia -e 'using Pkg; Pkg.add("Taxonomy")'
 ```
 
-## Download database
+## Download the database
 You need to download taxonomic data from NCBI's servers.
 ```
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
