@@ -64,19 +64,19 @@ function importnames(names_dmp_path::String; db_size::Int=default_db_size)
     taxids = Vector{Int}(undef, db_size)
     names = Vector{String}(undef, db_size)
 
-    f = open(names_dmp_path, "r")
     c = 0
-    for line in eachline(f)
-        cols = split(line, "\t", limit=8)
-        cols[7] != "scientific name" && continue
-    
-        c+=1
-        @inbounds taxids[c] = parse(Int, cols[1])
-        @inbounds names[c] = String(cols[3])
+    open(names_dmp_path, "r") do f
+        for line in eachline(f)
+            cols = split(line, "\t", limit=8)
+            cols[7] != "scientific name" && continue
+
+            c += 1
+            @inbounds taxids[c] = parse(Int, cols[1])
+            @inbounds names[c] = String(cols[3])
+        end
     end
     resize!(taxids, c)
     resize!(names, c)
-    close(f)
     return Pair{Int, String}.(taxids, names)
 end
 
