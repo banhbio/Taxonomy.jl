@@ -18,8 +18,8 @@ struct DB
     name2taxids::Ref{Union{Nothing, Dict{String, Vector{Int}}}}
     children::Ref{Union{Nothing, Dict{Int, Vector{Int}}}}
     function DB(nodes_dmp::String, names_dmp::String)
-        @assert isfile(nodes_dmp)
-        @assert isfile(names_dmp)
+        isfile(nodes_dmp) || throw(ArgumentError("nodes_dmp file does not exist: $nodes_dmp"))
+        isfile(names_dmp) || throw(ArgumentError("names_dmp file does not exist: $names_dmp"))
 
         parents, ranks = importnodes(nodes_dmp)
         names = importnames(names_dmp)
