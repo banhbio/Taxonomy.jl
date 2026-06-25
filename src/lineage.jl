@@ -8,7 +8,7 @@ _LR() = throw(LineageReformatError())
 
 struct LineageIndexError <: Exception end
 
-Base.showerror(io::IO, ::LineageIndexError) = print(io, "The index order is messed up.")
+Base.showerror(io::IO, ::LineageIndexError) = print(io, "Lineage ranks or positions must be requested from higher to lower rank.")
 
 _LI() = throw(LineageIndexError())
 
