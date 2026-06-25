@@ -124,19 +124,6 @@ function Base.get(db::DB, taxid::Int, default)
     end
 end
 
-"""
-    get(db::Taxonomy.DB, name::String, default)
-
-Return the `Taxon` object stored for the given name, or the given default value if no mapping for the name is present.
-"""
-function Base.get(db::DB, name::String, default)
-    try
-        return Taxon(name, db)
-    catch
-        return default
-    end
-end
-
 struct UnclassifiedTaxon <:AbstractTaxon
     name::String
     rank::Symbol
