@@ -18,7 +18,7 @@ _LI() = throw(LineageIndexError())
 A type that stores lineage information in `Vector`-like format.
 `T` represents element types, `Taxon` or `UnclassifiedTaxon`.
 
-- `getindex` is overloaded to get `Taxon` values. `Symbol`s such as `:superkingdom`, `:family`, `:genus`, `:species` in `CanonicalRanks` can be used. Also, `Between`, `From`, `Until`, `Cols` and `All` selectors can be used in more complex rank selection scenarios.
+- `getindex` is overloaded to get `Taxon` values. `Symbol`s such as `:domain`, `:superkingdom`, `:realm`, `:family`, `:genus`, `:species` in `CanonicalRanks` can be used. Also, `Between`, `From`, `Until`, `Cols` and `All` selectors can be used in more complex rank selection scenarios.
 - Once reformatted, it cannot be reformatted again. The status can be checked using `isreformatted(lineage)`.
 """
 struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
@@ -133,7 +133,7 @@ end
 """
     reformat(l::Lineage, ranks::Vector{Symbol})
 
-Return the `Lineage` object reformatted according to the given ranks.
+Return the `Lineage` object reformatted according to the given canonical ranks.
 If there is no corresponding taxon in the lineage to the rank, `UnclassifiedTaxon` will be stored.
 Once a `Lineage` is reformatted, it cannot be reformatted again.
 """
@@ -147,9 +147,7 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
     previous_ranks = l.ranks
     previuos_ranks_ints = Integer.(Rank.(previous_ranks))
 
-    if isempty(previous_ranks)
-        ut_source = l[end]
-    end
+    ut_source = l[end]
 
     for (i, rank) in enumerate(ranks)
         if Integer(Rank(rank)) in previuos_ranks_ints

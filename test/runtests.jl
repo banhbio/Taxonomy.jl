@@ -100,6 +100,12 @@ end
     denisova = Taxon(741158, db)
     homininae = Taxon(314295, db)
 
+    @test Rank(:domain) isa CanonicalRank
+    @test Rank(:superkingdom) isa CanonicalRank
+    @test Rank(:realm) isa CanonicalRank
+    @test Integer(Rank(:domain)) == Integer(Rank(:superkingdom))
+    @test Integer(Rank(:domain)) == Integer(Rank(:realm))
+    @test Rank(:kingdom) < Rank(:realm)
     @test Rank(:strain) < Rank(:species) < Rank(:genus)
     @test human < Rank(:genus)
     @test human <= Rank(:species)
@@ -123,9 +129,17 @@ end
     @test lineage[1:9] == lineage[Between(1, 9)]
     @test lineage[All()] == lineage
     @test lineage[All(3, 24, 29)] == lineage[Cols(3, 24, 29)] == lineage[Cols(:domain, 24, 29)] == lineage[Cols(:domain, :order, :family)] 
+    @test lineage[:domain] == lineage[:superkingdom]
+    @test lineage[Cols(:domain, :order, :family)] == lineage[Cols(:superkingdom, :order, :family)]
     @test lineage[Between(3, 29)] == lineage[Between(:domain, 29)] == lineage[Between(3, :family)] == lineage[Between(:domain, :family)]
     @test lineage[From(9)] == lineage[From(:phylum)] == lineage[From("phylum")] == lineage[9:32]
     @test lineage[Until(24)] == lineage[Until(:order)] == lineage[Until("order")] == lineage[1:24]
+
+    virus_lineage = Lineage(Taxon(2697049, db))
+    @test virus_lineage[:domain] == virus_lineage[:superkingdom] == virus_lineage[:realm]
+    @test rank(virus_lineage[:domain]) == :realm
+    reformatted_virus_lineage = reformat(virus_lineage, [:domain, :kingdom, :phylum])
+    @test rank(reformatted_virus_lineage[1]) == :realm
 
     @test get(lineage, 2, nothing) == Taxon(131567,db)
     @test get(lineage, :class, nothing) == Taxon(40674, db)
