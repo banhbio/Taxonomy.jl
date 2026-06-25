@@ -31,6 +31,8 @@ end
 
     db = Taxonomy.DB(NODES_DMP, NAMES_DMP)
     @test current_db() == db
+    @test_throws ArgumentError Taxonomy.DB(joinpath(TEST_TMP_DIR, "missing_nodes.dmp"), NAMES_DMP)
+    @test_throws ArgumentError Taxonomy.DB(NODES_DMP, joinpath(TEST_TMP_DIR, "missing_names.dmp"))
 
 end
 

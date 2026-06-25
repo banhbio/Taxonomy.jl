@@ -1,4 +1,4 @@
-const default_db_size = 4000000
+const default_db_sizehint = 4000000
 
 """
     Taxonomy.DB
@@ -18,8 +18,8 @@ struct DB
     name2taxids::Ref{Union{Nothing, Dict{String, Vector{Int}}}}
     children::Ref{Union{Nothing, Dict{Int, Vector{Int}}}}
     function DB(nodes_dmp::String, names_dmp::String)
-        @assert isfile(nodes_dmp)
-        @assert isfile(names_dmp)
+        isfile(nodes_dmp) || throw(ArgumentError("nodes_dmp file does not exist: $nodes_dmp"))
+        isfile(names_dmp) || throw(ArgumentError("names_dmp file does not exist: $names_dmp"))
 
         parents, ranks = importnodes(nodes_dmp)
         names = importnames(names_dmp)
@@ -34,49 +34,41 @@ end
 
 Base.show(io::IO, db::DB) = print(io, "Taxonomy.DB(\"$(db.nodes_dmp)\",\"$(db.names_dmp)\")")
 
-function importnodes(nodes_dmp_path::String; db_size::Int=default_db_size)
-    taxids = Vector{Int}(undef, db_size)
-    parents = Vector{Int}(undef, db_size)
-    ranks = Vector{Symbol}(undef, db_size)
+function importnodes(nodes_dmp_path::String; sizehint::Int=default_db_sizehint)
+    taxids = Int[]
+    parents = Int[]
+    ranks = Symbol[]
+    sizehint!(taxids, sizehint)
+    sizehint!(parents, sizehint)
+    sizehint!(ranks, sizehint)
 
-    c = 0
     open(nodes_dmp_path, "r") do f
         for line in eachline(f)
             cols = split(line, "\t", limit=6)
 
-            taxid = parse(Int, cols[1])
-            parent = parse(Int, cols[3])
-            rank = Symbol(cols[5])
-
-            c += 1
-            @inbounds taxids[c] = taxid
-            @inbounds parents[c] = parent
-            @inbounds ranks[c] = rank
+            push!(taxids, parse(Int, cols[1]))
+            push!(parents, parse(Int, cols[3]))
+            push!(ranks, Symbol(cols[5]))
         end
     end
-    resize!(taxids, c)
-    resize!(parents, c)
-    resize!(ranks, c)
     return Pair{Int, Int}.(taxids, parents), Pair{Int, Symbol}.(taxids, ranks)
 end
 
-function importnames(names_dmp_path::String; db_size::Int=default_db_size)
-    taxids = Vector{Int}(undef, db_size)
-    names = Vector{String}(undef, db_size)
+function importnames(names_dmp_path::String; sizehint::Int=default_db_sizehint)
+    taxids = Int[]
+    names = String[]
+    sizehint!(taxids, sizehint)
+    sizehint!(names, sizehint)
 
-    f = open(names_dmp_path, "r")
-    c = 0
-    for line in eachline(f)
-        cols = split(line, "\t", limit=8)
-        cols[7] != "scientific name" && continue
-    
-        c+=1
-        @inbounds taxids[c] = parse(Int, cols[1])
-        @inbounds names[c] = String(cols[3])
+    open(names_dmp_path, "r") do f
+        for line in eachline(f)
+            cols = split(line, "\t", limit=8)
+            cols[7] != "scientific name" && continue
+
+            push!(taxids, parse(Int, cols[1]))
+            push!(names, String(cols[3]))
+        end
     end
-    resize!(taxids, c)
-    resize!(names, c)
-    close(f)
     return Pair{Int, String}.(taxids, names)
 end
 
