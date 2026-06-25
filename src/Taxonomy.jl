@@ -16,7 +16,7 @@ export AbstractTrees, StringDistances,
        reformat, namedtuple, print_lineage, isdescendant, isancestor, 
        All, Between, Cols,
        From, Until,
-       LineageReformatError, LineageIndexError
+       LineageReformatError, LineageIndexError, UnCanonicalRankError, RankAliasError
 
 include("DataAPI.jl")
 include("database.jl")
