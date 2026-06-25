@@ -15,6 +15,9 @@ julia> current_db()
 Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 ```
 
+`DB` validates that both input files exist and throws `ArgumentError` if either path is missing.
+Name lookup and child traversal indexes are built lazily on first use and cached per `DB` object.
+
 ## Get taxonomic information from `Taxon`
 
 ```julia
@@ -43,11 +46,15 @@ Name must match to the scientific name exactly
 julia> ["Homo", "Viruses", "Drosophila"] .|> name2taxids |> Iterators.flatten .|> Taxon
 5-element Vector{Taxon}:
  9605 [genus] Homo
- 10239 [superkingdom] Viruses
+ 10239 [acellular root] Viruses
  7215 [genus] Drosophila
  2081351 [genus] Drosophila
  32281 [subgenus] Drosophila
 ```
+
+`name2taxids(name, db)` uses the given `DB`; `name2taxids(name)` uses `current_db()`.
+Name lookup returns taxids, not `Taxon` objects, because one scientific name can map to multiple taxids.
+Use `Taxon.(name2taxids(name, db), Ref(db))` when `Taxon` objects are needed.
 
 ## Traverse taxonomic subtrees from a given `Taxon`
 
@@ -129,12 +136,18 @@ julia> lca(human, gorilla, orangutan)
 # Vector input is also available
 julia> lca([human, gorilla, orangutan])
 9604 [family] Hominidae
+
+# Single-taxon input returns that taxon
+julia> lca(human)
+9606 [species] Homo sapiens
 ```
+
+`lca` requires at least one `Taxon`; `lca()` and `lca(Taxon[])` throw `ArgumentError`.
 
 ## Evaluate ancestor-descendant relationships between two `Taxon`s
 ```julia
 julia> viruses = Taxon(10239)
-10239 [superkingdom] Viruses
+10239 [acellular root] Viruses
 
 julia> sars_cov2 = Taxon(2697049)
 2697049 [no rank] Severe acute respiratory syndrome coronavirus 2
@@ -231,6 +244,7 @@ julia> lineage[:species]
 
 Taxonomy.jl provides `Between`, `From`, `Until`, `Cols` and `All` selectors for more complex rank selection scenarios.
 Use `All()` to select the full lineage, and use `Cols(...)` to select multiple positions or ranks.
+These selectors are provided by Taxonomy.jl itself.
 ```julia
 julia> lineage[All()]
 32-element Lineage{Taxon}:
@@ -270,6 +284,18 @@ julia> lineage[Cols(:superkingdom, :genus, :species)]
  2759 [superkingdom] Eukaryota
  9605 [genus] Homo
  9606 [species] Homo sapiens
+```
+
+For viral lineages, `:domain`, `:superkingdom`, and `:realm` all select the same top-rank slot.
+The returned taxon can therefore have rank `:realm`.
+```julia
+julia> sars_cov2_lineage = Lineage(Taxon(2697049));
+
+julia> sars_cov2_lineage[:superkingdom] == sars_cov2_lineage[:realm]
+true
+
+julia> sars_cov2_lineage[:realm]
+2559587 [realm] Riboviria
 ```
 
 ## Reformat `Lineage`
@@ -344,11 +370,24 @@ Stacktrace:
    @ REPL[103]:1
 ```
 
+Non-canonical ranks are rejected:
+```julia
+julia> reformat(lineage, [:superkingdom, :clade, :species])
+ERROR: Non-canonical ranks are not supported in reformat: [:clade]
+```
+
+Aliases for the same rank slot cannot be requested together:
+```julia
+julia> reformat(lineage, [:domain, :superkingdom, :phylum])
+ERROR: Rank aliases cannot be requested together in reformat: [:domain, :superkingdom, :phylum]
+```
+
 ## Convert `Lineage`s to `DataFrame`
 
 `Lineage` can be converted to a `NamedTuple` using `namedtuple`.
 
 The resulting `NamedTuple` can be passed to `DataFrame`
+When a top-rank alias such as `:superkingdom` is requested, viral lineages may store a `realm` taxon in that column.
 ```julia
 julia> using DataFrames
 
@@ -370,8 +409,8 @@ julia> taxa .|> Lineage .|> (x -> reformat(x, seven_rank)) .|> namedtuple |> Dat
    1 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia            9443 [order] Primates           9604 [family] Hominidae          9605 [genus] Homo               9606 [species] Homo sapiens
    2 │ 2 [superkingdom] Bacteria      1224 [phylum] Proteobacteria       1236 [class] Gammaproteobacteria  91347 [order] Enterobacterales  543 [family] Enterobacteriaceae  561 [genus] Escherichia         562 [species] Escherichia coli
    3 │ 2157 [superkingdom] Archaea    28890 [phylum] Euryarchaeota       183968 [class] Thermococci        2258 [order] Thermococcales     2259 [family] Thermococcaceae    2263 [genus] Thermococcus       187878 [species] Thermococcus ga…
-   4 │ 10239 [superkingdom] Viruses   2732007 [phylum] Nucleocytoviric…  2732523 [class] Megaviricetes     2732554 [order] Imitervirales   549779 [family] Mimiviridae      315393 [genus] Mimivirus        212035 [species] Acanthamoeba po…
-   5 │ 10239 [superkingdom] Viruses   2732408 [phylum] Pisuviricota      2732506 [class] Pisoniviricetes   76804 [order] Nidovirales       11118 [family] Coronaviridae     694002 [genus] Betacoronavirus  694009 [species] Severe acute re…
+   4 │ 2732004 [realm] Varidnaviria   2732007 [phylum] Nucleocytoviric…  2732523 [class] Megaviricetes     2732554 [order] Imitervirales   549779 [family] Mimiviridae      315393 [genus] Mimivirus        3047343 [species] Mimivirus bra…
+   5 │ 2559587 [realm] Riboviria      2732408 [phylum] Pisuviricota      2732506 [class] Pisoniviricetes   76804 [order] Nidovirales       11118 [family] Coronaviridae     694002 [genus] Betacoronavirus  3418604 [species] Betacoronavir…
 
 # Dealing with UnclassifiedTaxon as missing value
 
