@@ -2,10 +2,6 @@ module Taxonomy
 using AbstractTrees
 using OrderedCollections: OrderedDict
 using StringDistances
-import DataAPI,
-       DataAPI.All,
-       DataAPI.Between,
-       DataAPI.Cols
 export AbstractTrees, StringDistances,
        current_db, current_db!,
        Rank, CanonicalRank, UnCanonicalRank, CanonicalRankSet, CanonicalRanks,
@@ -18,7 +14,7 @@ export AbstractTrees, StringDistances,
        From, Until,
        LineageReformatError, LineageIndexError, UnCanonicalRankError, RankAliasError
 
-include("DataAPI.jl")
+include("selector.jl")
 include("database.jl")
 include("taxon.jl")
 include("rank.jl")

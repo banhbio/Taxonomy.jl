@@ -8,7 +8,7 @@ _LR() = throw(LineageReformatError())
 
 struct LineageIndexError <: Exception end
 
-Base.showerror(io::IO, ::LineageIndexError) = print(io, "The index order is messed up.")
+Base.showerror(io::IO, ::LineageIndexError) = print(io, "Lineage ranks or positions must be requested from higher to lower rank.")
 
 _LI() = throw(LineageIndexError())
 
@@ -139,7 +139,7 @@ function Base.getindex(l::Lineage, range::UnitRange{Int})
     return Lineage(line, ranks,  index, true)
 end
 
-Base.getindex(l::Lineage, idx::All) = isempty(idx.cols) ? l : getindex(l, Cols(idx.cols...))
+Base.getindex(l::Lineage, idx::All) = l
 
 function Base.getindex(l::Lineage{T}, idx::Cols) where T
     index = map(collect(idx.cols)) do i

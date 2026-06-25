@@ -130,10 +130,10 @@ end
     @test lineage[32] == lineage[end] == lineage[:species] == human
     @test lineage[1:9] == lineage[Between(1, 9)]
     @test lineage[All()] == lineage
-    @test lineage[All(3, 24, 29)] == lineage[Cols(3, 24, 29)] == lineage[Cols(:domain, 24, 29)] == lineage[Cols(:domain, :order, :family)] 
+    @test lineage[Cols(3, 24, 29)] == lineage[Cols(:domain, 24, 29)] == lineage[Cols(:domain, :order, :family)] 
     @test lineage[:domain] == lineage[:superkingdom]
     @test lineage[Cols(:domain, :order, :family)] == lineage[Cols(:superkingdom, :order, :family)]
-    @test lineage[Between(3, 29)] == lineage[Between(:domain, 29)] == lineage[Between(3, :family)] == lineage[Between(:domain, :family)]
+    @test lineage[Between(3, 29)] == lineage[Between(:domain, 29)] == lineage[Between(3, :family)] == lineage[Between(:domain, :family)] == lineage[Between("domain", "family")]
     @test lineage[From(9)] == lineage[From(:phylum)] == lineage[From("phylum")] == lineage[9:32]
     @test lineage[Until(24)] == lineage[Until(:order)] == lineage[Until("order")] == lineage[1:24]
 
@@ -202,6 +202,9 @@ end
     human = Taxon(9606, db)
     gorilla = Taxon(9593, db)
     pan = Taxon(9598, db)
+    @test_throws ArgumentError lca(Taxon[])
+    @test_throws ArgumentError lca()
+    @test lca([human]) == lca(human) == human
     @test lca([human,gorilla]) == lca(human,gorilla) == Taxon(207598, db)
     @test lca([human,gorilla,pan]) == lca(human,gorilla,pan) == Taxon(207598, db)
 end
