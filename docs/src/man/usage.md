@@ -1,6 +1,6 @@
 # Usage
 
-## Construct Database
+## Construct a Database
 
 ```julia
 # Load the package
@@ -18,11 +18,11 @@ Taxonomy.DB("db/nodes.dmp","db/names.dmp")
 ## Get taxonomic information from `Taxon`
 
 ```julia
-# Construct a Taxon from taxid and Taxonomy.DB
+# Construct a Taxon from a taxid and a Taxonomy.DB
 julia> human = Taxon(9606, db)
 9606 [species] Homo sapiens
 
-# Or, you can omit db from argument (current_db() loaded)
+# Or, you can omit the db argument (current_db() loaded)
 julia> human = Taxon(9606)
 9606 [species] Homo sapiens
 
@@ -38,7 +38,7 @@ julia> rank(human)
 
 ## Construct `Taxon`s from names
 
-Name must match to the scientific name excatly
+Name must match to the scientific name exactly
 ```julia
 julia> ["Homo", "Viruses", "Drosophila"] .|> name2taxids |> Iterators.flatten .|> Taxon
 5-element Vector{Taxon}:
@@ -60,8 +60,8 @@ julia> children(human)
 julia> AbstractTrees.parent(human)
 9605 [genus] Homo
 
-# Collect all Taxon in subtree using PreOderDFS iterator from AbstractTrees.jl
-julia> collect(AbastractTrees.PreOrderDFS(human))
+# Collect all Taxon in subtree using PreOrderDFS iterator from AbstractTrees.jl
+julia> collect(AbstractTrees.PreOrderDFS(human))
 3-element Vector{Taxon}:
  9606 [species] Homo sapiens
  741158 [subspecies] Homo sapiens subsp. 'Denisova'
@@ -112,13 +112,13 @@ julia> print_tree(Taxon(9604))
          ├─ 46359 [subspecies] Gorilla beringei graueri
          └─ 1159185 [subspecies] Gorilla beringei beringei
 ```
-**Note:** Use the child-to-parent traverse (`AbstrcatTrees.parent`) as much as possible since it is quite faster than parent-to-child traverse (`children` and iterators from `AbstractTrees.jl`).
+**Note:** Use the child-to-parent traverse (`AbstractTrees.parent`) as much as possible since it is quite faster than parent-to-child traversal (`children` and iterators from `AbstractTrees.jl`).
 
 ## Find lowest common ancestor (LCA)
 ```julia
 julia> human = Taxon(9606); gorilla = Taxon(9592); orangutan = Taxon(9600);
 
-juliia> lca(human, gorilla)
+julia> lca(human, gorilla)
 207598 [subfamily] Homininae
 
 # lca is a "varargs" function
@@ -158,7 +158,7 @@ julia> taxa = [2759, 33208, 7711, 40674, 9443, 9604, 9605, 9606] .|> Taxon
  9605 [genus] Homo
  9606 [species] Homo sapiens
 
-# Filter Taxons lower than a given rank
+# Filter taxa lower than a given rank
 julia> filter(taxa) do taxon
            taxon < Rank(:class)
        end
@@ -201,7 +201,7 @@ julia> lineage = Lineage(human)
  9606 [species] Homo sapiens
 ```
 
-`Taxon` information are stored in `Vector`-like format
+`Taxon` objects are stored in `Vector`-like format
 ```julia
 julia> lineage[1]
 1 [no Rank] root
@@ -213,7 +213,7 @@ julia> lineage[end]
 9606 [species] Homo sapiens
 ```
 
-`Symbol`s such as `:phylum`, `:genus` and `:species` (`Symbol`s in `CanonicalRanks`) are available to access each `Taxon`
+`Symbol`s such as `:phylum`, `:genus` and `:species` (`Symbol`s in `CanonicalRanks`) can be used to access each `Taxon`
 ```julia
 julia> lineage[:phylum]
 7711 [phylum] Chordata
@@ -274,7 +274,7 @@ julia> reformat(lineage, seven_rank)
  9606 [species] Homo sapiens
 ```
 
-The `:subspecies`/`:strain` are internally treated as the same rank, so that users can ignore ambiguities tn the rank below species.
+The `:subspecies` and `:strain` are internally treated as the same rank, so that users can ignore ambiguity in ranks below species.
 ```julia
 julia> eight_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species, :strain];
 
@@ -295,7 +295,7 @@ julia> rl[:subspecies] == rl[:strain]
 true
 ```
 
-If there is no corresponding taxon to your ranks in the linneage, then `UnclassifiedTaxon` will be stored.
+If there is no corresponding taxon to your ranks in the lineage, then `UnclassifiedTaxon` will be stored.
 ```julia
 julia> uncultured_bacillales = Taxon(157472)
 57472 [species] uncultured Bacillales bacterium
@@ -311,7 +311,7 @@ julia> reformatted_bacillales_lineage = reformat(Lineage(uncultured_bacillales),
  157472 [species] uncultured Bacillales bacterium
 ```
 
-Once reformatted, `Lineage` cannnot be reformatted again.
+Once reformatted, `Lineage` cannot be reformatted again.
 ```julia
 julia> isreformatted(reformatted_bacillales_lineage)
 true
@@ -329,9 +329,9 @@ Stacktrace:
 
 ## Convert `Lineage`s to `DataFrame`
 
-`Lineage` can be converted to `NamedTuple`, using `namedtuple`.
+`Lineage` can be converted to a `NamedTuple` using `namedtuple`.
 
-Converted `NamedTuple` can be used as input into `DataFrame`
+The resulting `NamedTuple` can be passed to `DataFrame`
 ```julia
 julia> using DataFrames
 
@@ -360,7 +360,7 @@ julia> taxa .|> Lineage .|> (x -> reformat(x, seven_rank)) .|> namedtuple |> Dat
 
 julia> taxa = [287, 157472, 9593, 2053489] .|> Taxon
 
-# By deafult, UnclassifiedTaxon are stored 
+# By default, UnclassifiedTaxon objects are stored 
 julia> taxa .|> Lineage .|> (x -> reformat(x, seven_rank)) .|> namedtuple |> DataFrame
 4×7 DataFrame
  Row │ superkingdom                   phylum                             class                              order                              family                             genus                              species                           
@@ -371,7 +371,7 @@ julia> taxa .|> Lineage .|> (x -> reformat(x, seven_rank)) .|> namedtuple |> Dat
    3 │ 2759 [superkingdom] Eukaryota  7711 [phylum] Chordata             40674 [class] Mammalia             9443 [order] Primates              9604 [family] Hominidae            9592 [genus] Gorilla               9593 [species] Gorilla gorilla
    4 │ 2157 [superkingdom] Archaea    1655434 [phylum] Candidatus Loki…  Unclassified [class] unclassifie…  Unclassified [order] unclassifie…  Unclassified [family] unclassifi…  Unclassified [genus] unclassifie…  2053489 [species] Candidatus Lok…
 
-# If set fill_by_missing to true in namedtuple, then missing are stored in DataFrame
+# If fill_by_missing is set to true in namedtuple, then missing are stored in DataFrame
 julia> taxa .|> Lineage .|> (x -> reformat(x, seven_rank)) .|> (x ->  namedtuple(x; fill_by_missing=true)) |> DataFrame
 4×7 DataFrame
  Row │ superkingdom                   phylum                             class                             order                          family                            genus                    species                           
