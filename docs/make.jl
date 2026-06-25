@@ -11,7 +11,7 @@ function readme2index()
     try
         readme = read(f,String)
         index = replace(readme,"![](docs/src/img" => "![](img")
-        write(g,readme)
+        write(g,index)
     finally
         close(f)
         close(g)
