@@ -12,6 +12,18 @@ Base.showerror(io::IO, ::LineageIndexError) = print(io, "The index order is mess
 
 _LI() = throw(LineageIndexError())
 
+struct UnCanonicalRankError <: Exception
+    ranks::Vector{Symbol}
+end
+
+Base.showerror(io::IO, e::UnCanonicalRankError) = print(io, "Non-canonical ranks are not supported in reformat: $(e.ranks)")
+
+struct RankAliasError <: Exception
+    ranks::Vector{Symbol}
+end
+
+Base.showerror(io::IO, e::RankAliasError) = print(io, "Rank aliases cannot be requested together in reformat: $(e.ranks)")
+
 """
     Lineage{T<:AbstractTaxon} <: AbstractVector{T}
 
@@ -67,6 +79,32 @@ Base.lastindex(l::Lineage) = lastindex(l.line)
 function _check_index_order(ranks::Vector{Symbol})
     pseudo_index = .- Integer.(Rank.(ranks))
     _check_index_order(pseudo_index)
+end
+
+function _check_reformat_ranks(ranks::Vector{Symbol})
+    noncanonical = Symbol[]
+    rank_codes = Int[]
+    for r in ranks
+        canonical_rank = Rank(r)
+        if canonical_rank isa UnCanonicalRank
+            push!(noncanonical, r)
+        else
+            push!(rank_codes, Integer(canonical_rank))
+        end
+    end
+    isempty(noncanonical) || throw(UnCanonicalRankError(noncanonical))
+
+    seen = Set{Int}()
+    aliases = Symbol[]
+    for (r, code) in zip(ranks, rank_codes)
+        if code in seen
+            push!(aliases, r)
+        else
+            push!(seen, code)
+        end
+    end
+    isempty(aliases) || throw(RankAliasError(ranks))
+    return nothing
 end
 
 function _check_index_order(ranks::Vector{Int})
@@ -134,10 +172,12 @@ end
     reformat(l::Lineage, ranks::Vector{Symbol})
 
 Return the `Lineage` object reformatted according to the given canonical ranks.
+Non-canonical ranks and multiple aliases for the same rank slot are not supported.
 If there is no corresponding taxon in the lineage to the rank, `UnclassifiedTaxon` will be stored.
 Once a `Lineage` is reformatted, it cannot be reformatted again.
 """
 function reformat(l::Lineage, ranks::Vector{Symbol})
+    _check_reformat_ranks(ranks)
     _check_index_order(ranks)
 
     isreformatted(l) && _LR()

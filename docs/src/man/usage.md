@@ -266,7 +266,7 @@ julia> lineage[Cols(:superkingdom, :genus, :species)]
 Reformat `Lineage` by providing a vector of canonical rank symbols.
 The rank symbols `:domain`, `:superkingdom`, and `:realm` share the same top-rank slot.
 The rank symbols `:subspecies` and `:strain` share the same below-species slot.
-Use only one symbol from each alias group in a reformatted lineage.
+Only canonical rank symbols are supported. Use only one symbol from each alias group in a reformatted lineage.
 ```julia
 julia> seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
 

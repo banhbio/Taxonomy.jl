@@ -156,6 +156,9 @@ end
 
     reformatted_human_lineage = reformat(lineage,[:domain,:phylum,:class,:order,:family,:genus,:species])
     @test_throws LineageIndexError reformat(lineage,[:species, :domain,:phylum,:class,:order,:family,:genus])
+    @test_throws UnCanonicalRankError reformat(lineage, [:domain, :clade, :species])
+    @test_throws RankAliasError reformat(lineage, [:domain, :superkingdom, :phylum])
+    @test_throws RankAliasError reformat(lineage, [:species, :subspecies, :strain])
     @test isreformatted(reformatted_human_lineage)
     @test_throws LineageReformatError reformat(reformatted_human_lineage, [:domain])
     @test eltype(reformatted_human_lineage) == Taxon
