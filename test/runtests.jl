@@ -202,6 +202,9 @@ end
     human = Taxon(9606, db)
     gorilla = Taxon(9593, db)
     pan = Taxon(9598, db)
+    @test_throws ArgumentError lca(Taxon[])
+    @test_throws ArgumentError lca()
+    @test lca([human]) == lca(human) == human
     @test lca([human,gorilla]) == lca(human,gorilla) == Taxon(207598, db)
     @test lca([human,gorilla,pan]) == lca(human,gorilla,pan) == Taxon(207598, db)
 end
