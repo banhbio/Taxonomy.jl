@@ -40,6 +40,17 @@ struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
     reformatted::Bool
 end
 
+_rank_code(rank::Symbol) = Integer(Rank(rank))
+
+function _lineage_index(ranks::Vector{Symbol}, positions)
+    return OrderedDict{Int, Int}(Pair.(_rank_code.(ranks), positions))
+end
+
+function _canonical_rank_positions(line)
+    pos = [(rank(t), i) for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks)]
+    return first.(pos), last.(pos)
+end
+
 function Lineage(taxon::Taxon)
     line = Taxon[]
     ranks = Symbol[]
@@ -61,7 +72,7 @@ function Lineage(taxon::Taxon)
     reverse!(ranks)
     reverse!(rankpos)
     rankpos = length(line) + 1 .- rankpos
-    return Lineage(line, ranks, OrderedDict{Int,Int}(Pair.(Integer.(Rank.(ranks)), rankpos)), false)
+    return Lineage(line, ranks, _lineage_index(ranks, rankpos), false)
 end
 
 """
@@ -123,10 +134,8 @@ Base.getindex(l::Lineage, ur::UnCanonicalRank) = KeyError(ur) |> throw
 
 function Base.getindex(l::Lineage, range::UnitRange{Int})
     line = getindex.(Ref(l), range)
-    pos = [(rank(t), i) for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks)]
-    ranks = first.(pos)
-    rankpos = last.(pos)
-    index = OrderedDict{Int, Int}(Pair.(Integer.(Rank.(ranks)), rankpos))
+    ranks, rankpos = _canonical_rank_positions(line)
+    index = _lineage_index(ranks, rankpos)
     return Lineage(line, ranks,  index, true)
 end
 
@@ -139,10 +148,8 @@ function Base.getindex(l::Lineage{T}, idx::Cols) where T
     _check_index_order(index)
 
     line = getindex.(Ref(l), index)
-    pos = [(rank(t), i) for (i, t) in enumerate(line) if in(rank(t), CanonicalRanks)]
-    ranks = first.(pos)
-    rankpos = last.(pos)
-    index = OrderedDict{Int, Int}(Pair.(Integer.(Rank.(ranks)), rankpos))
+    ranks, rankpos = _canonical_rank_positions(line)
+    index = _lineage_index(ranks, rankpos)
     return Lineage(line, ranks, index, true)
 end
 
@@ -204,7 +211,7 @@ function reformat(l::Lineage, ranks::Vector{Symbol})
     if all(isa.(line, Taxon))
         line = convert.(Taxon, line)
     end
-    return Lineage(line, ranks, OrderedDict{Int, Int}(Pair.(Integer.(Rank.(ranks)), 1:len)), true)
+    return Lineage(line, ranks, _lineage_index(ranks, 1:len), true)
 end
 
 """
