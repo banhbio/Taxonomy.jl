@@ -133,7 +133,7 @@ end
     @test lineage[Cols(3, 24, 29)] == lineage[Cols(:domain, 24, 29)] == lineage[Cols(:domain, :order, :family)] 
     @test lineage[:domain] == lineage[:superkingdom]
     @test lineage[Cols(:domain, :order, :family)] == lineage[Cols(:superkingdom, :order, :family)]
-    @test lineage[Between(3, 29)] == lineage[Between(:domain, 29)] == lineage[Between(3, :family)] == lineage[Between(:domain, :family)]
+    @test lineage[Between(3, 29)] == lineage[Between(:domain, 29)] == lineage[Between(3, :family)] == lineage[Between(:domain, :family)] == lineage[Between("domain", "family")]
     @test lineage[From(9)] == lineage[From(:phylum)] == lineage[From("phylum")] == lineage[9:32]
     @test lineage[Until(24)] == lineage[Until(:order)] == lineage[Until("order")] == lineage[1:24]
 

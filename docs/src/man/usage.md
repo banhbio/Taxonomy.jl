@@ -229,8 +229,18 @@ julia> lineage[:species]
 9606 [species] Homo sapiens
 ```
 
-`Between`, `From`, `Until`, `Cols` and `All` selectors are available in more complex rank selection scenarios.
+Taxonomy.jl provides `Between`, `From`, `Until`, `Cols` and `All` selectors for more complex rank selection scenarios.
+Use `All()` to select the full lineage, and use `Cols(...)` to select multiple positions or ranks.
 ```julia
+julia> lineage[All()]
+32-element Lineage{Taxon}:
+ 1 [no Rank] root
+ 131567 [no rank] cellular organisms
+ 2759 [superkingdom] Eukaryota
+ ⋮
+ 9605 [genus] Homo
+ 9606 [species] Homo sapiens
+
 julia> lineage[Between(:order, :family)]
 6-element Lineage{Taxon}:
  9443 [order] Primates
