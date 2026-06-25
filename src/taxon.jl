@@ -117,11 +117,8 @@ AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
 Return the `Taxon` object stored for the given taxid, or the given default value if no mapping for the taxid is present.
 """
 function Base.get(db::DB, taxid::Int, default)
-    try
-        return Taxon(taxid, db)
-    catch
-        return default
-    end
+    haskey(db.names, taxid) || return default
+    return Taxon(taxid, db)
 end
 
 struct UnclassifiedTaxon <:AbstractTaxon

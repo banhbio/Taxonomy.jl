@@ -170,7 +170,8 @@ Return the Taxon object stored for the given taxid or rank (i.e. :phylum), or th
 function Base.get(l::Lineage, idx::Union{Int,Symbol}, default::Any)
     try
         return getindex(l,idx)
-    catch
+    catch e
+        e isa KeyError || e isa BoundsError || rethrow()
         return default
     end
 end
