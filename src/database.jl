@@ -15,6 +15,7 @@ struct DB
     parents::Dict{Int,Int}
     ranks::Dict{Int,Symbol}
     names::Dict{Int,String}
+    name2taxids::Ref{Union{Nothing, Dict{String, Vector{Int}}}}
     function DB(nodes_dmp::String, names_dmp::String)
         @assert isfile(nodes_dmp)
         @assert isfile(names_dmp)
@@ -22,7 +23,8 @@ struct DB
         parents, ranks = importnodes(nodes_dmp)
         names = importnames(names_dmp)
 
-        db = new(nodes_dmp, names_dmp, Dict(parents), Dict(ranks), Dict(names))
+        name2taxids = Ref{Union{Nothing, Dict{String, Vector{Int}}}}(nothing)
+        db = new(nodes_dmp, names_dmp, Dict(parents), Dict(ranks), Dict(names), name2taxids)
         current_db!(db)
         return db
     end
@@ -89,50 +91,29 @@ function current_db()
     _current_db[]
 end
 
-const _current_name2taxids_db = Ref{Union{Nothing, Dict{String, Vector{Int}}}}(nothing)
-"""
-    current_name2taxids_db!()
-
-(Re)build and cache an inverted mapping from **scientific name** → **Vector{Int}**
-for the active taxonomy database returned by `current_db()`.
-
-Returns the freshly-built dictionary.
-"""
-function current_name2taxids_db!()
-    db = current_db()                 # throws if no DB active
-
+function name2taxids_db!(db::DB)::Dict{String, Vector{Int}}
     mapping = Dict{String, Vector{Int}}()
     for (taxid, name) in db.names
         push!(get!(mapping, name, Int[]), taxid)
     end
-
-    _current_name2taxids_db[] = mapping
+    db.name2taxids[] = mapping
     return mapping
 end
 
-"""
-    current_name2taxids_db()
-
-Return the cached **name ⇒ taxids** dictionary.  If the cache has not yet been
-built — i.e. `_current_name2taxids[] === nothing` — an informative `error` is
-thrown so that the caller explicitly decides when to rebuild via
-`current_name2taxids_db!()`.
-"""
-function current_name2taxids_db()
-    if isnothing(_current_name2taxids_db[])
-        current_name2taxids_db!()
+function name2taxids_db(db::DB)::Dict{String, Vector{Int}}
+    mapping = db.name2taxids[]
+    if isnothing(mapping)
+        return name2taxids_db!(db)
     end
-    return _current_name2taxids_db[]
+    return mapping
 end
 
 """
     current_db!(db::Taxonomy.DB)
 
 Set `db` as the current active database.
-Must call `current_name2taxids_db!()` again for the new DB. 
 """
 function current_db!(db::DB)
     _current_db[] = db
-    _current_name2taxids_db[] = nothing   # error on access until rebuilt
     return db
 end

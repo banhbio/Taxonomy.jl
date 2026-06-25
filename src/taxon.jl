@@ -26,7 +26,7 @@ If multiple hits are found, return a multi-element `Vector`. If not, 1- or 0-ele
 Omitting `db` automatically calls `current_db()`, which is usually the database that was last created.
 """
 function name2taxids(name::AbstractString, db::DB)
-    mapping = current_name2taxids_db()
+    mapping = name2taxids_db(db)
     return get(mapping, name, Int[])
 end
 
