@@ -263,7 +263,10 @@ julia> lineage[Cols(:superkingdom, :genus, :species)]
 ```
 
 ## Reformat `Lineage`
-Reformation of `Linage` to your ranks can be performed by using `reformat`.
+Reformat `Lineage` by providing a vector of canonical rank symbols.
+The rank symbols `:domain`, `:superkingdom`, and `:realm` share the same top-rank slot.
+The rank symbols `:subspecies` and `:strain` share the same below-species slot.
+Use only one symbol from each alias group in a reformatted lineage.
 ```julia
 julia> seven_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species];
 
@@ -278,7 +281,7 @@ julia> reformat(lineage, seven_rank)
  9606 [species] Homo sapiens
 ```
 
-The `:subspecies` and `:strain` are internally treated as the same rank, so that users can ignore ambiguity in ranks below species.
+The `:subspecies` and `:strain` aliases let users ignore ambiguity in ranks below species.
 ```julia
 julia> eight_rank = [:superkingdom, :phylum, :class, :order, :family, :genus, :species, :strain];
 
@@ -299,7 +302,7 @@ julia> rl[:subspecies] == rl[:strain]
 true
 ```
 
-If there is no corresponding taxon to your ranks in the lineage, then `UnclassifiedTaxon` will be stored.
+If there is no corresponding taxon to the requested canonical rank slot in the lineage, then `UnclassifiedTaxon` will be stored.
 ```julia
 julia> uncultured_bacillales = Taxon(157472)
 57472 [species] uncultured Bacillales bacterium
