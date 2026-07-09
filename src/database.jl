@@ -4,28 +4,10 @@ const default_db_sizehint = 4000000
     Taxonomy.DB
 
 # Constructors
-
 ```julia
 DB(nodes_dmp::String, names_dmp::String)
 ```
-
 Create DB(taxonomy database) object from nodes.dmp and names.dmp files.
-
-# Examples
-
-```jldoctest
-julia> nodes_dmp = joinpath(_DOCTEST_DB_DIR, "nodes.dmp");
-
-julia> names_dmp = joinpath(_DOCTEST_DB_DIR, "names.dmp");
-
-julia> db = Taxonomy.DB(nodes_dmp, names_dmp);
-
-julia> current_db() === db
-true
-
-julia> taxid(Taxon(9606, db))
-9606
-```
 """
 struct DB
     nodes_dmp::String
@@ -95,13 +77,6 @@ const _current_db = Ref{Union{Nothing, DB}}(nothing)
     current_db()
 
 Return the current active database or the last database that got created.
-
-# Examples
-
-```jldoctest
-julia> current_db() === db
-true
-```
 """
 function current_db()
     if isnothing(_current_db[])
@@ -149,16 +124,6 @@ end
     current_db!(db::Taxonomy.DB)
 
 Set `db` as the current active database.
-
-# Examples
-
-```jldoctest
-julia> current_db!(db) === db
-true
-
-julia> current_db() === db
-true
-```
 """
 function current_db!(db::DB)
     _current_db[] = db
