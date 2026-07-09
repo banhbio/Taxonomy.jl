@@ -275,7 +275,7 @@ end
 """
     namedtuple(lineage::Lineage; kwargs...)
 
-Return a NamedTuple whose filednames is ranks (in the `CanonicalRanks`) of the `lineage`.
+Return a NamedTuple whose field names are ranks (in the `CanonicalRanks`) of the `lineage`.
 This function is useful for converting `Lineage` to `DataFrame`, for example.
 
 # Arguments
@@ -322,7 +322,7 @@ Print a formatted representation of the lineage to the given `IO` object.
 # Arguments
 
 * `delim::AbstractString = ";"` - The delimiter between taxon fields.
-* `fill::Bool = false` - If `true`, prints `UnclassifiedTaxon`. only availavle when skip is false.
+* `fill::Bool = false` - If `true`, prints `UnclassifiedTaxon`. Only available when `skip` is `false`.
 * `skip::Bool = false` - If `true`, skip printing `UnclassifiedTaxon` and delimiter.
 
 # Examples

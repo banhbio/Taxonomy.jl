@@ -110,7 +110,7 @@ julia> Taxon(9606) < Rank(:genus)
 true
 ```
 
-Return `true` if the rank of the former `Taxon` is less than the later rank.
+Return `true` if the rank of the former `Taxon` is less than the latter rank.
 """
 Base.isless(x1::CanonicalRank, x2::CanonicalRank) = isless(Integer(x1), Integer(x2))
 
