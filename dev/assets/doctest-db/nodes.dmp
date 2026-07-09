@@ -1,0 +1,54 @@
+1	|	1	|	no rank	|
+2759	|	131567	|	domain	|
+6072	|	33208	|	clade	|
+7711	|	33511	|	phylum	|
+7742	|	89593	|	clade	|
+7776	|	7742	|	clade	|
+8287	|	117571	|	superclass	|
+9347	|	32525	|	clade	|
+9443	|	314146	|	order	|
+9526	|	314293	|	parvorder	|
+9592	|	207598	|	genus	|
+9593	|	9592	|	species	|
+9596	|	207598	|	genus	|
+9598	|	9596	|	species	|
+9599	|	607660	|	genus	|
+9600	|	9599	|	species	|
+9604	|	314295	|	family	|
+9605	|	207598	|	genus	|
+9606	|	9605	|	species	|
+10239	|	1	|	acellular root	|
+11118	|	2499399	|	family	|
+32523	|	1338369	|	clade	|
+32524	|	32523	|	clade	|
+32525	|	40674	|	clade	|
+33154	|	2759	|	clade	|
+33208	|	33154	|	kingdom	|
+33213	|	6072	|	clade	|
+33511	|	33213	|	clade	|
+40674	|	32524	|	class	|
+63221	|	9606	|	subspecies	|
+76804	|	2732506	|	order	|
+89593	|	7711	|	subphylum	|
+117570	|	7776	|	clade	|
+117571	|	117570	|	clade	|
+131567	|	1	|	cellular root	|
+207598	|	9604	|	subfamily	|
+314146	|	1437010	|	superorder	|
+314293	|	376913	|	infraorder	|
+314295	|	9526	|	superfamily	|
+376913	|	9443	|	suborder	|
+607660	|	9604	|	subfamily	|
+694002	|	2501931	|	genus	|
+741158	|	9606	|	subspecies	|
+1338369	|	8287	|	clade	|
+1437010	|	9347	|	clade	|
+2499399	|	76804	|	suborder	|
+2501931	|	11118	|	subfamily	|
+2509511	|	694002	|	subgenus	|
+2559587	|	10239	|	realm	|
+2697049	|	3418604	|	no rank	|
+2732396	|	2559587	|	kingdom	|
+2732408	|	2732396	|	phylum	|
+2732506	|	2732408	|	class	|
+3418604	|	2509511	|	species	|
