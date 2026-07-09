@@ -287,6 +287,16 @@ Base.show(io::IO, lineage::Lineage) = print_lineage(io, lineage)
     isdescendant(descendant::Taxon, ancestor::Taxon)
 
 Return `true` if the former taxon is a descendant of the latter taxon.
+
+# Examples
+
+```jldoctest
+julia> isdescendant(Taxon(9606), Taxon(9605))
+true
+
+julia> isdescendant(Taxon(9606), Taxon(10239))
+false
+```
 """
 AbstractTrees.isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lineage(descendant)
 
@@ -294,5 +304,15 @@ AbstractTrees.isdescendant(descendant::Taxon, ancestor::Taxon) = ancestor in Lin
     isancestor(ancestor::Taxon, descendant::Taxon)
 
 Return `true` if the former taxon is an ancestor of the latter taxon.
+
+# Examples
+
+```jldoctest
+julia> isancestor(Taxon(9605), Taxon(9606))
+true
+
+julia> isancestor(Taxon(10239), Taxon(9606))
+false
+```
 """
 isancestor(ancestor::Taxon, descendant::Taxon) = AbstractTrees.isdescendant(descendant, ancestor)
