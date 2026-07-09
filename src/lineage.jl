@@ -281,6 +281,26 @@ This function is useful for converting `Lineage` to `DataFrame`, for example.
 # Arguments
 
 * `fill_by_missing::Bool = false` - If `true`, fills missing instead of `UnclassifiedTaxon`.
+
+# Examples
+
+```jldoctest
+julia> ranks = [:domain, :phylum, :class, :order, :family, :genus, :species];
+
+julia> lineage = reformat(Lineage(Taxon(9606)), ranks);
+
+julia> nt = namedtuple(lineage);
+
+julia> nt.species
+9606 [species] Homo sapiens
+
+julia> incomplete = reformat(Lineage(Taxon(9443)), ranks);
+
+julia> nt = namedtuple(incomplete; fill_by_missing=true);
+
+julia> ismissing(nt.species)
+true
+```
 """
 function namedtuple(l::Lineage; fill_by_missing::Bool=false)
     ranks = l.ranks
