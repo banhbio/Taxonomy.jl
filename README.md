@@ -7,6 +7,13 @@
 
 [![DOI](https://zenodo.org/badge/341212699.svg)](https://zenodo.org/badge/latestdoi/341212699)
 
+## v0.5.1 Release Notes
+
+### Improvements
+
+- Added doctests to public API docstrings and usage examples.
+- Fixed docstring typos and clarified several API descriptions.
+
 ## v0.5.0 Release Notes
 
 ### Breaking changes

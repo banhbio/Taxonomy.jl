@@ -2,6 +2,7 @@ using Taxonomy
 using Documenter
 
 const DOCTEST_DB_DIR = joinpath(@__DIR__, "src", "assets", "doctest-db")
+const DOCS_ON_CI = get(ENV, "CI", "false") == "true"
 
 DocMeta.setdocmeta!(
     Taxonomy,
@@ -39,10 +40,10 @@ sync_readme_to_index!()
 makedocs(;
     modules=[Taxonomy],
     authors="banhbio <ban@kuicr.kyoto-u.ac.jp>",
-    repo="https://github.com/banhbio/Taxonomy.jl/blob/{commit}{path}#{line}",
+    repo=Documenter.Remotes.GitHub("banhbio", "Taxonomy.jl"),
     sitename="Taxonomy.jl",
     format=Documenter.HTML(;
-        prettyurls=get(ENV, "CI", "false") == "true",
+        prettyurls=DOCS_ON_CI,
         canonical="https://banhbio.github.io/Taxonomy.jl",
         assets=String[],
     ),
@@ -53,7 +54,9 @@ makedocs(;
     ],
 )
 
-deploydocs(;
-    repo="github.com/banhbio/Taxonomy.jl.git",
-    devbranch="main",
-)
+if DOCS_ON_CI
+    deploydocs(;
+        repo="github.com/banhbio/Taxonomy.jl.git",
+        devbranch="main",
+    )
+end
