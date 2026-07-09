@@ -219,6 +219,27 @@ Return the `Lineage` object reformatted according to the given canonical ranks.
 Non-canonical ranks and multiple aliases for the same rank slot are not supported.
 If there is no corresponding taxon in the lineage to the rank, `UnclassifiedTaxon` will be stored.
 Once a `Lineage` is reformatted, it cannot be reformatted again.
+
+# Examples
+
+```jldoctest
+julia> ranks = [:domain, :phylum, :class, :order, :family, :genus, :species];
+
+julia> reformatted = reformat(Lineage(Taxon(9606)), ranks);
+
+julia> isreformatted(reformatted)
+true
+
+julia> taxid.(reformatted)
+7-element Vector{Int64}:
+  2759
+  7711
+ 40674
+  9443
+  9604
+  9605
+  9606
+```
 """
 function reformat(l::Lineage, ranks::Vector{Symbol})
     _check_reformat_ranks(ranks)
