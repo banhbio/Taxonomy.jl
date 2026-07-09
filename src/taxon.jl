@@ -6,6 +6,16 @@ abstract type AbstractTaxon end
 
 Construct a `Taxon` from its `taxid`.
 Omitting `db` automatically calls `current_db()`, which is usually the database that was last created.
+
+# Examples
+
+```jldoctest
+julia> Taxon(9606)
+9606 [species] Homo sapiens
+
+julia> Taxon(9606, db)
+9606 [species] Homo sapiens
+```
 """
 struct Taxon <: AbstractTaxon 
     taxid::Int
@@ -24,6 +34,17 @@ Taxon(idx::Int) = Taxon(idx, current_db())
 Return a `Vector` of taxid from its `name`. `name` must match to the scientific name exactly.
 If multiple hits are found, return a multi-element `Vector`. If not, 1- or 0-element `Vector`. 
 Omitting `db` automatically calls `current_db()`, which is usually the database that was last created.
+
+# Examples
+
+```jldoctest
+julia> name2taxids("Homo")
+1-element Vector{Int64}:
+ 9605
+
+julia> name2taxids("ThisNameDoesNotExist")
+Int64[]
+```
 """
 function name2taxids(name::AbstractString, db::DB)
     mapping = name2taxids_db(db)
@@ -114,6 +135,13 @@ AbstractTrees.nodetype(::Type{Taxon}) = Taxon
     AbstractTrees.parent(taxon::Taxon)
 
 Return the `Taxon` object that is the parent of the given `Taxon` object.
+
+# Examples
+
+```jldoctest
+julia> AbstractTrees.parent(Taxon(9606))
+9605 [genus] Homo
+```
 """
 function AbstractTrees.parent(taxon::Taxon)
    parent_taxid = get(taxon.db.parents, taxon.taxid, nothing)
@@ -128,6 +156,13 @@ end
     children(taxon::Taxon)
 
 Return the vector of `Taxon` objects that are children of the given `Taxon` object.
+
+# Examples
+
+```jldoctest
+julia> sort(taxid.(children(Taxon(9606)))) == [63221, 741158]
+true
+```
 """
 function AbstractTrees.children(taxon::Taxon)
     children_taxid = get(children_db(taxon.db), taxon.taxid, Int[])
@@ -142,6 +177,16 @@ AbstractTrees.printnode(io::IO, taxon::Taxon) = print(io, taxon)
     get(db::Taxonomy.DB, taxid::Int, default)
 
 Return the `Taxon` object stored for the given taxid, or the given default value if no mapping for the taxid is present.
+
+# Examples
+
+```jldoctest
+julia> get(db, 9606, nothing)
+9606 [species] Homo sapiens
+
+julia> get(db, 99999999, nothing) === nothing
+true
+```
 """
 function Base.get(db::DB, taxid::Int, default)
     haskey(db.names, taxid) || return default
