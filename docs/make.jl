@@ -1,24 +1,40 @@
 using Taxonomy
 using Documenter
 
-DocMeta.setdocmeta!(Taxonomy, :DocTestSetup, :(using Taxonomy); recursive=true)
+const DOCTEST_DB_DIR = joinpath(@__DIR__, "src", "assets", "doctest-db")
 
-function readme2index()
-    readme_path = "README.md"
-    index_path = "docs/src/index.md" 
-    f = open(readme_path,"r")
-    g = open(index_path, "w")
-    try
-        readme = read(f,String)
-        index = replace(readme,"![](docs/src/img" => "![](img")
-        write(g,index)
-    finally
-        close(f)
-        close(g)
+DocMeta.setdocmeta!(
+    Taxonomy,
+    :DocTestSetup,
+    quote
+        using Taxonomy
+        using Taxonomy.AbstractTrees
+        _DOCTEST_DB_DIR = $(DOCTEST_DB_DIR)
+        db = Taxonomy.DB(
+            joinpath(_DOCTEST_DB_DIR, "nodes.dmp"),
+            joinpath(_DOCTEST_DB_DIR, "names.dmp"),
+        )
+        human = Taxon(9606, db)
+        lineage = Lineage(human)
+        seven_rank = [:domain, :phylum, :class, :order, :family, :genus, :species]
+    end;
+    recursive=true,
+)
+
+function sync_readme_to_index!()
+    readme_path = joinpath(@__DIR__, "..", "README.md")
+    index_path = joinpath(@__DIR__, "src", "index.md")
+
+    readme = read(readme_path, String)
+    index = replace(readme, "![](docs/src/img" => "![](img")
+
+    if !isfile(index_path) || read(index_path, String) != index
+        write(index_path, index)
     end
+    return nothing
 end
 
-readme2index()
+sync_readme_to_index!()
 
 makedocs(;
     modules=[Taxonomy],
