@@ -127,4 +127,22 @@ function Base.isless(x1::AbstractTaxon, x2::CanonicalRank)
     end
 end
 
+"""
+    <=(taxon::AbstractTaxon, rank::CanonicalRank)
+
+# Examples
+
+```jldoctest
+julia> Taxon(9606) <= Rank(:species)
+true
+
+julia> Taxon(9606) <= Rank(:genus)
+true
+
+julia> Taxon(9605) <= Rank(:species)
+false
+```
+
+Return `true` if the rank of the former `Taxon` is less than or equal to the latter rank.
+"""
 Base.:<=(x1::AbstractTaxon, x2::CanonicalRank) = Rank(x1) == x2 ? true : x1 < x2
