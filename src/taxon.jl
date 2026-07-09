@@ -61,6 +61,21 @@ Find names similar to the `query` and return a `Vector` of `NamedTuple`s with ta
 The similarities are calculated by the Lavenshtein distance by default.
 It can also be changed to other distances defined in `StringDistaces` package by specifying it in the distance argument.
 Omitting `db` automatically calls `current_db()`, which is usually the database that was last created.
+
+# Examples
+
+```jldoctest
+julia> result = first(similarnames("Homo sapiens"));
+
+julia> result.taxid
+9606
+
+julia> result.name
+"Homo sapiens"
+
+julia> result.similarity
+1.0
+```
 """
 function similarnames(query::AbstractString, db::DB; distance::StringDistance=StringDistances.Levenshtein(), threshold::Float64=0.8)
     result = @NamedTuple{taxid::Int, name::String, similarity::Float64}[]
