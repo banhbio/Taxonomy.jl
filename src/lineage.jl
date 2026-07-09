@@ -32,6 +32,18 @@ A type that stores lineage information in `Vector`-like format.
 
 - `getindex` is overloaded to get `Taxon` values. `Symbol`s such as `:domain`, `:superkingdom`, `:realm`, `:family`, `:genus`, `:species` in `CanonicalRanks` can be used. Also, `Between`, `From`, `Until`, `Cols` and `All` selectors can be used in more complex rank selection scenarios.
 - Once reformatted, it cannot be reformatted again. The status can be checked using `isreformatted(lineage)`.
+
+# Examples
+
+```jldoctest
+julia> lineage = Lineage(Taxon(9606));
+
+julia> lineage[:species]
+9606 [species] Homo sapiens
+
+julia> lineage[:class]
+40674 [class] Mammalia
+```
 """
 struct Lineage{T<:AbstractTaxon} <: AbstractVector{T}
     line::Vector{T}
@@ -175,9 +187,21 @@ Base.getindex(l::Lineage, idx::Until{Int}) = l[1:idx.last]
 Base.getindex(l::Lineage, idx::Until{Symbol}) = getindex(l, Until(l.index[Integer(Rank(idx.last))]))
 
 """
-    get(db::Taxonomy.DB, idx::Union{Int,Symbol}, default)
+    get(lineage::Lineage, idx::Union{Int,Symbol}, default)
 
-Return the Taxon object stored for the given taxid or rank (i.e. :phylum), or the given default value if no mapping for the taxid is present.
+Return the `Taxon` object stored at the given position or rank (i.e. `:phylum`), or the given default value if no matching item is present.
+
+# Examples
+
+```jldoctest
+julia> lineage = Lineage(Taxon(9606));
+
+julia> get(lineage, :class, nothing)
+40674 [class] Mammalia
+
+julia> get(lineage, :strain, nothing) === nothing
+true
+```
 """
 function Base.get(l::Lineage, idx::Union{Int,Symbol}, default::Any)
     try
