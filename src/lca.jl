@@ -4,6 +4,21 @@
 
 Return the `Taxon` object that is the lowest common ancestor of the given set of `Taxon`s.
 At least one `Taxon` is required.
+
+# Examples
+
+```jldoctest
+julia> human = Taxon(9606); gorilla = Taxon(9593);
+
+julia> lca(human, gorilla)
+207598 [subfamily] Homininae
+
+julia> lca([human, gorilla])
+207598 [subfamily] Homininae
+
+julia> lca(human)
+9606 [species] Homo sapiens
+```
 """
 function lca(taxa::Vector{Taxon})
     isempty(taxa) && throw(ArgumentError("lca requires at least one Taxon"))
