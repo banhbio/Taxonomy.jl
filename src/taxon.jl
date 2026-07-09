@@ -58,6 +58,13 @@ similarnames(query::AbstractString ; kwargs... ) = similarnames(query, current_d
     taxid(taxon::Taxon)
 
 Return the taxid of the given `Taxon` object.
+
+# Examples
+
+```jldoctest
+julia> taxid(Taxon(9606))
+9606
+```
 """
 taxid(taxon::Taxon) = taxon.taxid
 
@@ -66,6 +73,16 @@ taxid(taxon::Taxon) = taxon.taxid
 
 Return the name of the given `Taxon` object.
 It also works for an `UnclassifiedTaxon` object.
+
+# Examples
+
+```jldoctest
+julia> name(Taxon(9606))
+"Homo sapiens"
+
+julia> name(UnclassifiedTaxon(:subspecies, Taxon(9606)))
+"unclassified Homo sapiens subspecies"
+```
 """
 name(taxon::Taxon) = taxon.db.names[taxid(taxon)]
 
@@ -74,6 +91,16 @@ name(taxon::Taxon) = taxon.db.names[taxid(taxon)]
 
 Return the rank of the given `Taxon` object.
 It also works for an `UnclassifiedTaxon` object.
+
+# Examples
+
+```jldoctest
+julia> rank(Taxon(9606))
+:species
+
+julia> rank(UnclassifiedTaxon(:subspecies, Taxon(9606)))
+:subspecies
+```
 """
 rank(taxon::Taxon) = get(taxon.db.ranks, taxon.taxid, Symbol("no Rank"))
 
@@ -141,4 +168,16 @@ Base.show(io::IO, taxon::UnclassifiedTaxon) = print(io, "Unclassified [$(rank(ta
 rank(taxon::UnclassifiedTaxon) = taxon.rank
 name(taxon::UnclassifiedTaxon) = taxon.name
 
+"""
+    source(taxon::UnclassifiedTaxon)
+
+Return the source `Taxon` used to construct an `UnclassifiedTaxon`.
+
+# Examples
+
+```jldoctest
+julia> source(UnclassifiedTaxon(:subspecies, Taxon(9606)))
+9606 [species] Homo sapiens
+```
+"""
 source(taxon::UnclassifiedTaxon) = taxon.source

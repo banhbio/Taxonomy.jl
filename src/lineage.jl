@@ -79,6 +79,18 @@ end
     isreformatted(lineage::Lineage)
 
 Return `true` if `lineage` is already reformatted.
+
+# Examples
+
+```jldoctest
+julia> isreformatted(Lineage(Taxon(9606)))
+false
+
+julia> ranks = [:domain, :phylum, :class, :order, :family, :genus, :species];
+
+julia> isreformatted(reformat(Lineage(Taxon(9606)), ranks))
+true
+```
 """
 isreformatted(lineage::Lineage) = lineage.reformatted
 
