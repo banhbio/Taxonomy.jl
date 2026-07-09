@@ -324,6 +324,23 @@ Print a formatted representation of the lineage to the given `IO` object.
 * `delim::AbstractString = ";"` - The delimiter between taxon fields.
 * `fill::Bool = false` - If `true`, prints `UnclassifiedTaxon`. only availavle when skip is false.
 * `skip::Bool = false` - If `true`, skip printing `UnclassifiedTaxon` and delimiter.
+
+# Examples
+
+```jldoctest
+julia> ranks = [:domain, :phylum, :class, :order, :family, :genus, :species];
+
+julia> lineage = reformat(Lineage(Taxon(9443)), ranks);
+
+julia> sprint(io -> print_lineage(io, lineage))
+"Eukaryota;Chordata;Mammalia;Primates;;;"
+
+julia> sprint(io -> print_lineage(io, lineage; skip=true))
+"Eukaryota;Chordata;Mammalia;Primates"
+
+julia> sprint(io -> print_lineage(io, lineage; fill=true))
+"Eukaryota;Chordata;Mammalia;Primates;unclassified Primates family;unclassified Primates genus;unclassified Primates species"
+```
 """
 function print_lineage(io::IO, lineage::Lineage; delim::AbstractString=";", fill::Bool=false, skip::Bool=false)
     taxa = collect(lineage)
