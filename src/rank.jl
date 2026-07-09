@@ -36,6 +36,16 @@ Return `CanonicalRank(sym)` if sym is in `CanonicalRanks`. Return `UnCanonicalRa
 `CanonicalRank(sym)` can be used for `isless` comparison.
 `:domain`, `:superkingdom`, and `:realm` are treated as the same top-rank
 level.
+
+# Examples
+
+```jldoctest
+julia> Rank(:species) isa Taxonomy.CanonicalRank
+true
+
+julia> Rank(:clade) isa Taxonomy.UnCanonicalRank
+true
+```
 """
 Rank
 
@@ -71,6 +81,13 @@ Return `CanonicalRank` made from `rank(taxon)` if `rank(taxon)` is in `Canonical
 `CanonicalRank(taxon)` can be used for `isless` comparison.
 `:domain`, `:superkingdom`, and `:realm` can all be handled as canonical
 aliases for the same top-rank level.
+
+# Examples
+
+```jldoctest
+julia> Rank(Taxon(9606)) isa Taxonomy.CanonicalRank
+true
+```
 """
 Rank(taxon::AbstractTaxon) = rank(taxon) |> Rank
 
@@ -86,11 +103,13 @@ Base.show(io::IO, r::Rank) = print(io, String(rank(r)))
 """
     isless(taxon::AbstractTaxon, rank::CanonicalRank)
 
-Example
-```julia
-julia> Taxon(9606 , db) < Rank(:genus)
+# Examples
+
+```jldoctest
+julia> Taxon(9606) < Rank(:genus)
 true
 ```
+
 Return `true` if the rank of the former `Taxon` is less than the later rank.
 """
 Base.isless(x1::CanonicalRank, x2::CanonicalRank) = isless(Integer(x1), Integer(x2))
